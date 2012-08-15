@@ -1,0 +1,135 @@
+<%@ jet 
+    imports="
+        org.talend.core.model.process.INode 
+        org.talend.core.model.process.ElementParameterParser 
+        org.talend.core.model.metadata.IMetadataTable 
+        org.talend.core.model.metadata.IMetadataColumn 
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.EConnectionType
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        java.util.List 
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        
+    " 
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+// Retrive component properties
+String filename = ElementParameterParser.getValue(node,"__FILENAME__");
+
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+    IMetadataTable metadata = metadatas.get(0);
+    if (metadata != null) {
+    // Open the NetCDF file
+%>
+    int nbFeature_<%=cid %> = 0;
+    String filename_<%=cid %> = <%=filename %>;
+    ucar.nc2.NetcdfFile ncfile_<%=cid %> = null;
+    ucar.nc2.Variable sampleVariable_<%=cid %> = null;
+    ucar.ma2.IndexIterator sampleIterator_<%=cid %> = null;
+    try {
+        ncfile_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>);
+        try {
+<%
+        // Define variables
+        List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
+        String firstConnName = "";
+        if (conns!=null) {
+            if (conns.size()>0) {
+                for (int i = 0; i < conns.size(); i++) {
+                    IConnection conn = conns.get(i);
+                    firstConnName = conn.getName();
+        
+                    if ((conn.getLineStyle().equals(EConnectionType.FLOW_MAIN))||(conn.getLineStyle().equals(EConnectionType.FLOW_REF))) {
+                        List<IMetadataColumn> listColumns = metadata.getListColumns();
+                        int sizeListColumns = listColumns.size();
+						
+                        // Retrieve the values 
+                        for (int valueN = 0; valueN < sizeListColumns; valueN++) {
+                            IMetadataColumn column = listColumns.get(valueN);
+                            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+
+                            //Just to get a non-primitive type we can cast an Object instance to.
+                            String objectType = JavaTypesManager.getTypeToGenerate(column.getTalendType(), true);
+                            
+                            // Read the dimensions/variables
+%>
+        ucar.nc2.Variable v_<%=cid %>_<%=column.getLabel() %> = ncfile_<%=cid %>.findVariable("<%=column.getLabel() %>");
+        // TODO : Return when null
+        //if (null == vTemp)
+        //        return; <%=cid %>
+            
+        ucar.ma2.Array data_<%=cid %>_<%=column.getLabel() %> = v_<%=cid %>_<%=column.getLabel() %>.read();
+<%
+							//Create iterators for variables
+                            if (!column.isKey()) {
+%>      
+        ucar.ma2.IndexIterator iterator_<%=cid %>_<%=column.getLabel() %> = data_<%=cid %>_<%=column.getLabel() %>.getIndexIterator();
+        sampleVariable_<%=cid %> = v_<%=cid %>_<%=column.getLabel() %>;
+        sampleIterator_<%=cid %> = iterator_<%=cid %>_<%=column.getLabel() %>;
+<%
+							}
+                        }
+						            
+                        // Start the main loop - iterate over variables
+%>
+		while (
+<%
+                        for (int valueN = 0; valueN < sizeListColumns; valueN++) {
+                            IMetadataColumn column = listColumns.get(valueN);
+                            
+                            if (!column.isKey()) {                           
+%>      
+			iterator_<%=cid %>_<%=column.getLabel() %>.hasNext() &&
+<%
+							}
+						}
+%>
+			true)
+		{
+<%
+                        for (int valueN = 0; valueN < sizeListColumns; valueN++) {
+                            IMetadataColumn column = listColumns.get(valueN);
+                            
+                            if (!column.isKey()) {                           
+%>      
+			iterator_<%=cid %>_<%=column.getLabel() %>.next();
+<%
+							}
+						}
+                        
+                        // Pass values to next component
+                        for (int valueN = 0; valueN < sizeListColumns; valueN++) {
+                            IMetadataColumn column = listColumns.get(valueN);
+                            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+                            
+                            if (column.isKey()) {
+%>
+			int dimIndex_<%=column.getLabel() %> = sampleVariable_<%=cid %>.findDimensionIndex("<%=column.getLabel()%>");
+			int[] counter_<%=column.getLabel() %> = sampleIterator_<%=cid %>.getCurrentCounter();
+			int index_<%=column.getLabel() %> = counter_<%=column.getLabel() %>[dimIndex_<%=column.getLabel() %>];
+			
+            // TODO get according to data type
+			<%=conn.getName() %>.<%=column.getLabel() %> =  data_<%=cid %>_<%=column.getLabel() %>.getDouble(index_<%=column.getLabel() %>);
+			
+<%
+                            } else {
+%>
+							
+            // TODO get according to data type
+            <%=conn.getName() %>.<%=column.getLabel() %> = iterator_<%=cid %>_<%=column.getLabel() %>.getDoubleCurrent();
+<%
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+%>
