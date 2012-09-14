@@ -26,7 +26,20 @@
     <CONNECTOR CTYPE="RUN_IF"/>
   </CONNECTORS> 
   <PARAMETERS> 
-    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="1"/>
+	<PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="1">
+		<TABLE READONLY="false">
+	    	<COLUMN NAME="catalogUri" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="authority" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="id" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="name" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="catalogUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="downloadUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="opendapUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="subsetUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="fullName" TYPE="id_String" READONLY="false" LENGTH="255"/>
+	    	<COLUMN NAME="modified" TYPE="id_Date" READONLY="false"/>
+      	</TABLE>
+	</PARAMETER>
     <PARAMETER NAME="CATALOG_URL" FIELD="TEXT" REQUIRED="true" NUM_ROW ="2" >
    </PARAMETER >
   </PARAMETERS> 

@@ -30,12 +30,6 @@
 			<DEFAULT />
 		</PARAMETER>
 	</PARAMETERS>
-	<ADVANCED_PARAMETERS>
-		<PARAMETER NAME="IMPORT" FIELD="MEMO_IMPORT" REQUIRED="false"
-			SHOW="false" NUM_ROW="1">
-			<DEFAULT>import org.talend.sdi.geometry.Geometry;</DEFAULT>
-		</PARAMETER>
-	</ADVANCED_PARAMETERS>
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="netcdf" MODULE="netcdfAll-4.2.jar" REQUIRED="true" />

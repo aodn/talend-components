@@ -21,6 +21,7 @@ String catalogUrl = ElementParameterParser.getValue(node, "__CATALOG_URL__");
 %> 
 
 //--- Define THREDDS catalog iterator
+// TODO: Can be replaced by unidata Thredds catalog crawler?
 
 java.util.Iterator<thredds.catalog.InvDataset> catalogIterator_<%=cid%> = new java.util.Iterator<thredds.catalog.InvDataset>() {
     String catalogUrl;
