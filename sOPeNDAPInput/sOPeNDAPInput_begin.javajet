@@ -1,0 +1,180 @@
+<%@ jet 
+    imports="
+    	java.util.Iterator
+        java.util.List 
+        java.util.Map
+        java.util.Set 
+        java.util.LinkedHashMap
+        org.talend.core.model.process.INode 
+        org.talend.core.model.process.ElementParameterParser 
+        org.talend.core.model.metadata.IMetadataTable 
+        org.talend.core.model.metadata.IMetadataColumn 
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.EConnectionType
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+    " 
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+// Retrieve component properties
+String url = ElementParameterParser.getValue(node, "__URL__");
+List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
+
+// Get list of column names used in connections, mapped projection names and mapped variable names 
+
+Map<String, String> columnProjectionNames = new LinkedHashMap<String, String>();
+Map<String, String> columnVariableNames = new LinkedHashMap<String, String>();
+
+List< ? extends IConnection> conns = node.getOutgoingConnections();
+
+for (int i=0; i < conns.size(); i++) {
+	IConnection conn = conns.get(i);
+
+    if ((conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)	)||(conn.getLineStyle().equals(EConnectionType.FLOW_REF))) {
+    	IMetadataTable connMetadata = conn.getMetadataTable();
+    	
+        List<IMetadataColumn> listColumns = connMetadata.getListColumns();
+        
+        for (IMetadataColumn column : listColumns) {
+ 			//=========================================================================================
+			// WARNING: The following code is duplicated in the MAIN template - make sure any changes 
+			// are made there too.
+			//=========================================================================================
+			        	
+        	String columnName = column.getLabel();
+        	
+        	// Map column name to projection name
+        	// Its the column name unless specified otherwise in advanced parameters
+        	
+			String projectionName = columnName;
+			
+			for (Map<String, String> columnMapOverride : columnMappingOverrides) {
+				if (columnMapOverride.get("COLUMN").equals(columnName)) {
+					projectionName = columnMapOverride.get("VARIABLE");
+					break;
+				} 
+			}
+			
+			// Map projection name to variable name 
+			// (Can select array within grid by using TEMP.TEMP for example, but variable returned 
+			// is called TEMP.  Can select mapped array within grid by using TEMP.LONGITUDE, but variable 
+			// returned is called LONGITUDE). 
+			
+			String variableName = projectionName;
+			
+			if (variableName.indexOf(".") != -1) {
+				variableName = variableName.substring(variableName.lastIndexOf(".")+1);
+			}
+
+			//=========================================================================================
+			
+			// Create column name/projection name and column name/variable name mappings
+			
+        	columnProjectionNames.put(columnName, projectionName);
+        	columnVariableNames.put(columnName, variableName);
+        }
+    }
+}
+
+// Construct constraint expression to retrieve variable names used in connections only
+// variable name being the column name used or the variable name mapped to the column in advanced settings
+// if present - this is intended for use specifying variables contained in grids rather than the whole grid itself
+// rather than as a general mapping tool - a nicer approach may be to define a netcdf database type that could
+// be used when defining the schema itself like other database types - but this is substantially more work
+ 
+StringBuilder constraintExpression = new StringBuilder();
+Iterator<String> columnIterator = columnProjectionNames.keySet().iterator();
+
+while (columnIterator.hasNext()) {
+	String columnName = columnIterator.next(); 
+
+	constraintExpression.append(columnProjectionNames.get(columnName));
+	
+	if (columnIterator.hasNext()) {
+		constraintExpression.append(",");
+	}
+}
+
+// Begin component processing
+
+%>
+int nbFeature_<%=cid %> = 0;
+
+String dataSourceUrl_<%=cid %> = <%=url %>;
+String constraint_<%=cid %> =  "<%=constraintExpression %>";
+
+try {
+	opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
+			
+	try {
+		opendap.dap.DataDDS data_<%=cid %> = conn_<%=cid %>.getData(constraint_<%=cid %>, null);
+	
+<%
+// Get each variable retrieved
+
+for (String variableName : columnVariableNames.values()) {
+%>
+		opendap.dap.BaseType variable_<%=variableName %>_<%=cid %> = data_<%=cid %>.getVariable("<%=variableName %>");
+<%		
+}
+
+// Create a reader for each variable to return the value associated with a set of index values (row)
+%>			
+			
+		au.org.emii.talend.dap.reader.DReaderFactory readerFactory_<%=cid %> = new au.org.emii.talend.dap.reader.DReaderFactory();
+			
+<%
+for (String variableName : columnVariableNames.values()) {
+%>
+		au.org.emii.talend.dap.reader.DReader <%=variableName %>_<%=cid %>_Reader = readerFactory_<%=cid %>.getInstance(variable_<%=variableName %>_<%=cid %>);
+<%		
+}
+%>
+
+		java.util.Map<String,java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>>> connIterators_<%=cid %> = new java.util.LinkedHashMap<String, java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>>>();
+		 
+		au.org.emii.talend.dap.IndexRangesBuilder indexRangesBuilder_<%=cid %>;
+		java.util.Set<au.org.emii.talend.dap.IndexRange> indexRanges_<%=cid %>;
+				
+<%
+
+// Create iterator for each connection - iterate over all possible index combinations for variables to be output on connection
+
+for (int i=0; i < conns.size(); i++) {
+	IConnection conn = conns.get(i);
+
+    if ((conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)	)||(conn.getLineStyle().equals(EConnectionType.FLOW_REF))) {
+    	IMetadataTable connMetadata = conn.getMetadataTable();
+
+%>
+
+		indexRangesBuilder_<%=cid %> = new au.org.emii.talend.dap.IndexRangesBuilder();
+		
+<%    	
+        List<IMetadataColumn> listColumns = connMetadata.getListColumns();
+        
+        for (IMetadataColumn column : listColumns) {
+        	String variableName = columnVariableNames.get(column.getLabel());
+%>
+		indexRangesBuilder_<%=cid %>.addDimensions(variable_<%=variableName %>_<%=cid %>);
+<%        	
+        }
+%>
+
+		indexRanges_<%=cid %> = indexRangesBuilder_<%=cid %>.getIndexRanges();
+		
+		connIterators_<%=cid %>.put("<%=connMetadata.getLabel() %>", new au.org.emii.talend.dap.IndexValuesIterator(indexRanges_<%=cid %>));
+		
+<%		
+    }
+}
+%>
+		for (String connName_<%=cid %> : connIterators_<%=cid %>.keySet()) {
+			java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>> connIterator_<%=cid %> = connIterators_<%=cid %>.get(connName_<%=cid %>);
+			
+			while (connIterator_<%=cid %>.hasNext()) {
+				java.util.Set<au.org.emii.talend.dap.IndexValue> indexValues_<%=cid %> = connIterator_<%=cid %>.next();
+

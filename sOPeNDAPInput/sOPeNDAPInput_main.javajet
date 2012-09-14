@@ -1,0 +1,125 @@
+<%@ jet
+imports="
+java.util.List 
+java.util.Map
+org.talend.core.model.metadata.IMetadataColumn
+org.talend.core.model.metadata.IMetadataTable
+org.talend.core.model.process.EConnectionType
+org.talend.core.model.process.ElementParameterParser 
+org.talend.core.model.process.IConnection
+org.talend.core.model.process.INode
+org.talend.designer.codegen.config.CodeGeneratorArgument
+org.talend.core.model.metadata.types.JavaTypesManager
+"
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
+
+List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
+
+for (int i=0; i < conns.size(); i++) {
+	IConnection conn = conns.get(i);
+
+    if ((conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)	)||(conn.getLineStyle().equals(EConnectionType.FLOW_REF))) {
+    	IMetadataTable connMetadata = conn.getMetadataTable();
+    	
+%>
+		if (connName_<%=cid %>.equals("<%=conn.getName() %>")) {
+			<%=conn.getName() %> = new <%=conn.getName() %>Struct();
+<%    	
+    	
+        List<IMetadataColumn> listColumns = connMetadata.getListColumns();
+        
+        for (IMetadataColumn column : listColumns) {
+			//=========================================================================================
+			// WARNING: The following code is duplicated in the BEGIN template - make sure any changes 
+			// are made there too.
+			//=========================================================================================
+			        	
+        	String columnName = column.getLabel();
+
+        	// Map column name to projection name
+        	// Its the column name unless specified otherwise in advanced parameters
+        	
+			String projectionName = columnName;
+			
+			for (Map<String, String> columnMapOverride : columnMappingOverrides) {
+				if (columnMapOverride.get("COLUMN").equals(columnName)) {
+					projectionName = columnMapOverride.get("VARIABLE");
+					break;
+				} 
+			}
+			
+			// Map projection name to variable name 
+			// (Can select array within grid by using TEMP.TEMP for example, but variable returned 
+			// is called TEMP.  Can select mapped array within grid by using TEMP.LONGITUDE, but variable 
+			// returned is called LONGITUDE). 
+			
+			String variableName = projectionName;
+			
+			if (variableName.indexOf(".") != -1) {
+				variableName = variableName.substring(variableName.lastIndexOf(".")+1);
+			}
+
+			//=========================================================================================
+
+        	String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),column.isNullable());
+        	if (ttg.equals("Byte")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = new Byte(<%=variableName %>_<%=cid %>_Reader.getByte(indexValues_<%=cid %>));
+<%        
+			} else if (ttg.equals("byte")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = <%=variableName %>_<%=cid %>_Reader.getByte(indexValues_<%=cid %>);
+<%
+			} else if (ttg.equals("Float")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = new Float(<%=variableName %>_<%=cid %>_Reader.getFloat32(indexValues_<%=cid %>));
+<%
+			} else if (ttg.equals("float")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = <%=variableName %>_<%=cid %>_Reader.getFloat32(indexValues_<%=cid %>);
+<%
+			} else if (ttg.equals("Double")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = new Double(<%=variableName %>_<%=cid %>_Reader.getFloat64(indexValues_<%=cid %>));
+<%
+			} else if (ttg.equals("double")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = <%=variableName %>_<%=cid %>_Reader.getFloat64(indexValues_<%=cid %>);
+<%
+			} else if (ttg.equals("Short")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = new Short(<%=variableName %>_<%=cid %>_Reader.getInt16(indexValues_<%=cid %>));
+<%
+			} else if (ttg.equals("short")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = <%=variableName %>_<%=cid %>_Reader.getInt16(indexValues_<%=cid %>);
+<%
+			} else if (ttg.equals("Integer")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = new Integer(<%=variableName %>_<%=cid %>_Reader.getInt32(indexValues_<%=cid %>));
+<%
+			} else if (ttg.equals("int")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = <%=variableName %>_<%=cid %>_Reader.getInt32(indexValues_<%=cid %>);
+<%
+			} else if (ttg.equals("String")) {
+%>
+			<%=conn.getName() %>.<%=columnName %> = <%=variableName %>_<%=cid %>_Reader.getString(indexValues_<%=cid %>);
+<%
+			}			
+        }
+%>
+		} else {
+			<%=conn.getName() %> = null;
+		}
+<%        
+    }
+} 
+%>
+
