@@ -11,14 +11,15 @@
    <SIGNATURE/> 
   </HEADER> 
  <FAMILIES> 
-  <FAMILY>Geo/File/Management</FAMILY>
+  <FAMILY>Geo/File/Input</FAMILY>
+  <FAMILY>THREDDS/Input</FAMILY>
  </FAMILIES> 
  <DOCUMENTATION> 
    <URL></URL> 
   </DOCUMENTATION> 
   <CONNECTORS> 
     <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1"/>
-    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1"/>
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="1"/>
     <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
     <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
     <CONNECTOR CTYPE="COMPONENT_OK"/>
@@ -37,10 +38,14 @@
 	    	<COLUMN NAME="opendapUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
 	    	<COLUMN NAME="subsetUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
 	    	<COLUMN NAME="fullName" TYPE="id_String" READONLY="false" LENGTH="255"/>
-	    	<COLUMN NAME="modified" TYPE="id_Date" READONLY="false"/>
+	    	<COLUMN NAME="modified" TYPE="id_Date" READONLY="false" PATTERN="&quot;yyyy-MM-dd'T'HH:mm:ss'000Z'&quot;"/>
       	</TABLE>
 	</PARAMETER>
     <PARAMETER NAME="CATALOG_URL" FIELD="TEXT" REQUIRED="true" NUM_ROW ="2" >
+			<DEFAULT>"http://example.com/thredds/catalog.xml"</DEFAULT>
+   </PARAMETER >
+    <PARAMETER NAME="EXCLUDE_DATASETS" FIELD="TEXT" REQUIRED="false" NUM_ROW ="3" >
+			<DEFAULT>""</DEFAULT>
    </PARAMETER >
   </PARAMETERS> 
   <CODEGENERATION>

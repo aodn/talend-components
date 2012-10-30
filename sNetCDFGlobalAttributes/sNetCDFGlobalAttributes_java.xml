@@ -6,7 +6,8 @@
 		<SIGNATURE />
 	</HEADER>
 	<FAMILIES>
-		<FAMILY>Geo/File/Input</FAMILY>
+		<FAMILY>Geo/File/Management</FAMILY>
+		<FAMILY>NetCDF/Management</FAMILY>
 	</FAMILIES>
 	<DOCUMENTATION>
 		<URL />
