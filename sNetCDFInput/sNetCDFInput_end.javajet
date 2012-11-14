@@ -13,27 +13,37 @@ INode node = (INode)codeGenArgument.getArgument();
 String cidForward = "";
 String cid = node.getUniqueName();
 
-List<IMetadataTable> metadatas = node.getMetadataList();
-if ((metadatas!=null)&&(metadatas.size()>0)) {
-	IMetadataTable metadata = metadatas.get(0);
-	if (metadata!=null) {
+String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 %>
-        }
-    } catch (IOException ioe) {
-        ioe.printStackTrace();
-    }
-} catch (Exception e) {
-    System.out.println("Error: ");
-    e.printStackTrace();
-} finally {
-    if (null != ncfile_<%=cid %>) try {
-        ncfile_<%=cid %>.close();
-    } catch (Exception e) {
-        // TODO: handle exception
-    }
-}
-globalMap.put("<%=cidForward %>_NB_FEATURE", nbFeature_<%=cid %>);
-<%
+
+		}
 	}
+		
+} catch (java.io.IOException ioe) {
+	ioe.printStackTrace();
+	<% if (("true").equals(dieOnError)) {%>
+		throw(ioe);
+	<% } else { %>
+		error_<%=cid %> = true;
+		errorTrace_<%=cid %> = ioe.toString();
+	<% } %>
+} finally { 
+    if (null != ncfile_<%=cid %>) try {
+      ncfile_<%=cid %>.close();
+    } catch (java.io.IOException ioe) {
+	    ioe.printStackTrace();
+		<% if (("true").equals(dieOnError)) {%>
+			throw(ioe);
+		<% } else { %>
+			error_<%=cid %> = true;
+			errorTrace_<%=cid %> = ioe.toString();
+		<% } %>
+    }
 }
-%>      
+		  
+globalMap.put("<%=cidForward %>_NB_FEATURE", nbFeature_<%=cid %>);
+
+<% if (("false").equals(dieOnError)) {%>
+	globalMap.put("<%=cidForward %>_ERROR", new Boolean(error_<%=cid %>));
+	globalMap.put("<%=cidForward %>_ERROR_", errorTrace_<%=cid %>);
+<% } %>
