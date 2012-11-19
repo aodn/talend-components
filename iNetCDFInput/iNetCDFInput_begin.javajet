@@ -12,6 +12,7 @@
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.EConnectionType
         org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
     " 
 %>
 <%
@@ -45,8 +46,7 @@ for (int i=0; i < conns.size(); i++) {
 			        	
         	String columnName = column.getLabel();
         	
-        	// Map column name to projection name
-        	// Its the column name unless specified otherwise in advanced parameters
+        	// determine mapping to variable name 
         	
 			String variableName = "\"" + columnName + "\"";
 			
