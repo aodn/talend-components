@@ -87,7 +87,7 @@ String filename_<%=cid %> = <%=filename %>;
 ucar.nc2.NetcdfFile ncfile_<%=cid %> = null;
 
 try {
-	ncfile_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openFile(filename_<%=cid %>, null);
+	ncfile_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>);
 			
 	// Create readers for each variable.  Readers return the value of the variable for particular index values
 	
