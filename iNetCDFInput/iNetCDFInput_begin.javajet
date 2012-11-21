@@ -25,11 +25,12 @@ String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
 String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 
-// Get list of column names used in connections and mapped variable names 
+// Get list of column names used in connections and mapped variables/dimensions 
 
 %>
 
-java.util.Map<String, String> columnVariableNames_<%=cid %> = new java.util.LinkedHashMap<String, String>();
+java.util.Map<String, String> columnNameMapping_<%=cid %> = new java.util.LinkedHashMap<String, String>();
+java.util.Map<String, String> columnTypeMapping_<%=cid %> = new java.util.LinkedHashMap<String, String>();
 
 <%
 List< ? extends IConnection> conns = node.getOutgoingConnections();
@@ -46,26 +47,25 @@ for (int i=0; i < conns.size(); i++) {
 			        	
         	String columnName = column.getLabel();
         	
-        	// determine mapping to variable name 
+        	// determine column to NetCDF dimension/variable mapping
         	
-			String variableName = "\"" + columnName + "\"";
+			String name = "\"" + columnName + "\"";
+			String type = column.isKey()?"DIMENSION":"VARIABLE";
 			
 			for (Map<String, String> columnMapOverride : columnMappingOverrides) {
 				if (columnMapOverride.get("COLUMN").equals(columnName)) {
-					variableName = columnMapOverride.get("VARIABLE");
+					name = columnMapOverride.get("VARIABLE").equals("")?name:columnMapOverride.get("VARIABLE");
+					type = columnMapOverride.get("TYPE");
 					break;
 				} 
 			}
 			
-			// skip null mappings
-			
-			if (variableName == null) continue;
-			
-			// Update column name/variable name mappings
+			// Update column name/variable/dimension name mappings
 			 
 			%>
-			if (<%=variableName %> != null && !<%=variableName %>.trim().equals("")) { 
-       			columnVariableNames_<%=cid %>.put("<%=columnName %>", <%=variableName %>);
+			if (<%=name %> != null && !<%=name %>.trim().equals("")) { 
+       			columnNameMapping_<%=cid %>.put("<%=columnName %>", <%=name %>);
+   				columnTypeMapping_<%=cid %>.put("<%=columnName %>", "<%=type %>");
        		}
        		<%
         }
@@ -93,8 +93,14 @@ try {
 	
 	java.util.Map<String, au.org.emii.talend.dap.reader.NetcdfReader> readers_<%=cid %> = new java.util.LinkedHashMap<String, au.org.emii.talend.dap.reader.NetcdfReader>();
 	
-	for (String variableName : columnVariableNames_<%=cid %>.values()) {
-		readers_<%=cid %>.put(variableName, new au.org.emii.talend.dap.reader.NetcdfReader(ncfile_<%=cid %>.findVariable(variableName)));
+	for (java.util.Map.Entry<String, String> typeMapping : columnTypeMapping_<%=cid %>.entrySet()) {
+		if (typeMapping.getValue().equals("VARIABLE")) {
+			String name = columnNameMapping_<%=cid %>.get(typeMapping.getKey());
+			ucar.nc2.Variable variable = ncfile_<%=cid %>.findVariable(name);
+			if (variable != null) {
+				readers_<%=cid %>.put(name, new au.org.emii.talend.dap.reader.NetcdfReader(variable));
+			}
+		}
 	}
 		
 	java.util.Map<String,java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>>> connIterators_<%=cid %> = new java.util.LinkedHashMap<String, java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>>>();
@@ -123,10 +129,14 @@ for (int i=0; i < conns.size(); i++) {
         for (IMetadataColumn column : listColumns) {
         	String columnName = column.getLabel();
 %>
-        	String <%=cid %>_variableName_<%=connName %>_<%=columnName %> = columnVariableNames_<%=cid %>.get("<%=column.getLabel() %>");
+        	String <%=cid %>_name_<%=connName %>_<%=columnName %> = columnNameMapping_<%=cid %>.get("<%=column.getLabel() %>");
+        	String <%=cid %>_type_<%=connName %>_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=column.getLabel() %>");
         	
-        	if (<%=cid %>_variableName_<%=connName %>_<%=columnName %> != null) {
-				indexRangesBuilder_<%=cid %>.addDimensions(ncfile_<%=cid %>.findVariable(<%=cid %>_variableName_<%=connName %>_<%=columnName %>));
+        	if (<%=cid %>_type_<%=connName %>_<%=columnName %>.equals("VARIABLE") && <%=cid %>_name_<%=connName %>_<%=columnName %> != null) {
+				ucar.nc2.Variable variable = ncfile_<%=cid %>.findVariable(<%=cid %>_name_<%=connName %>_<%=columnName %>);
+				if (variable != null) {
+					indexRangesBuilder_<%=cid %>.addDimensions(variable);
+				}
 			}
 <%        	
         }
