@@ -28,8 +28,8 @@ String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 		errorTrace_<%=cid %> = ioe.toString();
 	<% } %>
 } finally { 
-    if (null != ncfile_<%=cid %>) try {
-      ncfile_<%=cid %>.close();
+    if (null != ncDataset_<%=cid %>) try {
+      ncDataset_<%=cid %>.close();
     } catch (java.io.IOException ioe) {
 	    ioe.printStackTrace();
 		<% if (("true").equals(dieOnError)) {%>

@@ -17,6 +17,11 @@ CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 
+// Retrieve component properties
+String scaleMissing = ElementParameterParser.getValue(node, "__SCALE_MISSING__");
+String nullValueHandling = ElementParameterParser.getValue(node, "__MISSING_VALUE_HANDLING__");
+String oneBasedIndex = ElementParameterParser.getValue(node, "__ONE_BASED_INDEX__");
+
 List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
 
 List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
@@ -46,83 +51,97 @@ for (int i=0; i < conns.size(); i++) {
 			if (<%=cid %>_name_<%=columnName %> == null || (<%=cid %>_type_<%=columnName %> .equals("VARIABLE") && reader_<%=cid %>_<%=columnName %> == null)) {
 				// skip this column - no mapping or the variable doesn't exist
 			} else if (<%=cid %>_type_<%=columnName %> .equals("VARIABLE")) {
-			 
-<%
-        
-        	String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),column.isNullable());
+<%    			
+        	String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+	        	
+			boolean checkMissing = scaleMissing.equals("true") && nullValueHandling.equals("NULL_VALUES") && column.isNullable() && !ttg.equals("String");
+
+			if (checkMissing) { %> 
+				ucar.nc2.dataset.VariableDS variable = (ucar.nc2.dataset.VariableDS)ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=columnName %>);
+				
+				if (variable.isMissing(reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>))) {
+					<%=conn.getName() %>.<%=columnName %> = null;
+				} else {
+<%        
+        	} 
+        	
         	if (ttg.equals("Byte")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Byte(reader_<%=cid %>_<%=columnName %>.getByte(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Byte(reader_<%=cid %>_<%=columnName %>.getByte(indexValues_<%=cid %>));
 <%        
 			} else if (ttg.equals("byte")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getByte(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getByte(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Boolean")) {
-%>
-				<%=conn.getName() %>.<%=columnName %> = new Boolean(reader_<%=cid %>_<%=columnName %>.getBoolean(indexValues_<%=cid %>));
+%>	
+					<%=conn.getName() %>.<%=columnName %> = new Boolean(reader_<%=cid %>_<%=columnName %>.getBoolean(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("boolean")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getBoolean(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getBoolean(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Character")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Character(reader_<%=cid %>_<%=columnName %>.getChar(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Character(reader_<%=cid %>_<%=columnName %>.getChar(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("char")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getChar(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getChar(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Float")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Float(reader_<%=cid %>_<%=columnName %>.getFloat(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Float(reader_<%=cid %>_<%=columnName %>.getFloat(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("float")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getFloat(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getFloat(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Double")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Double(reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Double(reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("double")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Short")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Short(reader_<%=cid %>_<%=columnName %>.getShort(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Short(reader_<%=cid %>_<%=columnName %>.getShort(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("short")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getShort(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getShort(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Integer")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Integer(reader_<%=cid %>_<%=columnName %>.getInt(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Integer(reader_<%=cid %>_<%=columnName %>.getInt(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("int")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getInt(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getInt(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Long")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Long(reader_<%=cid %>_<%=columnName %>.getLong(indexValues_<%=cid %>));
+					<%=conn.getName() %>.<%=columnName %> = new Long(reader_<%=cid %>_<%=columnName %>.getLong(indexValues_<%=cid %>));
 <%
 			} else if (ttg.equals("long")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getLong(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getLong(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("Object")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getObject(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getObject(indexValues_<%=cid %>);
 <%
 			} else if (ttg.equals("String")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getString(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getString(indexValues_<%=cid %>);
 <%
-			} 
+			}
+			
+			if (checkMissing) { %>
+				}
+<%			} 
 %>
 			} else {
 				au.org.emii.talend.dap.IndexValue dimensionValue = null;
@@ -135,34 +154,36 @@ for (int i=0; i < conns.size(); i++) {
 				}	
 				
 				if (dimensionValue != null) {
+					int index = dimensionValue.getValue()<%= oneBasedIndex.equals("true")?" + 1":""%>;
 <%
+
         	if (ttg.equals("Short")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Short(dimensionValue.getValue()));
+				<%=conn.getName() %>.<%=columnName %> = new Short(index);
 <%
 			} else if (ttg.equals("short")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = dimensionValue.getValue();
+				<%=conn.getName() %>.<%=columnName %> = index;
 <%
 			} else if (ttg.equals("Integer")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Integer(dimensionValue.getValue()));
+				<%=conn.getName() %>.<%=columnName %> = new Integer(index);
 <%
 			} else if (ttg.equals("int")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = dimensionValue.getValue();
+				<%=conn.getName() %>.<%=columnName %> = index;
 <%
 			} else if (ttg.equals("Long")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Long(dimensionValue.getValue()));
+				<%=conn.getName() %>.<%=columnName %> = new Long(index);
 <%
 			} else if (ttg.equals("long")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = dimensionValue.getValue();
+				<%=conn.getName() %>.<%=columnName %> = index;
 <%
 			} else if (ttg.equals("String")) {
 %>
-				<%=conn.getName() %>.<%=columnName %> = new Integer(dimensionValue.getValue()).toString();
+				<%=conn.getName() %>.<%=columnName %> = new Integer(index).toString();
 <%
 			} 
 %>

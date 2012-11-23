@@ -25,6 +25,17 @@ String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
 String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 
+// Enhanced dataset options
+String scaleMissing = ElementParameterParser.getValue(node, "__SCALE_MISSING__");
+String convertEnums = ElementParameterParser.getValue(node, "__CONVERT_ENUMS__");
+
+// Missing value options
+String isFillerMissing = ElementParameterParser.getValue(node, "__FILLER_MISSING__");
+String isInvalidMissing = ElementParameterParser.getValue(node, "__INVALID_MISSING__");
+String isMissingMissing = ElementParameterParser.getValue(node, "__MISSING_MISSING__");
+String nullValueHandling = ElementParameterParser.getValue(node, "__MISSING_VALUE_HANDLING__");
+
+
 // Get list of column names used in connections and mapped variables/dimensions 
 
 %>
@@ -82,12 +93,33 @@ String filename_<%=cid %> = <%=filename %>;
 <% if (("false").equals(dieOnError)) {%>
 	boolean error_<%=cid %> = false;
 	String errorTrace_<%=cid %> = "";
+<% }
+
+   if (scaleMissing.equals("true")) { %>
+	ucar.nc2.dataset.NetcdfDataset.setFillValueIsMissing(<%=isFillerMissing.equals("true") %>);
+  	ucar.nc2.dataset.NetcdfDataset.setInvalidDataIsMissing(<%=isInvalidMissing.equals("true") %>);
+  	ucar.nc2.dataset.NetcdfDataset.setMissingDataIsMissing(<%=isMissingMissing.equals("true") %>);
+  	ucar.nc2.dataset.NetcdfDataset.setUseNaNs(<%=nullValueHandling.equals("NANS") %>);
 <% } %>
 
-ucar.nc2.NetcdfFile ncfile_<%=cid %> = null;
+ucar.nc2.dataset.NetcdfDataset ncDataset_<%=cid %> = null;
 
 try {
-	ncfile_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>);
+<%	if (scaleMissing.equals("false") && convertEnums.equals("false")) { %>
+	ncDataset_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>, false, null);
+<% } else { %>
+	java.util.Set<ucar.nc2.dataset.NetcdfDataset.Enhance> enhanceMode_<%=cid %> = new java.util.HashSet<ucar.nc2.dataset.NetcdfDataset.Enhance>();
+<%
+      if (scaleMissing.equals("true")) { %>
+      enhanceMode_<%=cid %>.add(ucar.nc2.dataset.NetcdfDataset.Enhance.ScaleMissing);
+<%    }
+ 
+      if (convertEnums.equals("true")) { %>
+      enhanceMode_<%=cid %>.add(ucar.nc2.dataset.NetcdfDataset.Enhance.ConvertEnums);
+<%    } %>
+	
+	  ncDataset_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>, enhanceMode_<%=cid %>, 0, null, null);
+<%	} %>
 			
 	// Create readers for each variable.  Readers return the value of the variable for particular index values
 	
@@ -96,7 +128,7 @@ try {
 	for (java.util.Map.Entry<String, String> typeMapping : columnTypeMapping_<%=cid %>.entrySet()) {
 		if (typeMapping.getValue().equals("VARIABLE")) {
 			String name = columnNameMapping_<%=cid %>.get(typeMapping.getKey());
-			ucar.nc2.Variable variable = ncfile_<%=cid %>.findVariable(name);
+			ucar.nc2.Variable variable = ncDataset_<%=cid %>.findVariable(name);
 			if (variable != null) {
 				readers_<%=cid %>.put(name, new au.org.emii.talend.dap.reader.NetcdfReader(variable));
 			}
@@ -133,7 +165,7 @@ for (int i=0; i < conns.size(); i++) {
         	String <%=cid %>_type_<%=connName %>_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=column.getLabel() %>");
         	
         	if (<%=cid %>_type_<%=connName %>_<%=columnName %>.equals("VARIABLE") && <%=cid %>_name_<%=connName %>_<%=columnName %> != null) {
-				ucar.nc2.Variable variable = ncfile_<%=cid %>.findVariable(<%=cid %>_name_<%=connName %>_<%=columnName %>);
+				ucar.nc2.Variable variable = ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=connName %>_<%=columnName %>);
 				if (variable != null) {
 					indexRangesBuilder_<%=cid %>.addDimensions(variable);
 				}
