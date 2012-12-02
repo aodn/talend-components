@@ -1,0 +1,70 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+	
+    String cid = node.getUniqueName();
+    String dbhost = ElementParameterParser.getValue(node, "__HOST__");
+    String dbport = ElementParameterParser.getValue(node, "__PORT__");
+    String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+    String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbuser = ElementParameterParser.getValue(node, "__USER__");
+    String dbpass = ElementParameterParser.getValue(node, "__PASS__");
+    
+    String fileName = ElementParameterParser.getValue(node, "__FILENAME__");
+    
+%>
+
+	String fileName_<%=cid%> = <%=fileName%>;
+	
+	String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+	
+	String schema_<%=cid%> = <%=dbschema%>;
+
+	String userName_<%=cid%> = <%=(dbuser != null && dbuser.trim().length() == 0)? "null":dbuser%>;
+	String password_<%=cid%> = <%=(dbpass != null && dbpass.trim().length() == 0)? "null":dbpass%>;
+	
+	java.sql.Connection conn_<%=cid%>=null;
+    liquibase.Liquibase liquibase_<%=cid%> = null;
+
+    try {
+		java.lang.Class.forName("org.postgresql.Driver");
+		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,userName_<%=cid%>,password_<%=cid%>);
+		conn_<%=cid%>.setAutoCommit(false);
+    
+    	liquibase.database.Database database_<%=cid%> = liquibase.database.DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new liquibase.database.jvm.JdbcConnection(conn_<%=cid%>));
+    	database_<%=cid%>.setDefaultSchemaName(schema_<%=cid%>); 
+    	
+    	liquibase.diff.Diff diff_<%=cid%> = new liquibase.diff.Diff(database_<%=cid%>, schema_<%=cid%>);
+    	diff_<%=cid%>.setDiffTypes(null);
+    	
+ 		liquibase.diff.DiffResult diffResult_<%=cid%> = diff_<%=cid%>.compare();
+
+        diffResult_<%=cid%>.setChangeSetAuthor("talend");
+        diffResult_<%=cid%>.setChangeSetContext(null);
+		diffResult_<%=cid%>.setDataDir(null);
+		
+		diffResult_<%=cid%>.printChangeLog(fileName_<%=cid%>, database_<%=cid%>);
+
+    } finally {
+        if (conn_<%=cid%> != null) {
+            conn_<%=cid%>.rollback();
+            conn_<%=cid%>.close();
+        }
+    }
+
+	

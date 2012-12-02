@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<COMPONENT> 
+	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="0.1" STATUS="ALPHA"
+		COMPATIBILITY="ALL" AUTHOR="jonescc" RELEASE_DATE="20120904"
+		STARTABLE="true" VISIBLE="true" DATA_AUTO_PROPAGATE="false"
+		SCHEMA_AUTO_PROPAGATE="false" HAS_CONDITIONAL_OUTPUTS="false">
+		<SIGNATURE />
+	</HEADER>
+  <FAMILIES> 
+    <FAMILY>Databases/PostgreSQL</FAMILY> 
+  </FAMILIES>  
+  <DOCUMENTATION> 
+    <URL/> 
+  </DOCUMENTATION>  
+  <CONNECTORS> 
+	<CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1" />
+	<CONNECTOR CTYPE="COMPONENT_OK" />
+	<CONNECTOR CTYPE="COMPONENT_ERROR" />
+	<CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+	<CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+	<CONNECTOR CTYPE="RUN_IF" />
+  </CONNECTORS>  
+  <PARAMETERS> 
+    <PARAMETER NAME="PROPERTY" FIELD="PROPERTY_TYPE" NUM_ROW="1" REPOSITORY_VALUE="DATABASE:POSTGRESQL"/>
+    <PARAMETER NAME="HOST" FIELD="TEXT" NUM_ROW="3" REPOSITORY_VALUE="SERVER_NAME" REQUIRED="true">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	<PARAMETER NAME="TYPE" FIELD="TEXT" NUM_ROW="3" SHOW="false" REPOSITORY_VALUE="TYPE">
+      <DEFAULT>PostgreSQL</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="PORT" FIELD="TEXT" NUM_ROW="3" REPOSITORY_VALUE="PORT" REQUIRED="true">
+      <DEFAULT>"5432"</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="DBNAME" FIELD="TEXT" NUM_ROW="4" REPOSITORY_VALUE="SID" REQUIRED="true">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="SCHEMA_DB" FIELD="TEXT" NUM_ROW="4" REPOSITORY_VALUE="SCHEMA">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="5" REPOSITORY_VALUE="USERNAME" REQUIRED="true">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="PASS" FIELD="TEXT" NUM_ROW="5" REPOSITORY_VALUE="PASSWORD" REQUIRED="true">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	<PARAMETER NAME="FILENAME" FIELD="FILE" NUM_ROW="6"		REQUIRED="true" REPOSITORY_VALUE="FILE_PATH" SHOW_IF="USE_INLINE_CONTENT!='TRUE'">
+		<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/changelog.xml"</DEFAULT>
+	</PARAMETER>
+     <PARAMETER NAME="USE_INLINE_CONTENT" FIELD="CHECK" NUM_ROW="7">
+        <DEFAULT>false</DEFAULT>
+     </PARAMETER>
+	<PARAMETER NAME="INLINE_CONTENT" FIELD="MEMO" NB_LINES="100" NUM_ROW="8"
+		REQUIRED="true" REPOSITORY_VALUE="FILE_PATH" SHOW_IF="USE_INLINE_CONTENT=='TRUE'">
+		<DEFAULT>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;databaseChangeLog 
+    xmlns=&quot;http://www.liquibase.org/xml/ns/dbchangelog&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd&quot;&gt;
+    
+    &lt;changeSet author=&quot;talend&quot; id=&quot;changeset-1&quot;&gt;
+        &lt;createTable tableName=&quot;dummy&quot;&gt;
+            &lt;column name=&quot;dummyfield&quot; type=&quot;VARCHAR(5)&quot;&gt;
+            &lt;/column&gt;
+        &lt;/createTable&gt;
+    &lt;/changeSet&gt;
+&lt;/databaseChangeLog&gt; </DEFAULT>
+	</PARAMETER>
+  </PARAMETERS>  
+  <CODEGENERATION> 
+    <IMPORTS> 
+      <IMPORT MODULE="liquibase.jar" NAME="liquibase" REQUIRED="true"/> 
+	  <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
+    </IMPORTS> 
+  </CODEGENERATION>  
+  <RETURNS> 
+    <RETURN AVAILABILITY="AFTER" NAME="NB_LINE" TYPE="id_Integer"/> 
+  </RETURNS> 
+</COMPONENT>
