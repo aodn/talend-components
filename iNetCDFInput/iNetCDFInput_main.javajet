@@ -21,6 +21,7 @@ String cid = node.getUniqueName();
 String scaleMissing = ElementParameterParser.getValue(node, "__SCALE_MISSING__");
 String nullValueHandling = ElementParameterParser.getValue(node, "__MISSING_VALUE_HANDLING__");
 String oneBasedIndex = ElementParameterParser.getValue(node, "__ONE_BASED_INDEX__");
+String trimStrings = ElementParameterParser.getValue(node, "__TRIM_STRINGS__");
 
 List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
 
@@ -135,7 +136,7 @@ for (int i=0; i < conns.size(); i++) {
 <%
 			} else if (ttg.equals("String")) {
 %>
-					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getString(indexValues_<%=cid %>);
+					<%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getString(indexValues_<%=cid %>)<%=trimStrings.equals("true")?".trim()":"" %>;
 <%
 			}
 			
