@@ -29,7 +29,7 @@
     String fileName = ElementParameterParser.getValue(node, "__FILENAME__");
     String inlineContent = ElementParameterParser.getValue(node, "__INLINE_CONTENT__")
     						.replaceAll("\"","\\\\\"")
-    						.replaceAll("\n","\\\" + \n\\\"")	;
+    						.replaceAll("\n"," \\\" + \n\\\"")	;
     
     if (useInlineContent.equals("true")) { %>
     	java.io.File tempFile_<%=cid%> = null;
