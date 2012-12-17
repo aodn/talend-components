@@ -27,9 +27,9 @@
     
     String useInlineContent = ElementParameterParser.getValue(node, "__USE_INLINE_CONTENT__");
     String fileName = ElementParameterParser.getValue(node, "__FILENAME__");
-    String inlineContent = ElementParameterParser.getValue(node, "__INLINE_CONTENT__")
-    						.replaceAll("\"","\\\\\"")
-    						.replaceAll("\n"," \\\" + \n\\\"")	;
+	String inlineContent = ElementParameterParser.getValue(node, "__INLINE_CONTENT__")
+							.replaceAll("\"","\\\\\"")
+							.replaceAll("\n","\\\\n\\\" + \n\\\"");
     
     if (useInlineContent.equals("true")) { %>
     	java.io.File tempFile_<%=cid%> = null;

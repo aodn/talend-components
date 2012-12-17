@@ -24,7 +24,6 @@ CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 
-String xslFile = ElementParameterParser.getValue(node, "__XSLT_FILE__");
 String xmlField = ElementParameterParser.getValue(node, "__XML_FIELD__");
 
 List<Map<String, String>> params = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__PARAMS__");
@@ -75,7 +74,6 @@ if (incomingConnName != null && outConnName != null) {
             %>
         
             javax.xml.transform.stream.StreamSource xmlSource_<%=cid%> = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(xmlStr_<%=cid%>));
-//            java.io.StringWriter xmlWriter_<%=cid%> = new java.io.StringWriter();
             java.io.ByteArrayOutputStream xmlWriter_<%=cid%> = new java.io.ByteArrayOutputStream();
             t<%=cid%>.transform(xmlSource_<%=cid%>, new javax.xml.transform.stream.StreamResult(xmlWriter_<%=cid%>));
             

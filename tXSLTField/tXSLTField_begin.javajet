@@ -12,13 +12,27 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 
 String xslFile = ElementParameterParser.getValue(node, "__XSLT_FILE__");
+
+String useInlineContent = ElementParameterParser.getValue(node, "__USE_INLINE_CONTENT__");
+
+String inlineContent = ElementParameterParser.getValue(node, "__INLINE_CONTENT__")
+						.replaceAll("\"","\\\\\"")
+						.replaceAll("\n","\\\\n\\\" + \n\\\"");
+
 %>
 
 System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
 
-java.io.File xsltFile_<%=cid%> = new java.io.File(<%=xslFile%>);
-
 javax.xml.transform.TransformerFactory tFactory_<%=cid%> = javax.xml.transform.TransformerFactory.newInstance();            
-javax.xml.transform.Templates xslTemplate_<%=cid%> = tFactory_<%=cid%>.newTemplates(new javax.xml.transform.stream.StreamSource(xsltFile_<%=cid%>));
+
+<% if (useInlineContent.equals("true")) { %>
+	String xslStr_<%=cid%> = "<%=inlineContent%>";
+	
+	java.io.StringReader xsltSource_<%=cid%> = new java.io.StringReader(xslStr_<%=cid%>);
+<% } else { %>
+	java.io.File xsltSource_<%=cid%> = new java.io.File(<%=xslFile%>);
+<% } %>
+
+javax.xml.transform.Templates xslTemplate_<%=cid%> = tFactory_<%=cid%>.newTemplates(new javax.xml.transform.stream.StreamSource(xsltSource_<%=cid%>));
 
 
