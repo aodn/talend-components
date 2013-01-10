@@ -106,7 +106,7 @@ java.util.Iterator<thredds.catalog.InvDataset> catalogIterator_<%=cid%> = new ja
     }
     boolean isExcluded(thredds.catalog.InvDataset ds) {
     	for (java.util.regex.Pattern excludeDataset : excludeDatasets) {
-    		java.util.regex.Matcher matcher = excludeDataset.matcher(ds.getName());
+    		java.util.regex.Matcher matcher = excludeDataset.matcher(ds.getID());
     		
     		if (matcher.matches()) {
     			return true;
