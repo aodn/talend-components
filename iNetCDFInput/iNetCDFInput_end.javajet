@@ -45,5 +45,5 @@ globalMap.put("<%=cidForward %>_NB_FEATURE", nbFeature_<%=cid %>);
 
 <% if (("false").equals(dieOnError)) {%>
 	globalMap.put("<%=cidForward %>_ERROR", new Boolean(error_<%=cid %>));
-	globalMap.put("<%=cidForward %>_ERROR_", errorTrace_<%=cid %>);
+	globalMap.put("<%=cidForward %>_ERROR_STACK_TRACE", errorTrace_<%=cid %>);
 <% } %>
