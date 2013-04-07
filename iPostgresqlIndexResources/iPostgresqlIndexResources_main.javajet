@@ -1,0 +1,74 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	
+
+    String urlInputField = ElementParameterParser.getValue(node, "__URL_FIELD__");
+    
+    if (urlInputField == null || urlInputField.trim().equals("")) {
+    	urlInputField = "url";
+    }
+    
+    String modifiedInputField = ElementParameterParser.getValue(node, "__MODIFIED_FIELD__");
+
+    if (modifiedInputField == null || modifiedInputField.trim().equals("")) {
+    	modifiedInputField = "modified";
+    }
+    
+	IMetadataTable preMetadata = null;
+	
+	if ((node.getIncomingConnections()!=null) && (node.getIncomingConnections().size()>0)) {
+		preMetadata = node.getIncomingConnections().get(0).getMetadataTable();
+	}
+%>
+	
+		// Map input row to indexed resource fields
+		
+		IndexedResource_<%=cid%> indexedResource_<%=cid%>  = new IndexedResource_<%=cid%>();
+		
+<%		
+	String inRowName = node.getIncomingConnections().get(0).getName();
+	 
+	List<IMetadataColumn> columns = preMetadata.getListColumns();
+	
+	for (int i = 0; i < columns.size(); i++) {
+		IMetadataColumn column = columns.get(i);
+		
+		if (column.getLabel().equals(urlInputField)) {
+%>
+		indexedResource_<%=cid%>.url = <%=inRowName%>.<%=column.getLabel()%>;
+<%
+		}
+
+		if (column.getLabel().equals(modifiedInputField)) {
+%>
+		indexedResource_<%=cid%>.modified = <%=inRowName%>.<%=column.getLabel()%>;
+<%
+		}
+	}
+%>
+
+		// Write non-null indexed resource details to temporary file 
+	
+		if (indexedResource_<%=cid%>.url != null && !indexedResource_<%=cid%>.url.trim().equals("")) {
+			indexedResource_<%=cid%>.writeObject(oos_<%=cid%>);
+		
+			nb_line_<%=cid %>++;
+		}
+	   
+	   

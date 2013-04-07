@@ -1,0 +1,134 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	
+%>
+
+		} finally {
+			// ensure output stream is always closed
+			if (oos_<%=cid%> != null) {
+				oos_<%=cid%>.close();
+				oos_<%=cid%> = null;
+			}
+		}
+	
+		// Now write buffered data to the database
+		
+		java.io.ObjectInputStream in_<%=cid%> = null;
+		
+		try {
+			// create postgresql connection 
+			java.lang.Class.forName("org.postgresql.Driver");
+			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, userName_<%=cid%>, password_<%=cid%>);
+			conn_<%=cid%>.setAutoCommit(false);
+
+			int commitEvery_<%=cid%> = 10000;
+			int commitCounter_<%=cid%> = 0;
+
+			String update_<%=cid%> = "UPDATE indexed_file "
+				+ " SET modified = ?, last_indexed = ?, last_indexed_run = ? WHERE job_id = ? AND url = ?";
+			java.sql.PreparedStatement pstmtUpdate_<%=cid%> = conn_<%=cid%>
+					.prepareStatement(update_<%=cid%>);
+					
+			String insert_<%=cid%> = "INSERT INTO indexed_file "
+					+ " (job_id, url, modified, last_indexed, last_indexed_run) VALUES (?,?,?,?,?)";
+			java.sql.PreparedStatement pstmtInsert_<%=cid%> = conn_<%=cid%>
+					.prepareStatement(insert_<%=cid%>);
+						
+			try {			
+				// open buffered data for input
+				in_<%=cid%> = new java.io.ObjectInputStream(new java.io.FileInputStream(tempFile_<%=cid%>));
+				
+				// for each buffered resource
+				for (int i=0; i < nb_line_<%=cid %>; i++) {
+					// read buffered resource
+					IndexedResource_<%=cid%> indexedResource_<%=cid%> = new IndexedResource_<%=cid%>();
+					indexedResource_<%=cid%>.readObject(in_<%=cid%>);
+					
+					// log resource buffered
+					System.out.println("job_id: " + Long.toString(jobId_<%=cid%>) + " url: " + indexedResource_<%=cid%>.url +
+					 " modified: " + indexedResource_<%=cid%>.modified.toString() + " last_indexed: " + (new java.util.Date()).toString() +
+					 " last_indexed_run: " + Long.toString(runNo_<%=cid%>));
+					
+					// update any existing record
+					
+					if (indexedResource_<%=cid%>.modified != null) {
+						pstmtUpdate_<%=cid%>.setTimestamp(1, new java.sql.Timestamp(indexedResource_<%=cid%>.modified.getTime()));
+					} else {
+						pstmtUpdate_<%=cid%>.setNull(1, java.sql.Types.TIMESTAMP);
+					}
+
+					pstmtUpdate_<%=cid%>.setTimestamp(2, new java.sql.Timestamp((new java.util.Date()).getTime()));
+					pstmtUpdate_<%=cid%>.setLong(3, runNo_<%=cid%>);
+					pstmtUpdate_<%=cid%>.setLong(4, jobId_<%=cid%>);
+					pstmtUpdate_<%=cid%>.setString(5, indexedResource_<%=cid%>.url);
+
+					int updateFlag_<%=cid%> = pstmtUpdate_<%=cid%>.executeUpdate();
+					
+					// if no records where updated, insert a new record
+					
+					if (updateFlag_<%=cid%> == 0) {
+						pstmtInsert_<%=cid%>.setLong(1, jobId_<%=cid%>);
+						pstmtInsert_<%=cid%>.setString(2, indexedResource_<%=cid%>.url);
+
+						if (indexedResource_<%=cid%>.modified != null) {
+							pstmtInsert_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(indexedResource_<%=cid%>.modified.getTime()));
+						} else {
+							pstmtInsert_<%=cid%>.setNull(3, java.sql.Types.TIMESTAMP);
+						}
+
+						pstmtInsert_<%=cid%>.setTimestamp(4, new java.sql.Timestamp((new java.util.Date()).getTime()));
+						pstmtInsert_<%=cid%>.setLong(5, runNo_<%=cid%>);
+
+						pstmtInsert_<%=cid%>.executeUpdate();
+					}
+
+					// commit every specified number of records
+					commitCounter_<%=cid%>++;
+
+					if (commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
+						conn_<%=cid%>.commit();
+						commitCounter_<%=cid%> = 0;
+					}
+
+				}
+				
+				// commit records which haven't been committed yet
+				conn_<%=cid%>.commit();
+			} finally {
+				// ensure input stream is always closed
+				if (in_<%=cid%> != null) {
+					in_<%=cid%>.close();
+					in_<%=cid%> = null;
+				}
+			}
+		} finally {
+		    // ensure connection is always closed
+	        if (conn_<%=cid%> != null) {
+	            conn_<%=cid%>.rollback();
+	            conn_<%=cid%>.close();
+	            conn_<%=cid%> = null;
+	        }
+		}
+
+	} finally {
+		// ensure temporary file is always deleted
+		if (tempFile_<%=cid%> != null) {
+			tempFile_<%=cid%>.delete(); 
+		}
+	}		

@@ -1,0 +1,39 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	
+%>
+
+			}
+					
+		} finally {
+			// ensure input stream is always closed
+			if (in_<%=cid%> != null) {
+				in_<%=cid%>.close();
+				in_<%=cid%> = null;
+			}
+		}
+	} finally {
+		// ensure temporary file is always deleted
+		if (tempFile_<%=cid%> != null) {
+			tempFile_<%=cid%>.delete(); 
+		}
+	}	
+	
+	globalMap.put("<%=cid %>_NB_RESOURCES", nb_resources_<%=cid %>);
+		
