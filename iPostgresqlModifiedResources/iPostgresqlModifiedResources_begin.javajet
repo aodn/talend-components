@@ -30,6 +30,9 @@
     String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 %>
 
+	org.apache.log4j.Logger logger_<%=cid%> = org.apache.log4j.Logger.getLogger("au.org.emii.talend.iPostgresqlModifiedResources");
+    // logger_<%=cid%>.setLevel(org.apache.log4j.Level.WARN);
+
 	int nb_resources_<%=cid %> = 0;
 	
 	String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
@@ -47,33 +50,14 @@
 	    
 		tempFile_<%=cid%> = java.io.File.createTempFile("modified_resource_", ".tmp");
 			
-		// Define class used to buffer indexed resource details
-				
-		class ModifiedResource_<%=cid%> {
-			public long id;
-			public String url;
-			public java.util.Date modified;
-			
-		 	void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		 		out.writeLong(id);
-		 		out.writeObject(url);
-		 		out.writeObject(modified);
-		 	}
-	
-			 void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-			 	id = in.readLong();
-		 		url = (String) in.readObject();
-		 		modified = (java.util.Date) in.readObject();
-			 }
-		 };
-			
 		java.io.FileOutputStream fos_<%=cid%> = null;
 		java.io.ObjectOutputStream oos_<%=cid%> = null;
 		java.sql.Connection conn_<%=cid%>=null;
 
 	    try {
+	    	// Get connection
 			java.lang.Class.forName("org.postgresql.Driver");
-			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,userName_<%=cid%>,password_<%=cid%>);
+			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, userName_<%=cid%>, password_<%=cid%>);
 			conn_<%=cid%>.setAutoCommit(false);
 			
 			// Determine resources that have been added or modified since last invocation
@@ -94,17 +78,15 @@
 			java.sql.ResultSet rs_<%=cid%> = stmt_<%=cid%>
 					.executeQuery(dbquery_<%=cid%>);
 					
+			// Add each new or modified resource to temporary file
+					
 			fos_<%=cid%> = new java.io.FileOutputStream(tempFile_<%=cid%>);
 			oos_<%=cid%> = new java.io.ObjectOutputStream(fos_<%=cid%>);
 			
 			while (rs_<%=cid%>.next()) {
-				ModifiedResource_<%=cid%> modifiedResource_<%=cid%>  = new ModifiedResource_<%=cid%>();
-				
-				modifiedResource_<%=cid%>.id = rs_<%=cid%>.getLong("id");
-				modifiedResource_<%=cid%>.url = rs_<%=cid%>.getString("url");
-				modifiedResource_<%=cid%>.modified = rs_<%=cid%>.getDate("modified");
-				
-				modifiedResource_<%=cid%>.writeObject(oos_<%=cid%>);
+				oos_<%=cid%>.writeLong(rs_<%=cid%>.getLong("id"));
+				oos_<%=cid%>.writeObject(rs_<%=cid%>.getString("url"));
+				oos_<%=cid%>.writeObject(new java.util.Date(rs_<%=cid%>.getTimestamp("modified").getTime()));
 			
 				nb_resources_<%=cid %>++;
 			}
@@ -132,15 +114,17 @@
 			// for each buffered resource
 			for (int i=0; i < nb_resources_<%=cid %>; i++) {
 				// read buffered resource
-				ModifiedResource_<%=cid%> modifiedResource_<%=cid%> = new ModifiedResource_<%=cid%>();
-				modifiedResource_<%=cid%>.readObject(in_<%=cid%>);
+				long id_<%=cid%> = in_<%=cid%>.readLong();
+				String resourceUrl_<%=cid%> = (String) in_<%=cid%>.readObject();
+				java.util.Date lastModified_<%=cid%> = (java.util.Date) in_<%=cid%>.readObject();
 					
-				// log resource buffered
-//				System.out.println("id: " + Long.toString(modifiedResource_<%=cid%>.id) + " url: " + modifiedResource_<%=cid%>.url +
-//				 " modified: " + modifiedResource_<%=cid%>.modified.toString());
+				// log resource details
+				logger_<%=cid%>.debug("Processing url " + resourceUrl_<%=cid%> +
+				 " last modified " + lastModified_<%=cid%>.toString() + "...");
 				
-				globalMap.put("<%=cid %>_URL",  modifiedResource_<%=cid%>.url);
-				globalMap.put("<%=cid %>_MODIFIED",  modifiedResource_<%=cid%>.modified);
+				// Put buffered resource details into global map for use by components in iteration
+				globalMap.put("<%=cid %>_URL",  resourceUrl_<%=cid%>);
+				globalMap.put("<%=cid %>_MODIFIED",  lastModified_<%=cid%>);
     
-
+				try {
 	

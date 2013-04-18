@@ -30,44 +30,22 @@
     	modifiedInputField = "modified";
     }
     
-	IMetadataTable preMetadata = null;
-	
-	if ((node.getIncomingConnections()!=null) && (node.getIncomingConnections().size()>0)) {
-		preMetadata = node.getIncomingConnections().get(0).getMetadataTable();
-	}
-%>
-	
-		// Map input row to indexed resource fields
-		
-		IndexedResource_<%=cid%> indexedResource_<%=cid%>  = new IndexedResource_<%=cid%>();
-		
-<%		
 	String inRowName = node.getIncomingConnections().get(0).getName();
-	 
-	List<IMetadataColumn> columns = preMetadata.getListColumns();
+%>
 	
-	for (int i = 0; i < columns.size(); i++) {
-		IMetadataColumn column = columns.get(i);
-		
-		if (column.getLabel().equals(urlInputField)) {
-%>
-		indexedResource_<%=cid%>.url = <%=inRowName%>.<%=column.getLabel()%>;
-<%
-		}
+		String resourceUrl_<%=cid%> = <%=inRowName%>.<%=urlInputField%>;
+		java.util.Date modified_<%=cid%> = <%=inRowName%>.<%=modifiedInputField%>;
 
-		if (column.getLabel().equals(modifiedInputField)) {
-%>
-		indexedResource_<%=cid%>.modified = <%=inRowName%>.<%=column.getLabel()%>;
-<%
-		}
-	}
-%>
-
-		// Write non-null indexed resource details to temporary file 
+		// Write non-null resource details to temporary file 
 	
-		if (indexedResource_<%=cid%>.url != null && !indexedResource_<%=cid%>.url.trim().equals("")) {
-			indexedResource_<%=cid%>.writeObject(oos_<%=cid%>);
-		
+		if (url_<%=cid%> != null && !url_<%=cid%>.trim().equals("")) {
+			oos_<%=cid%>.writeObject(resourceUrl_<%=cid%>);
+			oos_<%=cid%>.writeObject(modified_<%=cid%>);
+
+			// log resource buffered
+			logger_<%=cid%>.debug("Indexing " + resourceUrl_<%=cid%> + " last modified " + modified_<%=cid%>.toString());
+					
+			// keep track of how many resources we've written		
 			nb_line_<%=cid %>++;
 		}
 	   
