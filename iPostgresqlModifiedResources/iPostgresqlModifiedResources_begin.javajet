@@ -42,6 +42,16 @@
     String jobName_<%=cid%> = <%=jobName%>;
     String harvestType_<%=cid%> = <%=harvestType%>;
     
+	String dbquery_<%=cid%> = "select file.id, file.url, file.modified "
+			+ "  from indexed_file file "
+			+ "   LEFT OUTER JOIN file_harvest fh on (fh.harvest_type = '"
+			+ harvestType_<%=cid%>
+			+ "' and file.id = fh.file_id) "
+			+ "   JOIN  index_job job on (job.name = '"
+			+ jobName_<%=cid%>
+			+ "'  and file.job_id = job.id and file.last_indexed_run = job.last_run_no) "
+			+ " where fh.last_moddate_harvested is null or fh.last_moddate_harvested <> modified ";
+		
 	java.io.File tempFile_<%=cid%> = null;
     
 	try {
@@ -65,16 +75,6 @@
 			java.sql.Statement stmt_<%=cid%> = conn_<%=cid%>
 					.createStatement();
 	
-			String dbquery_<%=cid%> = "select file.id, file.url, file.modified "
-					+ "  from indexed_file file "
-					+ "   LEFT OUTER JOIN file_harvest fh on (fh.harvest_type = '"
-					+ harvestType_<%=cid%>
-					+ "' and file.id = fh.file_id) "
-					+ "   JOIN  index_job job on (job.name = '"
-					+ jobName_<%=cid%>
-					+ "'  and file.job_id = job.id and file.last_indexed_run = job.last_run_no) "
-					+ " where fh.last_moddate_harvested is null or fh.last_moddate_harvested <> modified ";
-		
 			java.sql.ResultSet rs_<%=cid%> = stmt_<%=cid%>
 					.executeQuery(dbquery_<%=cid%>);
 					
