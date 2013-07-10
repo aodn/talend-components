@@ -1,0 +1,54 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    
+    String cid = node.getUniqueName();
+    	
+%>
+
+	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%>
+	 
+						// Determine if an existing harvest record for this file exists
+						
+						java.sql.Statement stmt_<%=cid%> = conn_<%=cid%>
+								.createStatement();
+	
+						String fileHarvestCountQuery_<%=cid%> = "select count(1) from file_harvest "
+								+ " WHERE harvest_type = '" + harvestType_<%=cid%> + "' "
+								+ "   AND file_id = " + Long.toString(id_<%=cid%>);
+								
+						java.sql.ResultSet rs_<%=cid%> = stmt_<%=cid%>.executeQuery(fileHarvestCountQuery_<%=cid%>);
+						
+						java.sql.PreparedStatement pstmt_<%=cid%>;
+						
+						// If a record exists, update it otherwise create one
+						
+						if (rs_<%=cid%>.next() && rs_<%=cid%>.getInt(1) > 0) {
+							// Update the record to record the new last modified date that has been processed
+							String update_<%=cid%> = "update file_harvest "
+									+ " set last_moddate_harvested = ? WHERE harvest_type = ? AND file_id = ?";
+									
+							pstmt_<%=cid%> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+									
+							pstmt_<%=cid%>.setTimestamp(1, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
+							pstmt_<%=cid%>.setString(2, harvestType_<%=cid%>);
+							pstmt_<%=cid%>.setLong(3, id_<%=cid%>);
+						} else {
+							// Insert a record with for the file recording the last modified date harvested
+							String insert_<%=cid%> = "insert into file_harvest "
+									+ " (harvest_type, file_id, last_moddate_harvested) VALUES (?,?,?)";
+									
+							pstmt_<%=cid%> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+									
+							pstmt_<%=cid%>.setString(1, harvestType_<%=cid%>);
+							pstmt_<%=cid%>.setLong(2, id_<%=cid%>);
+							pstmt_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
+						}					
+													
+	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%> 		

@@ -1,0 +1,29 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    
+    String cid = node.getUniqueName();
+    	
+%>
+
+	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%>
+	 
+						// Update last modified date harvetsed
+						
+						String update_<%=cid%> = "update file_harvest "
+								+ " set last_moddate_harvested = ? WHERE harvest_type = ? AND file_id = ?";
+								
+						java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>
+								.prepareStatement(update_<%=cid%>);
+								
+						pstmt_<%=cid%>.setTimestamp(1, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
+						pstmt_<%=cid%>.setString(2, harvestType_<%=cid%>);
+						pstmt_<%=cid%>.setLong(3, id_<%=cid%>);
+						
+	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%> 

@@ -1,0 +1,88 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	
+
+    String urlInputField = ElementParameterParser.getValue(node, "__URL_FIELD__");
+    
+    if (urlInputField == null || urlInputField.trim().equals("")) {
+    	urlInputField = "url";
+    }
+    
+    String modifiedInputField = ElementParameterParser.getValue(node, "__MODIFIED_FIELD__");
+
+    if (modifiedInputField == null || modifiedInputField.trim().equals("")) {
+    	modifiedInputField = "modified";
+    }
+    
+	String inRowName = node.getIncomingConnections().get(0).getName();
+%>
+	
+		String resourceUrl_<%=cid%> = <%=inRowName%>.<%=urlInputField%>;
+		java.util.Date modified_<%=cid%> = <%=inRowName%>.<%=modifiedInputField%>;
+
+		// Index non-null resources 
+	
+		if (url_<%=cid%> != null && !url_<%=cid%>.trim().equals("")) {
+			// try to update an existing record
+			
+			if (modified_<%=cid%> != null) {
+				pstmtUpdate_<%=cid%>.setTimestamp(1, new java.sql.Timestamp(modified_<%=cid%>.getTime()));
+			} else {
+				pstmtUpdate_<%=cid%>.setNull(1, java.sql.Types.TIMESTAMP);
+			}
+
+			pstmtUpdate_<%=cid%>.setTimestamp(2, new java.sql.Timestamp((new java.util.Date()).getTime()));
+			pstmtUpdate_<%=cid%>.setLong(3, runNo_<%=cid%>);
+			pstmtUpdate_<%=cid%>.setLong(4, jobId_<%=cid%>);
+			pstmtUpdate_<%=cid%>.setString(5, resourceUrl_<%=cid%>);
+
+			int updateFlag_<%=cid%> = pstmtUpdate_<%=cid%>.executeUpdate();
+			
+			// if no records where updated, insert a new record
+			
+			if (updateFlag_<%=cid%> == 0) {
+				pstmtInsert_<%=cid%>.setLong(1, jobId_<%=cid%>);
+				pstmtInsert_<%=cid%>.setString(2, resourceUrl_<%=cid%>);
+
+				if (modified_<%=cid%> != null) {
+					pstmtInsert_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(modified_<%=cid%>.getTime()));
+				} else {
+					pstmtInsert_<%=cid%>.setNull(3, java.sql.Types.TIMESTAMP);
+				}
+
+				pstmtInsert_<%=cid%>.setTimestamp(4, new java.sql.Timestamp((new java.util.Date()).getTime()));
+				pstmtInsert_<%=cid%>.setLong(5, runNo_<%=cid%>);
+
+				pstmtInsert_<%=cid%>.executeUpdate();
+			}
+
+			// commit every specified number of records
+			
+			commitCounter_<%=cid%>++;
+
+			if (commitEvery_<%=cid%> <= commitCounter_<%=cid%>) {
+				conn_<%=cid%>.commit();
+				commitCounter_<%=cid%> = 0;
+			}
+
+			// keep track of how many resources we've written		
+			nb_line_<%=cid %>++;
+		}
+	   
+	   

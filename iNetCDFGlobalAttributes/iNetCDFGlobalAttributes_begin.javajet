@@ -1,0 +1,34 @@
+<%@ jet 
+    imports="
+        org.talend.core.model.process.INode 
+        org.talend.core.model.process.ElementParameterParser 
+        org.talend.core.model.metadata.IMetadataTable 
+        org.talend.core.model.metadata.IMetadataColumn 
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.EConnectionType
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        java.util.List 
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        
+    " 
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+// Retrive component properties
+String filename = ElementParameterParser.getValue(node,"__FILENAME__");
+
+ // Open the NetCDF file
+%>
+
+int nbLine_<%=cid %> = 0;
+String filename_<%=cid %> = <%=filename %>;
+ucar.nc2.NetcdfFile ncfile_<%=cid %> = null;
+
+try {
+    ncfile_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>);
+    
+    

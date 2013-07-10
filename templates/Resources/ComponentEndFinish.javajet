@@ -1,0 +1,27 @@
+
+                pstmt_<%=cid%>.executeUpdate();
+                                            
+                // file has been successfully processed so commit changes
+                conn_<%=cid%>.commit();
+                
+                nb_resources_<%=cid %>++;
+            } catch (Exception e) {
+                // Log error and continue wih next resource
+                System.err.println("Exception while processing " + resourceUrl_<%=cid%>);
+                e.printStackTrace();
+                // TODO: allow this behaviour to be turned off i.e. provide Die on error option
+                // may also be good to process all url's that can be processed and then fail if 
+                // there were any errors so still get a notification
+                // or may be able to use nagios error appender
+            }
+        }
+    } finally {
+        if (conn_<%=cid%> != null) {
+            conn_<%=cid%>.rollback();
+            conn_<%=cid%>.close();
+            conn_<%=cid%> = null;
+        }
+    }
+					
+	globalMap.put("<%=cid %>_NB_RESOURCES", nb_resources_<%=cid %>);
+										    

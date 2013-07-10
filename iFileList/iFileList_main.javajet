@@ -1,0 +1,64 @@
+<%@ jet
+imports="
+org.talend.core.model.metadata.IMetadataColumn
+org.talend.core.model.metadata.IMetadataTable
+org.talend.core.model.process.EConnectionType
+org.talend.core.model.process.IConnection
+org.talend.core.model.process.INode
+org.talend.designer.codegen.config.CodeGeneratorArgument
+java.util.List
+"
+%>
+<% CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();	
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {//b
+ IMetadataTable metadata = metadatas.get(0);
+ if (metadata != null) {//a
+  List<IMetadataColumn> columns = metadata.getListColumns();	
+  
+  List< ? extends IConnection> outConns = node.getOutgoingConnections();
+  for (IConnection conn : outConns) 
+  { //2	
+   if (conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)||conn.getLineStyle().equals(EConnectionType.FLOW_MERGE))
+   { //3
+    String outputConnName = conn.getName();
+    
+    for (int i = 0; i < columns.size(); i++) 
+    {//4
+     IMetadataColumn column = columns.get(i);
+     
+     if (column.getLabel().equals("file"))
+     {//5
+%>
+   <%=outputConnName %>.<%=column.getLabel() %> = currentFileName_<%=cid%>;
+<%
+     } else if (column.getLabel().equals("filePath")) {
+%>
+   <%=outputConnName %>.<%=column.getLabel() %> = currentFilePath_<%=cid%>;
+<%
+     } else if (column.getLabel().equals("fileDirectory")) {
+%>
+   <%=outputConnName %>.<%=column.getLabel() %> = currentFileDirectory_<%=cid%>;
+<%
+     } else if (column.getLabel().equals("fileExtension")) {
+%>
+   <%=outputConnName %>.<%=column.getLabel() %> = currentFileExtension_<%=cid%>;
+<%
+     } else if (column.getLabel().equals("fileLastModified")) {
+%>
+   <%=outputConnName %>.<%=column.getLabel() %> = currentFileLastModified_<%=cid%>;
+<%
+     } else if (column.getLabel().equals("fileSize")) {
+%>
+   <%=outputConnName %>.<%=column.getLabel() %> = currentFileSize_<%=cid%>;
+<%
+     }//5
+    }//4
+   }//3
+  }//2
+ }//a
+}//b
+%>
+    
