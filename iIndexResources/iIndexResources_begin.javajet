@@ -1,0 +1,132 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+	
+    String cid = node.getUniqueName();
+
+    String dbhost = ElementParameterParser.getValue(node, "__HOST__");
+    String dbport = ElementParameterParser.getValue(node, "__PORT__");
+    String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+    String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbuser = ElementParameterParser.getValue(node, "__USER__");
+    String dbpass = ElementParameterParser.getValue(node, "__PASS__");
+    
+    String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
+%>
+
+	int nb_line_<%=cid %> = 0;
+	
+	String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+	String schema_<%=cid%> = <%=dbschema%>;
+	String userName_<%=cid%> = <%=(dbuser != null && dbuser.trim().length() == 0)? "null":dbuser%>;
+	String password_<%=cid%> = <%=(dbpass != null && dbpass.trim().length() == 0)? "null":dbpass%>;
+    String jobName_<%=cid%> = <%=jobName%>;
+    
+	java.sql.Connection conn_<%=cid%>=null;
+    
+    long runNo_<%=cid%> = -1L;
+    long jobId_<%=cid%> = -1L;
+
+    try {
+    	// Connect to indexing database 
+    	
+		java.lang.Class.forName("org.postgresql.Driver");
+		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, userName_<%=cid%>, password_<%=cid%>);
+		conn_<%=cid%>.setAutoCommit(false);
+    
+		// Run liquibase changelog to create or update indexing tables
+
+    	liquibase.database.Database database = liquibase.database.DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new liquibase.database.jvm.JdbcConnection(conn_<%=cid%>));
+    	database.setDefaultSchemaName(schema_<%=cid%>); 
+        liquibase.Liquibase liquibase = new liquibase.Liquibase("iPostgresqlIndexResources_changelog.xml", new liquibase.resource.ClassLoaderResourceAccessor(), database);
+        liquibase.update(null);
+        
+        // Try getting the run number by adding 1 to the last run number for this job
+        
+		String updateStmt = "UPDATE index_job "
+				+ " SET last_run_no = last_run_no + 1, last_run_date = ? WHERE name = ?";
+				
+		java.sql.PreparedStatement pstmtUpdate = conn_<%=cid%>.prepareStatement(updateStmt);
+		pstmtUpdate.setTimestamp(1, new java.sql.Timestamp((new Date()).getTime()));
+		pstmtUpdate.setString(2, jobName_<%=cid%>);
+		int updateFlag = pstmtUpdate.executeUpdate();
+		
+		// If there was no last run number for this job create a new record setting the run number to 1
+		
+		if (updateFlag == 0) {
+			String insertStmt = "INSERT INTO index_job "
+					+ " (name, last_run_no, last_run_date) VALUES (?,?,?)";
+			java.sql.PreparedStatement pstmtInsert = conn_<%=cid%>
+					.prepareStatement(insertStmt);
+			pstmtInsert.setString(1, jobName_<%=cid%>);
+			pstmtInsert.setLong(2, 1);
+			pstmtInsert.setTimestamp(3, new java.sql.Timestamp((new Date()).getTime()));
+			pstmtInsert.executeUpdate();
+		}
+		
+		conn_<%=cid%>.commit();
+		
+		// Get job id and run number to be used for this run (just recorded above)
+		
+		java.sql.Statement stmt = conn_<%=cid%>.createStatement();
+		String dbquery = "select id, last_run_no from index_job where name = '"
+				+ jobName_<%=cid%> + "'";
+		java.sql.ResultSet rs = stmt.executeQuery(dbquery);
+		rs.next();
+		jobId_<%=cid%> = rs.getLong("id");
+		runNo_<%=cid%> = rs.getLong("last_run_no");
+		
+    } finally {
+        if (conn_<%=cid%> != null) {
+            conn_<%=cid%>.rollback();
+            conn_<%=cid%>.close();
+            conn_<%=cid%> = null;
+        }
+    }
+    
+	try {
+		// create postgresql connection 
+		java.lang.Class.forName("org.postgresql.Driver");
+		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, userName_<%=cid%>, password_<%=cid%>);
+		conn_<%=cid%>.setAutoCommit(false);
+
+		// commit management
+		int commitEvery_<%=cid%> = 10000;  
+		int commitCounter_<%=cid%> = 0;
+
+		// prepared statments used to create or update indexed resource details
+		
+		String update_<%=cid%> = "UPDATE indexed_file "
+			+ " SET modified = ?, last_indexed = ?, last_indexed_run = ? WHERE job_id = ? AND url = ?";
+			
+		java.sql.PreparedStatement pstmtUpdate_<%=cid%> = conn_<%=cid%>
+				.prepareStatement(update_<%=cid%>);
+				
+		String insert_<%=cid%> = "INSERT INTO indexed_file "
+				+ " (job_id, url, modified, last_indexed, last_indexed_run) VALUES (?,?,?,?,?)";
+				
+		java.sql.PreparedStatement pstmtInsert_<%=cid%> = conn_<%=cid%>
+				.prepareStatement(insert_<%=cid%>);
+					
+
+		
+				
+    
+    
+
+	

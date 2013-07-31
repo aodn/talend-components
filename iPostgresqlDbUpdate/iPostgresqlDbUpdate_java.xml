@@ -50,8 +50,8 @@
      <PARAMETER NAME="USE_INLINE_CONTENT" FIELD="CHECK" NUM_ROW="7">
         <DEFAULT>false</DEFAULT>
      </PARAMETER>
-	<PARAMETER NAME="INLINE_CONTENT" FIELD="MEMO" NB_LINES="100" NUM_ROW="8"
-		REQUIRED="true" REPOSITORY_VALUE="FILE_PATH" SHOW_IF="USE_INLINE_CONTENT=='TRUE'">
+	<PARAMETER NAME="INLINE_CONTENT" FIELD="MEMO" NB_LINES="4" NUM_ROW="8"
+		REQUIRED="false" SHOW_IF="USE_INLINE_CONTENT=='TRUE'">
 		<DEFAULT>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;databaseChangeLog 
     xmlns=&quot;http://www.liquibase.org/xml/ns/dbchangelog&quot;

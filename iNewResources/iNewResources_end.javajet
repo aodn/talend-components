@@ -1,0 +1,26 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();	
+%>
+	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%> 
+	
+						// Add record to harvested files
+						
+						String insert_<%=cid%> = "insert into file_harvest "
+								+ " (harvest_type, file_id, last_moddate_harvested) VALUES (?,?,?)";
+								
+						java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>
+								.prepareStatement(insert_<%=cid%>);
+								
+						pstmt_<%=cid%>.setString(1, harvestType_<%=cid%>);
+						pstmt_<%=cid%>.setLong(2, id_<%=cid%>);
+						pstmt_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
+						
+	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%> 
