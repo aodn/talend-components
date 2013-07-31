@@ -42,6 +42,7 @@
 		java.io.File tempDir_<%=cid%> = null;
     	
     	try {
+    	System.out.println("Start of try block");
 	    	tempDir_<%=cid%> = java.io.File.createTempFile("talend-temp-","");
 	    	tempDir_<%=cid%>.delete();
 	    	tempDir_<%=cid%>.mkdir();
@@ -120,6 +121,7 @@
 
 <%    if (useInlineContent.equals("true")) { %>
 	} finally {
+	System.out.println("In finally block");
 		if (tempFile_<%=cid%> != null) tempFile_<%=cid%>.delete();
 		if (tempDir_<%=cid%> != null) tempDir_<%=cid%>.delete();
 	    if (out_<%=cid%> != null) out_<%=cid%>.close();
