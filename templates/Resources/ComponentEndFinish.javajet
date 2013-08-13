@@ -5,14 +5,19 @@
                 conn_<%=cid%>.commit();
                 
                 nb_resources_<%=cid %>++;
+                
+            // Catch any exceptions processing a resource and continue with next 
+            // TODO: add other options e.g. die on exception, die after x number of failures etc
+            } catch (RuntimeException r) {
+            	// Handle exceptions thrown in child jobs (rethrown as runtime exceptions)
+            	if (!r.getMessage().equals("Child job running failed")) throw r;
+                // Log error and continue wih next resource
+                System.err.println("Exception in child job while processing " + resourceUrl_<%=cid%>);
+                r.printStackTrace();
             } catch (Exception e) {
                 // Log error and continue wih next resource
                 System.err.println("Exception while processing " + resourceUrl_<%=cid%>);
                 e.printStackTrace();
-                // TODO: allow this behaviour to be turned off i.e. provide Die on error option
-                // may also be good to process all url's that can be processed and then fail if 
-                // there were any errors so still get a notification
-                // or may be able to use nagios error appender
             }
         }
     } finally {
