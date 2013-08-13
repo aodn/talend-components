@@ -10,10 +10,13 @@
             // TODO: add other options e.g. die on exception, die after x number of failures etc
             } catch (RuntimeException r) {
             	// Handle exceptions thrown in child jobs (rethrown as runtime exceptions)
-            	if (!r.getMessage().equals("Child job running failed")) throw r;
-                // Log error and continue wih next resource
-                System.err.println("Exception in child job while processing " + resourceUrl_<%=cid%>);
-                r.printStackTrace();
+            	if (r.getMessage().equals("Child job running failed")) {
+                    // Log error and continue wih next resource
+                    System.err.println("Exception in child job while processing " + resourceUrl_<%=cid%>);
+                    r.printStackTrace();
+                } else {
+                     throw r;
+                }
             } catch (Exception e) {
                 // Log error and continue wih next resource
                 System.err.println("Exception while processing " + resourceUrl_<%=cid%>);
