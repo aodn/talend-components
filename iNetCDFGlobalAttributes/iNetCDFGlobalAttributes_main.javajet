@@ -32,6 +32,8 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
 %>
 
      ucar.nc2.Attribute attribute_<%=cid %>_<%=i %> = ncfile_<%=cid %>.findGlobalAttribute("<%=column.getLabel() %>");
+     
+     if (attribute_<%=cid %>_<%=i %> != null) {
 
 <%
      String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
@@ -54,6 +56,9 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
         <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>_<%=i %>.getNumericValue(0).doubleValue();
 <%
      }//5     
+%>
+     }
+<%
     }//4
    }//3
   }//2
