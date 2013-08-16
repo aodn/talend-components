@@ -1,0 +1,38 @@
+<%@ jet 
+    imports="
+        org.talend.core.model.process.INode 
+        org.talend.core.model.process.ElementParameterParser 
+        org.talend.core.model.metadata.IMetadataTable 
+        org.talend.core.model.metadata.IMetadataColumn 
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.EConnectionType
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        java.util.List 
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        
+    " 
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+// Retrive component properties
+String url = ElementParameterParser.getValue(node,"__URL__");
+
+ %>
+
+int nbLine_<%=cid %> = 0;
+String dataSourceUrl_<%=cid %> = <%=url %>;
+
+try {
+	opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
+			
+	try {
+		opendap.dap.DDS dds_<%=cid %> = conn_<%=cid %>.getDDS();
+
+		for (java.util.Enumeration<opendap.dap.BaseType> variables_<%=cid %> = dds_<%=cid %>.getVariables(); variables_<%=cid %>.hasMoreElements();) {
+			opendap.dap.BaseType variable_<%=cid %> = variables_<%=cid %>.nextElement();
+	    	
+    	
