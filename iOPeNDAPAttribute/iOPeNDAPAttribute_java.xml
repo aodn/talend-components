@@ -31,6 +31,7 @@
         		<COLUMN NAME="name" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="255"/>
         		<COLUMN NAME="value" TYPE="id_String" READONLY="false" CUSTOM="true" LENGTH="255"/>
         		<COLUMN NAME="type" TYPE="id_String" READONLY="false" CUSTOM="true" LENGTH="255"/>
+      			<COLUMN NAME="container" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="255"/>
       		</TABLE>
     	</PARAMETER>
 		<PARAMETER NAME="CONTAINER" FIELD="TEXT" NUM_ROW="3"
