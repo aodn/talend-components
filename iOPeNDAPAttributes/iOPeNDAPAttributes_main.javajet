@@ -32,6 +32,8 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
 %>
 
      opendap.dap.Attribute attribute_<%=cid %>_<%=i %> = attributes_<%=cid %>.getAttribute("<%=column.getLabel() %>");
+
+     if (attribute_<%=cid %>_<%=i %> != null) {
 <%
      String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
 %>
@@ -63,7 +65,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
 <%
      }//5    
 %>
-
+    }
 <%
     }//4
    }//3
