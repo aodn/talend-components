@@ -29,38 +29,48 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
     for (int i = 0; i < columns.size(); i++) 
     {//4
      IMetadataColumn column = columns.get(i);
-%>
 
-     opendap.dap.Attribute attribute_<%=cid %>_<%=i %> = attributes_<%=cid %>.getAttribute("<%=column.getLabel() %>");
-
-     if (attribute_<%=cid %>_<%=i %> != null) {
-<%
      String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
-%>
-    // return <%=ttg %>
-<%
      
-     if (ttg.equals("String")||ttg.equals("Object"))
+     if (column.getLabel().equals("name") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>_<%=i %>.getValueAt(0);
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getClearName();
+<%  
+     }//5 
+     else if (column.getLabel().equals("type") && ttg.equals("String"))
+     {//5
+%>
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getTypeName();
+<%  
+     }//5 
+     else if (column.getLabel().equals("dimensions") && ttg.equals("String"))
+     {//5
+%>
+
+		java.util.Enumeration<opendap.dap.DArrayDimension> arrayDimensions_<%=cid %> = null; 
+		
+		if (variable_<%=cid %> instanceof opendap.dap.DGrid) {
+			arrayDimensions_<%=cid %> = ((opendap.dap.DGrid) variable_<%=cid %>).getArray().getDimensions();
+		} else if (variable_<%=cid %> instanceof opendap.dap.DArray) {
+			arrayDimensions_<%=cid %> = ((opendap.dap.DArray) variable_<%=cid %>).getDimensions();
+		}
+
+		if (arrayDimensions_<%=cid %> != null) {			
+			StringBuilder dimensions = new StringBuilder("");
+			
+			while (arrayDimensions_<%=cid %>.hasMoreElements()) {
+				opendap.dap.DArrayDimension dimension_<%=cid %> = arrayDimensions_<%=cid %>.nextElement();
+				dimensions.append(dimension_<%=cid %>.getClearName());
+				if (arrayDimensions_<%=cid %>.hasMoreElements()) {
+					dimensions.append(",");
+				}
+			}
+			
+			<%=outputConnName %>.<%=column.getLabel() %> = dimensions.toString();
+	    }
 <%
      }//5     
-     else if (ttg.equals("java.util.Date"))
-     {//5
-%>
-        <%=outputConnName %>.<%=column.getLabel() %> = (new ucar.nc2.units.DateType(attribute_<%=cid %>_<%=i %>.getValueAt(0), null, null)).getDate();
-<%
-     }//5     
-     else if (ttg.equals("Double"))
-     {//5
-%>
-        <%=outputConnName %>.<%=column.getLabel() %> = new Double(attribute_<%=cid %>_<%=i %>.getValueAt(0));
-<%
-     }//5    
-%>
-    }
-<%
     }//4
    }//3
   }//2

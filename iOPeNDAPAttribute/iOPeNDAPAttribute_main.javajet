@@ -32,22 +32,28 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
 
      String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
      
-     if (column.getLabel().equals("name") && ttg.equals("String"))
+     if (column.getLabel().equals("container") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.getName();
+       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.container;
+<%  
+     }//5 
+     else if (column.getLabel().equals("name") && ttg.equals("String"))
+     {//5
+%>
+       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.name;
 <%  
      }//5 
      else if (column.getLabel().equals("value") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.getValueAt(0);
+       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.value;
 <%
      }//5     
      else if (column.getLabel().equals("type") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.getTypeString();
+       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.type;
 <%
      }//5     
     }//4
