@@ -40,16 +40,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
     // return <%=ttg %>
 <%
      
-     if (ttg.equals("String"))
+     if (ttg.equals("String")||ttg.equals("Object"))
      {//5
 %>
        <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>_<%=i %>.getValueAt(0);
-<%  
-     }//5 
-     else if (ttg.equals("Object"))
-     {//5
-%>
-        <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>_<%=i %>.getValueAt(0);
 <%
      }//5     
      else if (ttg.equals("java.util.Date"))
