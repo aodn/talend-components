@@ -29,15 +29,10 @@
 	    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="2">
       		<TABLE READONLY="true">
         		<COLUMN NAME="name" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="255"/>
-        		<COLUMN NAME="value" TYPE="id_String" READONLY="false" CUSTOM="true" LENGTH="255"/>
-        		<COLUMN NAME="type" TYPE="id_String" READONLY="false" CUSTOM="true" LENGTH="255"/>
-      			<COLUMN NAME="container" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="255"/>
+        		<COLUMN NAME="type" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="255"/>
+        		<COLUMN NAME="dimensions" TYPE="id_String" READONLY="true" CUSTOM="true" LENGTH="255"/>
       		</TABLE>
     	</PARAMETER>
-		<PARAMETER NAME="CONTAINER" FIELD="TEXT" NUM_ROW="3"
-			REQUIRED="false">
-			<DEFAULT>"NC_GLOBAL"</DEFAULT>
-		</PARAMETER>
 	</PARAMETERS>
 	<CODEGENERATION>
 		<IMPORTS>

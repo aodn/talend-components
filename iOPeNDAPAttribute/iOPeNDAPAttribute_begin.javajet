@@ -20,10 +20,84 @@ String cid = node.getUniqueName();
 
 // Retrive component properties
 String url = ElementParameterParser.getValue(node,"__URL__");
-String container = ElementParameterParser.getValue(node,"__CONTAINER__");
+String containerParam = ElementParameterParser.getValue(node,"__CONTAINER__");
+String container = containerParam.trim().equals("") ? "\"\"" : containerParam;
 
  // Open the OPeNDAP dataset
 %>
+
+class AttributeHelper_<%=cid %> {
+
+    public List<Attribute> getAttributes(opendap.dap.AttributeTable attributeTable, String containerPath) {
+        List<Attribute> attributes = new java.util.ArrayList<Attribute>();
+        addAttributes(attributeTable, attributes, containerPath);
+        return attributes;
+    }
+    
+    private void addAttributes(opendap.dap.AttributeTable attributeTable, List<Attribute> attributes, String containerPath) {
+        if (attributeTable != null) {
+            for (java.util.Enumeration<String> attributeNames = attributeTable.getNames(); attributeNames.hasMoreElements();) {
+                String attributeName = attributeNames.nextElement();
+                opendap.dap.Attribute dapAttribute = attributeTable.getAttribute(attributeName);
+                try {
+	                if (dapAttribute.isContainer()) {
+	                    String newContainerPath = addContainerName(containerPath, dapAttribute.getName());
+	                    addAttributes(dapAttribute.getContainer(), attributes, newContainerPath);                
+	                } else {
+	                    addSimpleAttribute(dapAttribute, attributes, containerPath);
+	                }
+                } catch (opendap.dap.NoSuchAttributeException e) {
+                	//Shouldn't happen but don't swallow it if it does
+                	throw new RuntimeException(e);
+                }
+    
+            }
+        }
+    }
+    
+    private String addContainerName(String containerPath, String containerName) {
+        StringBuilder result = new StringBuilder(containerPath);
+        if (result.length()>0) {
+	        result.append('.');
+	    }
+        result.append(containerName);
+        return result.toString();
+    }
+    
+    private void addSimpleAttribute(opendap.dap.Attribute dapAttribute, List<Attribute> attributes, String containerPath) 
+      throws opendap.dap.NoSuchAttributeException {
+        Attribute attribute = new Attribute();
+        
+        attribute.container = containerPath;
+        attribute.name = dapAttribute.getName();
+        attribute.type = dapAttribute.getTypeString();
+        attribute.value = getValueString(dapAttribute.getValues());
+        
+        attributes.add(attribute);
+    }
+    
+    private String getValueString(java.util.Enumeration<String> valuesEnumeration) {
+        StringBuilder values = new StringBuilder("");
+        
+        for (; valuesEnumeration.hasMoreElements();) {
+            String value = valuesEnumeration.nextElement();
+            if (values.length() > 0) {
+                values.append(',');
+            }
+            values.append(value);
+        }
+        
+        return values.toString();
+    }
+    
+    class Attribute {
+        String container;
+        String name;
+        String value;
+        String type;
+    }
+
+}
 
 int nbLine_<%=cid %> = 0;
 String dataSourceUrl_<%=cid %> = <%=url %>;
@@ -34,7 +108,7 @@ try {
 	try {
 		opendap.dap.AttributeTable attributes_<%=cid %> = conn_<%=cid %>.getDAS();
 <%
-if (container != null && !container.trim().equals("")) {
+if (!container.trim().equals("\"\"")) {
 %>
 
         attributes_<%=cid %> = attributes_<%=cid %>.getAttribute(<%=container %>).getContainer();
@@ -43,10 +117,8 @@ if (container != null && !container.trim().equals("")) {
 }
 %>
 
-	for (java.util.Enumeration<String> attributeNames_<%=cid %> = attributes_<%=cid %>.getNames(); attributeNames_<%=cid %>.hasMoreElements();) {
-		String attributeName_<%=cid %> = attributeNames_<%=cid %>.nextElement();
-    	opendap.dap.Attribute attribute_<%=cid %> = attributes_<%=cid %>.getAttribute(attributeName_<%=cid %>);
-    	
-    	if (attribute_<%=cid %>.isContainer() || attribute_<%=cid %>.isAlias()) continue;
-    	
+	AttributeHelper_<%=cid %> ah_<%=cid %> = new AttributeHelper_<%=cid %>();
+	
+	for (AttributeHelper_<%=cid %>.Attribute attribute_<%=cid %> : ah_<%=cid %>.getAttributes(attributes_<%=cid %>, <%=container%>) ) {
+	    	
     	

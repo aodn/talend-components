@@ -34,14 +34,13 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
      ucar.nc2.Attribute attribute_<%=cid %>_<%=i %> = ncfile_<%=cid %>.findGlobalAttribute("<%=column.getLabel() %>");
      
      if (attribute_<%=cid %>_<%=i %> != null) {
-
 <%
      String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
      
      if (ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>_<%=i %>.getStringValue(0);
+          <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>_<%=i %>.getValue(0).toString();
 <%  
      }//5 
      else if (ttg.equals("Object"))
