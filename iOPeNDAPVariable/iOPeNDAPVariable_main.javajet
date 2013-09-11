@@ -41,7 +41,17 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
      else if (column.getLabel().equals("type") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getTypeName();
+       opendap.dap.BaseType containedVariable_<%=cid %>;
+       
+       if (variable_<%=cid %> instanceof opendap.dap.DGrid) {
+           containedVariable_<%=cid %> = ((opendap.dap.DGrid) variable_<%=cid %>).getArray().getPrimitiveVector().getTemplate();
+       } else if (variable_<%=cid %> instanceof opendap.dap.DArray) {
+           containedVariable_<%=cid %> = ((opendap.dap.DArray) variable_<%=cid %>).getPrimitiveVector().getTemplate();
+       } else {
+           containedVariable_<%=cid %> = variable_<%=cid %>;
+       }
+       
+       <%=outputConnName %>.<%=column.getLabel() %> = containedVariable_<%=cid %>.getTypeName();
 <%  
      }//5 
      else if (column.getLabel().equals("dimensions") && ttg.equals("String"))
