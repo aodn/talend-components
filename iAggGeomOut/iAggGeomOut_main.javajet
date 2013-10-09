@@ -1,0 +1,99 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.metadata.IMetadataTable
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+    java.util.Map
+"
+%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+String operation = ElementParameterParser.getValue(node,"__OPERATION__");
+
+IMetadataColumn geometryColumn = null;
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+    IMetadataTable metadata = metadatas.get(0);
+    if (metadata != null) {
+        List<IMetadataColumn> columns = metadata.getListColumns();
+        for (int j = 0; j < columns.size(); j++) {
+            IMetadataColumn column = columns.get(j);
+            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+            if(typeToGenerate.equals("Geometry")) {
+                geometryColumn = column;
+                break;
+            }
+        }
+    }
+}
+if (geometryColumn == null){
+    return "error(\"Cannot find a geometry column\");";
+}
+String colGeo = geometryColumn.getLabel();
+String colAgg = ElementParameterParser.getValue(node,"__COL__");
+boolean noColSelected = ElementParameterParser.getValue(node, "__NO_COL_SELECTED__").equals("true");
+
+List< ? extends IConnection> conns = node.getIncomingConnections();
+for (IConnection conn : conns) {
+    if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+%>
+org.talend.sdi.geometry.Geometry geomCur = (org.talend.sdi.geometry.Geometry) <%=conn.getName() %>.<%=colGeo %>;
+
+<% if (noColSelected) { %>
+if (!hash_<%=colAgg %>_<%=cid %>.isEmpty()) {
+    operation_result_<%=cid %> = hash_<%=colAgg %>_<%=cid %>.values().iterator().next();
+<% } else { %>
+if (hash_<%=colAgg %>_<%=cid %>.containsKey(<%=conn.getName() %>.<%=colAgg %>)) {
+    operation_result_<%=cid %> = hash_<%=colAgg %>_<%=cid %>.get(<%=conn.getName() %>.<%=colAgg %>);
+<% } %>
+
+<%
+        /* 
+         * Geom operation according to component flavor.
+         */
+        if (operation.equals("makeLine")) {
+%>
+	com.vividsolutions.jts.geom.Point point_<%=cid %> = (com.vividsolutions.jts.geom.Point) geomCur._getInternalGeometry();
+    operation_result_<%=cid %>.<%=colGeo %>.add(point_<%=cid %>.getCoordinate());
+
+<%
+        }
+%>
+
+} else {
+    operation_result_<%=cid %> = new OperationStruct<%=cid %>();
+    // Add id to the Operation ?
+
+<%
+        /* 
+         * Geom operation according to component flavor.
+         */
+        if (operation.equals("makeLine")) {
+%>
+
+    operation_result_<%=cid %>.<%=colGeo %> = new com.vividsolutions.jts.geom.CoordinateList();
+	com.vividsolutions.jts.geom.Point point_<%=cid %> = (com.vividsolutions.jts.geom.Point) geomCur._getInternalGeometry();
+    operation_result_<%=cid %>.<%=colGeo %>.add(point_<%=cid %>.getCoordinate());
+    operation_result_<%=cid %>.inputCRS = geomCur.getCRS();
+
+<%
+        }
+%>
+
+    hash_<%=colAgg %>_<%=cid %>.put(<%=conn.getName() %>.<%=colAgg %>, operation_result_<%=cid %>);
+}
+    // TODO : add nb of features aggregated
+<%
+    }
+}
+%>
