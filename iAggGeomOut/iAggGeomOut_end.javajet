@@ -110,9 +110,7 @@ while(<%=colAgg%>_iterator_<%=cid %>.hasNext()){
     <%
         if (operation.equals("makeLine")) {
     %>
-    com.vividsolutions.jts.geom.GeometryFactory factory_<%=cid %> = new com.vividsolutions.jts.geom.GeometryFactory();
-    com.vividsolutions.jts.geom.Geometry result_geom = factory_<%=cid %>.createLineString(operation_result_<%=cid %>.<%=colGeo %>.toCoordinateArray());
-    aggregated_row_<%=cid %>.<%=colGeo %> = new Geometry(result_geom);
+    aggregated_row_<%=cid %>.<%=colGeo %> = new Geometry(operation_result_<%=cid %>.<%=colGeo %>.getGeometry());
     aggregated_row_<%=cid %>.<%=colGeo %>.setCRS(operation_result_<%=cid %>.inputCRS);
 
     <%

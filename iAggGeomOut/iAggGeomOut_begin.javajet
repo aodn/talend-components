@@ -56,7 +56,7 @@ class OperationStruct<%=cid %> {
         if (operation.equals("makeLine")) {
 %>
 
-    com.vividsolutions.jts.geom.CoordinateList <%=colGeo %>;
+    com.vividsolutions.jts.linearref.LinearGeometryBuilder <%=colGeo %>;
     org.opengis.referencing.crs.CoordinateReferenceSystem inputCRS;
 <%
         } else {

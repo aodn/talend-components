@@ -64,7 +64,8 @@ if (hash_<%=colAgg %>_<%=cid %>.containsKey(<%=conn.getName() %>.<%=colAgg %>)) 
         if (operation.equals("makeLine")) {
 %>
 	com.vividsolutions.jts.geom.Point point_<%=cid %> = (com.vividsolutions.jts.geom.Point) geomCur._getInternalGeometry();
-    operation_result_<%=cid %>.<%=colGeo %>.add(point_<%=cid %>.getCoordinate());
+	com.vividsolutions.jts.geom.Coordinate coord_<%=cid %> = point_<%=cid %>.getCoordinate();
+    operation_result_<%=cid %>.<%=colGeo %>.add(coord_<%=cid %>);
 
 <%
         }
@@ -81,7 +82,8 @@ if (hash_<%=colAgg %>_<%=cid %>.containsKey(<%=conn.getName() %>.<%=colAgg %>)) 
         if (operation.equals("makeLine")) {
 %>
 
-    operation_result_<%=cid %>.<%=colGeo %> = new com.vividsolutions.jts.geom.CoordinateList();
+	com.vividsolutions.jts.geom.GeometryFactory factory_<%=cid %> = new com.vividsolutions.jts.geom.GeometryFactory();
+    operation_result_<%=cid %>.<%=colGeo %> = new com.vividsolutions.jts.linearref.LinearGeometryBuilder(factory_<%=cid %>);
 	com.vividsolutions.jts.geom.Point point_<%=cid %> = (com.vividsolutions.jts.geom.Point) geomCur._getInternalGeometry();
     operation_result_<%=cid %>.<%=colGeo %>.add(point_<%=cid %>.getCoordinate());
     operation_result_<%=cid %>.inputCRS = geomCur.getCRS();
