@@ -1,0 +1,59 @@
+<%@ jet
+imports="
+org.talend.core.model.metadata.IMetadataColumn
+org.talend.core.model.metadata.IMetadataTable
+org.talend.core.model.process.EConnectionType
+org.talend.core.model.process.IConnection
+org.talend.core.model.process.INode
+org.talend.designer.codegen.config.CodeGeneratorArgument
+org.talend.core.model.metadata.types.JavaTypesManager
+java.util.List
+"
+%>
+<% CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();	
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {//b
+ IMetadataTable metadata = metadatas.get(0);
+ if (metadata != null) {//a
+  List<IMetadataColumn> columns = metadata.getListColumns();	
+  
+  List< ? extends IConnection> outConns = node.getOutgoingConnections();
+  for (IConnection conn : outConns) 
+  { //2	
+   if (conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)||conn.getLineStyle().equals(EConnectionType.FLOW_MERGE))
+   { //3
+    String outputConnName = conn.getName();
+    
+    for (int i = 0; i < columns.size(); i++) 
+    {//4
+     IMetadataColumn column = columns.get(i);
+
+     String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
+     
+     if (column.getLabel().equals("name") && ttg.equals("String"))
+     {//5
+%>
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getName();
+<%  
+     }//5 
+     else if (column.getLabel().equals("type") && ttg.equals("String"))
+     {//5
+%>
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getDataType().toString().replace(" ", ",");
+<%  
+     }//5 
+     else if (column.getLabel().equals("dimensions") && ttg.equals("String"))
+     {//5
+%>
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getDimensionsString();
+<%
+     }//5     
+    }//4
+   }//3
+  }//2
+ }//a
+}//b
+%>
+    
