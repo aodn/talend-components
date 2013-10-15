@@ -1,12 +1,10 @@
 <%@ jet
 imports="
-org.talend.core.model.metadata.IMetadataColumn
 org.talend.core.model.metadata.IMetadataTable
 org.talend.core.model.process.EConnectionType
 org.talend.core.model.process.IConnection
 org.talend.core.model.process.INode
 org.talend.designer.codegen.config.CodeGeneratorArgument
-org.talend.core.model.metadata.types.JavaTypesManager
 java.util.List
 "
 %>
@@ -14,56 +12,34 @@ java.util.List
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();	
 List<IMetadataTable> metadatas = node.getMetadataList();
+
 if ((metadatas != null) && (metadatas.size() > 0)) {//b
  IMetadataTable metadata = metadatas.get(0);
+ 
  if (metadata != null) {//a
-  List<IMetadataColumn> columns = metadata.getListColumns();	
-  
   List< ? extends IConnection> outConns = node.getOutgoingConnections();
   for (IConnection conn : outConns) 
   { //2	
    if (conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)||conn.getLineStyle().equals(EConnectionType.FLOW_MERGE))
    { //3
     String outputConnName = conn.getName();
+%>
     
-    for (int i = 0; i < columns.size(); i++) 
-    {//4
-     IMetadataColumn column = columns.get(i);
+    <%=outputConnName %>.variable = variable_<%=cid %>.getName();
+    <%=outputConnName %>.name = attribute_<%=cid %>.getName();
+    <%=outputConnName %>.type = attribute_<%=cid %>.getDataType().toString();
+    
+    // Concatenate attribute values into a single comma separated string (normally only one)
+    
+    StringBuilder sb_<%=cid %> = new StringBuilder(attribute_<%=cid %>.getValue(0).toString());
 
-     String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(),true);
-     
-     if (column.getLabel().equals("variable") && ttg.equals("String"))
-     {//5
-%>
-       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getName();
-<%  
-     }//5 
-     else if (column.getLabel().equals("name") && ttg.equals("String"))
-     {//5
-%>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.getName();
-<%  
-     }//5 
-     else if (column.getLabel().equals("type") && ttg.equals("String"))
-     {//5
-%>
-       <%=outputConnName %>.<%=column.getLabel() %> = attribute_<%=cid %>.getDataType().toString();
-<%  
-     }//5 
-     else if (column.getLabel().equals("value") && ttg.equals("String"))
-     {//5
-%>
-       StringBuilder sb_<%=cid %> = new StringBuilder(attribute_<%=cid %>.getValue(0).toString());
+    for (int i = 1; i < attribute_<%=cid %>.getLength(); i++) {
+        sb_<%=cid %>.append(',');
+        sb_<%=cid %>.append(attribute_<%=cid %>.getValue(i).toString());
+    }
 
-       for (int i = 1; i < attribute_<%=cid %>.getLength(); i++) {
-           sb_<%=cid %>.append(',');
-           sb_<%=cid %>.append(attribute_<%=cid %>.getValue(i).toString());
-       }
-
-       <%=outputConnName %>.<%=column.getLabel() %> = sb_<%=cid %>.toString();
+    <%=outputConnName %>.value = sb_<%=cid %>.toString();
 <%
-     }//5     
-    }//4
    }//3
   }//2
  }//a

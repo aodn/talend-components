@@ -11,9 +11,6 @@ org.talend.designer.codegen.config.CodeGeneratorArgument
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
-
-String variableParam = ElementParameterParser.getValue(node,"__VARIABLE__");
-String variable = variableParam.trim().equals("") ? "\"\"" : variableParam;
 %> 
     
             nbLine_<%=cid %>++;
@@ -21,12 +18,12 @@ String variable = variableParam.trim().equals("") ? "\"\"" : variableParam;
      }
     
 } catch (Exception e) {
+    System.out.println("Error: ");
+    e.printStackTrace();
+} finally {
     if (ncDataset_<%=cid %> != null) {
     	ncDataset_<%=cid %>.close();
    	}
-
-    System.out.println("Error: ");
-    e.printStackTrace();
 }
 
 globalMap.put("<%=cid %>_NB_LINE", nbLine_<%=cid %>);
