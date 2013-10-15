@@ -114,6 +114,11 @@ while(<%=colAgg%>_iterator_<%=cid %>.hasNext()){
     aggregated_row_<%=cid %>.<%=colGeo %>.setCRS(operation_result_<%=cid %>.inputCRS);
 
     <%
+        } else if (operation.equals("makeTrajectory")) {
+    %>
+    aggregated_row_<%=cid %>.<%=colGeo %> = operation_result_<%=cid %>.getTrajectory();
+
+    <%
         } else {
     %>
     
