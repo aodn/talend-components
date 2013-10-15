@@ -41,13 +41,13 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
      else if (column.getLabel().equals("type") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getDataType().toString().replace(" ", ",");
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getDataType().toString();
 <%  
      }//5 
      else if (column.getLabel().equals("dimensions") && ttg.equals("String"))
      {//5
 %>
-       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getDimensionsString();
+       <%=outputConnName %>.<%=column.getLabel() %> = variable_<%=cid %>.getDimensionsString().replace(" ", ",");
 <%
      }//5     
     }//4

@@ -1,0 +1,48 @@
+<%@ jet
+imports="
+org.talend.core.model.metadata.IMetadataTable
+org.talend.core.model.process.EConnectionType
+org.talend.core.model.process.IConnection
+org.talend.core.model.process.INode
+org.talend.designer.codegen.config.CodeGeneratorArgument
+java.util.List
+"
+%>
+<% CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();	
+List<IMetadataTable> metadatas = node.getMetadataList();
+
+if ((metadatas != null) && (metadatas.size() > 0)) {//b
+ IMetadataTable metadata = metadatas.get(0);
+ 
+ if (metadata != null) {//a
+  List< ? extends IConnection> outConns = node.getOutgoingConnections();
+  for (IConnection conn : outConns) 
+  { //2	
+   if (conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)||conn.getLineStyle().equals(EConnectionType.FLOW_MERGE))
+   { //3
+    String outputConnName = conn.getName();
+%>
+    
+    <%=outputConnName %>.variable = variable_<%=cid %>.getName();
+    <%=outputConnName %>.name = attribute_<%=cid %>.getName();
+    <%=outputConnName %>.type = attribute_<%=cid %>.getDataType().toString();
+    
+    // Concatenate attribute values into a single comma separated string (normally only one)
+    
+    StringBuilder sb_<%=cid %> = new StringBuilder(attribute_<%=cid %>.getValue(0).toString());
+
+    for (int i = 1; i < attribute_<%=cid %>.getLength(); i++) {
+        sb_<%=cid %>.append(',');
+        sb_<%=cid %>.append(attribute_<%=cid %>.getValue(i).toString());
+    }
+
+    <%=outputConnName %>.value = sb_<%=cid %>.toString();
+<%
+   }//3
+  }//2
+ }//a
+}//b
+%>
+    
