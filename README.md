@@ -1,6 +1,4 @@
 ##Installation
-
-```
-$ git clone git@github.com:aodn/talend-components.git
-$ cp -rf talend-components/* <path to TOS>/plugins/org.talend.designer.components.localprovider_*/components
-```
+1. [Install TOS](http://intranet.emii.org.au/content/installing-tos)
+2. [Install SDI](http://intranet.emii.org.au/content/installing-sdi)
+3. [Install these custom components](http://intranet.emii.org.au/content/talend-custom-components)
