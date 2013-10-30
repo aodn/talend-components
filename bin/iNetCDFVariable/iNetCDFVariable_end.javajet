@@ -21,8 +21,8 @@ String cid = node.getUniqueName();
     e.printStackTrace();
 } finally {
     if (ncDataset_<%=cid %> != null) {
-        ncDataset_<%=cid %>.close();
-    }
+    	ncDataset_<%=cid %>.close();
+   	}
 }
 
 globalMap.put("<%=cid %>_NB_LINE", nbLine_<%=cid %>);
