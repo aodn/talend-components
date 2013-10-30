@@ -17,12 +17,12 @@ String cid = node.getUniqueName();
      }
     
 } catch (Exception e) {
-    if (ncDataset_<%=cid %> != null) {
-    	ncDataset_<%=cid %>.close();
-   	}
-
     System.out.println("Error: ");
     e.printStackTrace();
+} finally {
+    if (ncDataset_<%=cid %> != null) {
+        ncDataset_<%=cid %>.close();
+    }
 }
 
 globalMap.put("<%=cid %>_NB_LINE", nbLine_<%=cid %>);
