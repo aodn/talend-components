@@ -194,7 +194,7 @@
     }
     public void addFiles(String cid,boolean useGlob,boolean caseSensitive,boolean ifexclude){
     %>
-    	String fileName_<%=cid%> = file.getName();
+    	String filePath_<%=cid%> = file.getPath();
 		for (final String filemask_<%=cid%> : maskList_<%=cid%>) {
 			String filemask_compile_<%=cid%> = filemask_<%=cid%>;
 			<%if (useGlob){%>
@@ -203,19 +203,19 @@
 		    }
 		    if (caseSensitive){
 		    %>
-		      java.util.regex.Pattern fileNamePattern_<%=cid%> = java.util.regex.Pattern.compile(filemask_compile_<%=cid%>);
+		      java.util.regex.Pattern filePathPattern_<%=cid%> = java.util.regex.Pattern.compile(filemask_compile_<%=cid%>);
 		    <%
 		    }else{
 		    %>
-		      java.util.regex.Pattern fileNamePattern_<%=cid%> = java.util.regex.Pattern.compile(filemask_compile_<%=cid%>, java.util.regex.Pattern.CASE_INSENSITIVE);
+		      java.util.regex.Pattern filePathPattern_<%=cid%> = java.util.regex.Pattern.compile(filemask_compile_<%=cid%>, java.util.regex.Pattern.CASE_INSENSITIVE);
            <%
             }
            %>
-          	if (fileNamePattern_<%=cid%>.matcher(fileName_<%=cid%>).matches()){
+          	if (filePathPattern_<%=cid%>.matcher(filePath_<%=cid%>).matches()){
               <%if (ifexclude){%>
 			 		boolean isExclude_<%=cid%> = false;
-			        for(java.util.regex.Pattern pattern : excludefileNameEachPattern_<%=cid%>) {
-			        	if(pattern.matcher(fileName_<%=cid%>).matches()) {
+			        for(java.util.regex.Pattern pattern : excludefilePathEachPattern_<%=cid%>) {
+			        	if(pattern.matcher(filePath_<%=cid%>).matches()) {
 			        		isExclude_<%=cid%> = true;
 			        		break;
 			        	}
@@ -260,7 +260,7 @@
     if (ifexclude){
     %>   
       String excludefilemask_<%=cid%> = <%=ElementParameterParser.getValue(node, "__EXCLUDEFILEMASK__")%>;
-	  final List<java.util.regex.Pattern> excludefileNameEachPattern_<%=cid%> = new java.util.ArrayList<java.util.regex.Pattern>();
+	  final List<java.util.regex.Pattern> excludefilePathEachPattern_<%=cid%> = new java.util.ArrayList<java.util.regex.Pattern>();
 	  if(excludefilemask_<%=cid%>!=null && !"".equals(excludefilemask_<%=cid%>)) {
 	  	for(String excludefilemaskEach_<%=cid%> : excludefilemask_<%=cid%>.split(",")) {
 	  	 <%if (useGlob){%>
@@ -268,11 +268,11 @@
 	  	 <%}
 	  	 	if (!caseSensitive){
 	  	 %>
-				excludefileNameEachPattern_<%=cid%>.add(java.util.regex.Pattern.compile(excludefilemaskEach_<%=cid%>,java.util.regex.Pattern.CASE_INSENSITIVE));
+				excludefilePathEachPattern_<%=cid%>.add(java.util.regex.Pattern.compile(excludefilemaskEach_<%=cid%>,java.util.regex.Pattern.CASE_INSENSITIVE));
 		 <%
 			} else {
 		 %>
-				excludefileNameEachPattern_<%=cid%>.add(java.util.regex.Pattern.compile(excludefilemaskEach_<%=cid%>));
+				excludefilePathEachPattern_<%=cid%>.add(java.util.regex.Pattern.compile(excludefilemaskEach_<%=cid%>));
 		 <%
 			}
 		 %>	  	 		
