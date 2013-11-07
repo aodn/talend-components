@@ -86,6 +86,14 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//b
 			}
 		}
 <%
+     } else if (column.getLabel().equals("size")) {
+%>
+		if (ds_<%=cid %> instanceof thredds.catalog.InvDatasetImpl) {
+			thredds.catalog.InvDatasetImpl dsImp = (thredds.catalog.InvDatasetImpl) ds_<%=cid %>;
+			
+			<%=outputConnName %>.<%=column.getLabel() %> = dsImp.getDataSize();
+		}
+<%
      }//5
     }//4
    }//3
