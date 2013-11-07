@@ -39,7 +39,7 @@
 	    	<COLUMN NAME="subsetUrl" TYPE="id_String" READONLY="false" LENGTH="255"/>
 	    	<COLUMN NAME="fullName" TYPE="id_String" READONLY="false" LENGTH="255"/>
 	    	<COLUMN NAME="modified" TYPE="id_Date" READONLY="false" PATTERN="&quot;yyyy-MM-dd'T'HH:mm:ss'000Z'&quot;"/>
-	    	<COLUMN NAME="size" TYPE="id_Double" READONLY="false"/>
+	    	<COLUMN NAME="fileSize" TYPE="id_Double" READONLY="false"/>
       	</TABLE>
 	</PARAMETER>
     <PARAMETER NAME="CATALOG_URL" FIELD="TEXT" REQUIRED="true" NUM_ROW ="2" >

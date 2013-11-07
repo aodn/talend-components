@@ -33,7 +33,7 @@
     String sizeInputField = ElementParameterParser.getValue(node, "__SIZE_FIELD__");
 
     if (sizeInputField == null || sizeInputField.trim().equals("")) {
-    	sizeInputField = "size";
+    	sizeInputField = "fileSize";
     }
     
 	String inRowName = node.getIncomingConnections().get(0).getName();
@@ -41,7 +41,7 @@
 	
 		String resourceUrl_<%=cid%> = <%=inRowName%>.<%=urlInputField%>;
 		java.util.Date modified_<%=cid%> = <%=inRowName%>.<%=modifiedInputField%>;
-		Double size_<%=cid%> = <%=inRowName%>.<%=sizeInputField%>;
+		Double fileSize_<%=cid%> = <%=inRowName%>.<%=sizeInputField%>;
 
 		// Index non-null resources 
 	
@@ -54,7 +54,7 @@
 				pstmtUpdate_<%=cid%>.setNull(1, java.sql.Types.TIMESTAMP);
 			}
 
-			pstmtUpdate_<%=cid%>.setDouble(2, size_<%=cid%>);
+			pstmtUpdate_<%=cid%>.setDouble(2, fileSize_<%=cid%>);
 			pstmtUpdate_<%=cid%>.setTimestamp(3, new java.sql.Timestamp((new java.util.Date()).getTime()));
 			pstmtUpdate_<%=cid%>.setLong(4, runNo_<%=cid%>);
 			pstmtUpdate_<%=cid%>.setLong(5, jobId_<%=cid%>);
@@ -74,7 +74,7 @@
 					pstmtInsert_<%=cid%>.setNull(3, java.sql.Types.TIMESTAMP);
 				}
 
-				pstmtInsert_<%=cid%>.setDouble(4, size_<%=cid%>);
+				pstmtInsert_<%=cid%>.setDouble(4, fileSize_<%=cid%>);
 				pstmtInsert_<%=cid%>.setTimestamp(5, new java.sql.Timestamp((new java.util.Date()).getTime()));
 				pstmtInsert_<%=cid%>.setLong(6, runNo_<%=cid%>);
 
