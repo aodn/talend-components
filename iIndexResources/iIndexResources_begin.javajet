@@ -112,13 +112,15 @@
 		// prepared statments used to create or update indexed resource details
 		
 		String update_<%=cid%> = "UPDATE indexed_file "
-			+ " SET modified = ?, last_indexed = ?, last_indexed_run = ? WHERE job_id = ? AND url = ?";
+			+ "  SET modified = ?, size = ?, last_indexed = ?, last_indexed_run = ? "
+			+ "WHERE job_id = ? AND url = ?";
 			
 		java.sql.PreparedStatement pstmtUpdate_<%=cid%> = conn_<%=cid%>
 				.prepareStatement(update_<%=cid%>);
 				
 		String insert_<%=cid%> = "INSERT INTO indexed_file "
-				+ " (job_id, url, modified, last_indexed, last_indexed_run) VALUES (?,?,?,?,?)";
+				+ "(job_id, url, modified, size, last_indexed, last_indexed_run) " 
+				+ "VALUES (?,?,?,?,?,?)";
 				
 		java.sql.PreparedStatement pstmtInsert_<%=cid%> = conn_<%=cid%>
 				.prepareStatement(insert_<%=cid%>);
