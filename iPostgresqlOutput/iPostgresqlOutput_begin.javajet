@@ -16,7 +16,7 @@ imports="
 		java.util.HashMap
 		java.util.LinkedList
 " 
-skeleton="../templates/db_output_bulk.skeleton"
+skeleton="../../../templates/db_output_bulk.skeleton"
 %>
 
 <%
@@ -199,7 +199,7 @@ int count_<%=cid%>=0;
 if(columnList != null && columnList.size()>0) {    
        Manager manager = null;
     %>
-    <%@ include file="../templates/_tableActionForOutput.javajet"%>
+    <%@ include file="../../../templates/_tableActionForOutput.javajet"%>
     <%   
     Map<String, StringBuilder> actionSQLMap = getManager(dbmsId, cid).createProcessSQL(stmtStructure);
     StringBuilder insertColName = actionSQLMap.get(INSERT_COLUMN_NAME);   
@@ -242,7 +242,7 @@ if(columnList != null && columnList.size()>0) {
     if(isEnableDebug) {
         %>
         StringBuffer query_<%=cid%> = null;
-       	<%@ include file="../templates/DB/Output/splitSQLForAllDBInBegin.javajet" %>
+       	<%@ include file="../../../templates/DB/Output/splitSQLForAllDBInBegin.javajet" %>
         <%
     }
 }
