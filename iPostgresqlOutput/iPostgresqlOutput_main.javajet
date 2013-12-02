@@ -1012,7 +1012,23 @@ skeleton="../../../templates/db_output_bulk.skeleton"
             	    	batchSizeCounter_<%=cid%> = 0;             	                	                	
                 }catch (java.sql.BatchUpdateException e){
                 
-                  System.out.println( "here1");
+
+			System.err.println("Contents of BatchUpdateException:");
+			System.err.println(" Update counts: ");
+			int [] updateCounts = e.getUpdateCounts();              
+			for (int i = 0; i < updateCounts.length; i++) {
+				System.err.println("  Statement " + i + ":" + updateCounts[i]);
+			}
+
+			java.sql.SQLException se = e; 
+			do {
+				System.err.println("SQL exception:");
+				System.err.println(" Message: " + se.getMessage());      
+				System.err.println(" SQLSTATE: " + se.getSQLState());
+				System.err.println(" Error code: " + se.getErrorCode());
+				se = se.getNextException();
+			} while(se != null);
+ 
                 
                 	<%if(("true").equals(dieOnError)) {
                 	%>
@@ -1079,8 +1095,23 @@ skeleton="../../../templates/db_output_bulk.skeleton"
             	    	<%
             	    	}%>            	    
                 }catch (java.sql.BatchUpdateException e){
-                
-                  System.out.println( "here0");
+               
+			System.err.println("Contents of BatchUpdateException:");
+			System.err.println(" Update counts: ");
+			int [] updateCounts = e.getUpdateCounts();              
+			for (int i = 0; i < updateCounts.length; i++) {
+				System.err.println("  Statement " + i + ":" + updateCounts[i]);
+			}
+
+			java.sql.SQLException se = e; 
+			do {
+				System.err.println("SQL exception:");
+				System.err.println(" Message: " + se.getMessage());      
+				System.err.println(" SQLSTATE: " + se.getSQLState());
+				System.err.println(" Error code: " + se.getErrorCode());
+				se = se.getNextException();
+			} while(se != null);
+ 
                 
                 	<%if(("true").equals(dieOnError)) {
                 	%>
