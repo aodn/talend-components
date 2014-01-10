@@ -4,7 +4,7 @@ imports="
 	org.talend.core.model.process.INode
 	org.talend.core.model.process.ElementParameterParser
 	org.talend.core.model.process.IConnection
-	java.util.List	
+	java.util.List
 " 
 %>
 
