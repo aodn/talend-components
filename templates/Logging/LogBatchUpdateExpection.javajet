@@ -1,0 +1,33 @@
+<%@ jet 
+	imports="	
+	" 
+%>
+
+	// we expect to have object e as a java.sql.BatchUpdateException
+	{
+
+	System.out.println("===============================");
+	System.out.println(" Update counts: ");
+	int [] updateCounts = e.getUpdateCounts();              
+	for (int i = 0; i < updateCounts.length; i++) {
+		System.out.println("  Statement " + i + ":" + updateCounts[i]);
+	}
+
+	System.out.println("===============================");
+	System.out.println("Contents of BatchUpdateException:");
+	java.sql.SQLException se = e; 
+	do {		
+		System.out.println("SQL exception:");
+		System.out.println(" Message: " + se.getMessage());      
+		System.out.println(" SQLSTATE: " + se.getSQLState());
+		System.out.println(" Error code: " + se.getErrorCode());	
+		// make sure printStackTrace() writes to stdout, not stderr
+		java.io.StringWriter sw = new java.io.StringWriter();
+		se.printStackTrace(new java.io.PrintWriter(sw));									
+		System.out.println(" Stacktrace:" + sw.toString());
+		se = se.getNextException();
+	} while(se != null);
+	
+	}
+
+
