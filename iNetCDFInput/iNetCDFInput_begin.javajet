@@ -23,7 +23,6 @@ String cid = node.getUniqueName();
 // Retrieve component properties
 String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
-String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 
 // Enhanced dataset options
 String scaleMissing = ElementParameterParser.getValue(node, "__SCALE_MISSING__");
@@ -90,12 +89,7 @@ int nbFeature_<%=cid %> = 0;
 
 String filename_<%=cid %> = <%=filename %>;
 
-<% if (("false").equals(dieOnError)) {%>
-	boolean error_<%=cid %> = false;
-	String errorTrace_<%=cid %> = "";
-<% }
-
-   if (scaleMissing.equals("true")) { %>
+<% if (scaleMissing.equals("true")) { %>
 	ucar.nc2.dataset.NetcdfDataset.setFillValueIsMissing(<%=isFillerMissing.equals("true") %>);
   	ucar.nc2.dataset.NetcdfDataset.setInvalidDataIsMissing(<%=isInvalidMissing.equals("true") %>);
   	ucar.nc2.dataset.NetcdfDataset.setMissingDataIsMissing(<%=isMissingMissing.equals("true") %>);

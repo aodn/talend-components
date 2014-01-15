@@ -14,12 +14,7 @@ String cid = node.getUniqueName();
 %> 
     
         nbLine_<%=cid %>++;
-    } catch (Exception e) {
-        System.out.println("Error: ");
-        e.printStackTrace();
     }
-} catch (Exception e) {
-    System.out.println("Error: ");
-    e.printStackTrace();
 }
+
 globalMap.put("<%=cid %>_NB_LINE",nbLine_<%=cid %>);

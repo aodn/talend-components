@@ -22,7 +22,6 @@ String cid = node.getUniqueName();
 // Retrieve component properties
 String url = ElementParameterParser.getValue(node, "__URL__");
 List<Map<String, String>> columnMappingOverrides = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COLUMN_MAPPINGS__");
-String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 
 // Get list of column names used in connections, mapped projection names and mapped variable names 
 
@@ -103,11 +102,6 @@ while (columnIterator_<%=cid %>.hasNext()) {
 int nbFeature_<%=cid %> = 0;
 
 String dataSourceUrl_<%=cid %> = <%=url %>;
-
-<% if (("false").equals(dieOnError)) {%>
-	boolean error_<%=cid %> = false;
-	String errorTrace_<%=cid %> = "";
-<% } %>
 
 try {
 	opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
