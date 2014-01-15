@@ -12,38 +12,14 @@ CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cidForward = "";
 String cid = node.getUniqueName();
-
-String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 %>
 
 		}
 	}
-		
-} catch (java.io.IOException ioe) {
-	ioe.printStackTrace();
-	<% if (("true").equals(dieOnError)) {%>
-		throw(ioe);
-	<% } else { %>
-		error_<%=cid %> = true;
-		errorTrace_<%=cid %> = ioe.toString();
-	<% } %>
 } finally { 
-    if (null != ncDataset_<%=cid %>) try {
+    if (null != ncDataset_<%=cid %>) {
       ncDataset_<%=cid %>.close();
-    } catch (java.io.IOException ioe) {
-	    ioe.printStackTrace();
-		<% if (("true").equals(dieOnError)) {%>
-			throw(ioe);
-		<% } else { %>
-			error_<%=cid %> = true;
-			errorTrace_<%=cid %> = ioe.toString();
-		<% } %>
     }
 }
 		  
 globalMap.put("<%=cidForward %>_NB_FEATURE", nbFeature_<%=cid %>);
-
-<% if (("false").equals(dieOnError)) {%>
-	globalMap.put("<%=cidForward %>_ERROR", new Boolean(error_<%=cid %>));
-	globalMap.put("<%=cidForward %>_ERROR_STACK_TRACE", errorTrace_<%=cid %>);
-<% } %>

@@ -16,10 +16,6 @@ String cid = node.getUniqueName();
             nbLine_<%=cid %>++;
         }
      }
-    
-} catch (Exception e) {
-    System.out.println("Error: ");
-    e.printStackTrace();
 } finally {
     if (ncDataset_<%=cid %> != null) {
     	ncDataset_<%=cid %>.close();
