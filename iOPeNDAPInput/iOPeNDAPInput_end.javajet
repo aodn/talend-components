@@ -14,8 +14,6 @@ String cidForward = "";
 String cid = node.getUniqueName();
 %>
 
-			}
-		}
 	}
 }
 
