@@ -28,16 +28,14 @@ String container = ElementParameterParser.getValue(node,"__CONTAINER__");
 int nbLine_<%=cid %> = 0;
 String dataSourceUrl_<%=cid %> = <%=url %>;
 
-try {
-	opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
+opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
 			
-	try {
-		opendap.dap.AttributeTable attributes_<%=cid %> = conn_<%=cid %>.getDAS();
+opendap.dap.AttributeTable attributes_<%=cid %> = conn_<%=cid %>.getDAS();
 <%
 if (container != null && !container.trim().equals("")) {
 %>
 
-        attributes_<%=cid %> = attributes_<%=cid %>.getAttribute(<%=container %>).getContainer();
+    attributes_<%=cid %> = attributes_<%=cid %>.getAttribute(<%=container %>).getContainer();
         
 <%
 }

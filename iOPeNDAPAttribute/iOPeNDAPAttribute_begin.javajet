@@ -102,23 +102,21 @@ class AttributeHelper_<%=cid %> {
 int nbLine_<%=cid %> = 0;
 String dataSourceUrl_<%=cid %> = <%=url %>;
 
-try {
-	opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
+opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
 			
-	try {
-		opendap.dap.AttributeTable attributes_<%=cid %> = conn_<%=cid %>.getDAS();
+opendap.dap.AttributeTable attributes_<%=cid %> = conn_<%=cid %>.getDAS();
 <%
 if (!container.trim().equals("\"\"")) {
 %>
 
-        attributes_<%=cid %> = attributes_<%=cid %>.getAttribute(<%=container %>).getContainer();
+    attributes_<%=cid %> = attributes_<%=cid %>.getAttribute(<%=container %>).getContainer();
         
 <%
 }
 %>
 
-	AttributeHelper_<%=cid %> ah_<%=cid %> = new AttributeHelper_<%=cid %>();
-	
-	for (AttributeHelper_<%=cid %>.Attribute attribute_<%=cid %> : ah_<%=cid %>.getAttributes(attributes_<%=cid %>, <%=container%>) ) {
+AttributeHelper_<%=cid %> ah_<%=cid %> = new AttributeHelper_<%=cid %>();
+
+for (AttributeHelper_<%=cid %>.Attribute attribute_<%=cid %> : ah_<%=cid %>.getAttributes(attributes_<%=cid %>, <%=container%>) ) {
 	    	
     	

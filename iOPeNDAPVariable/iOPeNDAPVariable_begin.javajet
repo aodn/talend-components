@@ -26,13 +26,11 @@ String url = ElementParameterParser.getValue(node,"__URL__");
 int nbLine_<%=cid %> = 0;
 String dataSourceUrl_<%=cid %> = <%=url %>;
 
-try {
-	opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
+opendap.dap.DConnect2 conn_<%=cid %> = new opendap.dap.DConnect2(dataSourceUrl_<%=cid %>);
 			
-	try {
-		opendap.dap.DDS dds_<%=cid %> = conn_<%=cid %>.getDDS();
+opendap.dap.DDS dds_<%=cid %> = conn_<%=cid %>.getDDS();
 
-		for (java.util.Enumeration<opendap.dap.BaseType> variables_<%=cid %> = dds_<%=cid %>.getVariables(); variables_<%=cid %>.hasMoreElements();) {
-			opendap.dap.BaseType variable_<%=cid %> = variables_<%=cid %>.nextElement();
+for (java.util.Enumeration<opendap.dap.BaseType> variables_<%=cid %> = dds_<%=cid %>.getVariables(); variables_<%=cid %>.hasMoreElements();) {
+	opendap.dap.BaseType variable_<%=cid %> = variables_<%=cid %>.nextElement();
 	    	
     	
