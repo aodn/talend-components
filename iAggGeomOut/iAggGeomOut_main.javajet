@@ -68,6 +68,11 @@ if (hash_<%=colAgg %>_<%=cid %>.containsKey(<%=conn.getName() %>.<%=colAgg %>)) 
     operation_result_<%=cid %>.<%=colGeo %>.add(coord_<%=cid %>);
 
 <%
+        } else if (operation.equals("makeTrajectory")) {
+%>
+    operation_result_<%=cid %>.add(geomCur);
+
+<%
         }
 %>
 
@@ -87,6 +92,13 @@ if (hash_<%=colAgg %>_<%=cid %>.containsKey(<%=conn.getName() %>.<%=colAgg %>)) 
 	com.vividsolutions.jts.geom.Point point_<%=cid %> = (com.vividsolutions.jts.geom.Point) geomCur._getInternalGeometry();
     operation_result_<%=cid %>.<%=colGeo %>.add(point_<%=cid %>.getCoordinate());
     operation_result_<%=cid %>.inputCRS = geomCur.getCRS();
+
+<%
+        } else if (operation.equals("makeTrajectory")) {
+%>
+
+    operation_result_<%=cid %>.setInputCRS(geomCur.getCRS());
+    operation_result_<%=cid %>.add(geomCur);
 
 <%
         }

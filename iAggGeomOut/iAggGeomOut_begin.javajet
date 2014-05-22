@@ -59,6 +59,69 @@ class OperationStruct<%=cid %> {
     com.vividsolutions.jts.linearref.LinearGeometryBuilder <%=colGeo %>;
     org.opengis.referencing.crs.CoordinateReferenceSystem inputCRS;
 <%
+        } else if (operation.equals("makeTrajectory")) {
+%>
+    private com.vividsolutions.jts.geom.GeometryFactory factory = new com.vividsolutions.jts.geom.GeometryFactory();
+    private com.vividsolutions.jts.linearref.LinearGeometryBuilder builder = new com.vividsolutions.jts.linearref.LinearGeometryBuilder(factory);
+    private org.opengis.referencing.crs.CoordinateReferenceSystem inputCRS;
+    
+    public void setInputCRS(org.opengis.referencing.crs.CoordinateReferenceSystem inputCRS) {
+        this.inputCRS = inputCRS;
+    }
+    
+    public void add(Geometry point) {
+        com.vividsolutions.jts.geom.Coordinate lastCoord = builder.getLastCoordinate();
+
+        com.vividsolutions.jts.geom.Point jtsPoint = (com.vividsolutions.jts.geom.Point) point._getInternalGeometry();
+        com.vividsolutions.jts.geom.Coordinate coord = jtsPoint.getCoordinate();
+        
+        if (crossesAntiMeridian(lastCoord, coord)) {
+            splitAtAntiMeridian(lastCoord, coord);
+        }
+        
+        builder.add(coord);
+    }
+    
+    public Geometry getTrajectory() {
+        Geometry result = new Geometry(builder.getGeometry());
+        result.setCRS(inputCRS);
+        return result;
+    }
+    
+    private boolean crossesAntiMeridian(com.vividsolutions.jts.geom.Coordinate lastCoord, com.vividsolutions.jts.geom.Coordinate coord) {
+        if (lastCoord == null) return false;
+        // assume crosses anti-meridian if distance between longitudes is > 180
+        return Math.abs(coord.x - lastCoord.x) > 180;
+    }
+    
+    private void splitAtAntiMeridian(com.vividsolutions.jts.geom.Coordinate lastCoord, com.vividsolutions.jts.geom.Coordinate coord) {
+        com.vividsolutions.jts.geom.Coordinate endPoint = getIntersectionPoint(lastCoord, coord);
+        com.vividsolutions.jts.geom.Coordinate startPoint = getIntersectionPoint(coord, lastCoord);
+        
+        builder.add(endPoint);
+        builder.endLine();
+        builder.add(startPoint);
+    }
+    
+    private com.vividsolutions.jts.geom.Coordinate getIntersectionPoint(com.vividsolutions.jts.geom.Coordinate lastCoord, com.vividsolutions.jts.geom.Coordinate coord) {
+        double longitude;
+        double latitude;
+
+        if (lastCoord.x > 0) {
+            longitude = 180;
+        } else {
+            longitude = -179.999999999999;
+        }
+        
+        // map coord longitude to longitude domain extended past the anti-meridian 
+        double extendedLongitude = coord.x > 0 ? coord.x - 360 : coord.x + 360;
+
+        // determine latitude at which line between two coords crosses the anti-meridian 
+        latitude = ((longitude - lastCoord.x) * (coord.y - lastCoord.y)/(extendedLongitude - lastCoord.x)) + lastCoord.y;
+        
+        return new com.vividsolutions.jts.geom.Coordinate(longitude, latitude);
+    }    
+<%
         } else {
 %>
 
