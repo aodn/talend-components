@@ -32,4 +32,11 @@
       </includes>
     </fileSet>
   </fileSets>
+  
+  <dependencySets>
+    <dependencySet>
+    	<outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}</outputFileNameMapping>
+    	<useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+  </dependencySets>
 </assembly>
