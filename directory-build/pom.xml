@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   
   <groupId>au.org.emii.talend</groupId>
-  <artifactId>directory-packager</artifactId>
+  <artifactId>directory-build</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>directory-packager</name>
+  <name>directory-build</name>
   <packaging>pom</packaging>
 
   <properties>

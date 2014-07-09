@@ -9,7 +9,7 @@
   
   <modules>
     <module>component-packager</module>
-    <module>directory-packager</module>
+    <module>directory-build</module>
     <module>iAggGeomOut</module>
     <module>iDeletedResources</module>
     <module>iFileList</module>
