@@ -1,12 +1,12 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
+    org.talend.core.model.process.INode
     org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
 "
 %>
 
-    <%@ include file="../templates/Geonetwork/MetadataUpdater.javajet"%> 
+    <%@ include file="../templates/Geonetwork/MetadataUpdater.javajet"%>
 
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -29,101 +29,163 @@ String gnUsername = ElementParameterParser.getValue(node, "__GN_USERNAME__");
 String gnPassword = ElementParameterParser.getValue(node, "__GN_PASSWORD__");
 
 String uuid = ElementParameterParser.getValue(node, "__UUID__");
+
+String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
+
 %>
 
-    // Get bounding polygon from postgis
-    
-    String boundingPolygon_<%=cid%> = null;
-    
+    System.out.format( "* iSpatialExtend instance \n");
+
+    boolean requireUpdate_<%=cid%> = false;
+
+    {
     java.sql.Connection conn_<%=cid%> = null;
-    java.sql.Statement stmt_<%=cid %> = null;
+    java.sql.PreparedStatement pstmt_<%=cid %> = null;
     java.sql.ResultSet rs_<%=cid %> = null;
-    
+
     try {
         <%
         String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
-        
+
         if(("true").equals(useExistingConn)) {
             String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-            String conn = "conn_" + connection; %>
+            String conn = "conn_" + connection;
+        %>
             conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
         <% } else { %>
             java.lang.Class.forName("org.postgresql.Driver");
             String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
             String dbUser_<%=cid %> = <%=dbuser%>;
             String dbPwd_<%=cid %> = <%=dbpwd%>;
-            conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>, dbUser_<%=cid%>, dbPwd_<%=cid%>);    
+            conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>, dbUser_<%=cid%>, dbPwd_<%=cid%>);
         <% } %>
-        
-        // Get bounding polygon from postgres (requires BoundingPolygonAsGml3 function to be installed)
-        
-        String query = "select BoundingPolygonAsGml3('" + <%=dbschema%> + "','" + <%=dbtable%> + "','" + <%=dbcol%> + "'," + <%=resolution%> + ")";
-        stmt_<%=cid %> = conn_<%=cid %>.createStatement();
-        rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query);
+
+
+        // has any resource changed during the harvest
+        String changeQuery = ""
+          + " select exists ("
+          + " select 1"
+          + " from indexed_file"
+          + " left join file_harvest on indexed_file.id = file_harvest.file_id"
+          + " where file_harvest.last_change_run = (select last_run_no from index_job where name = ? )"
+          + " ) as changed"
+        ;
+
+        pstmt_<%=cid%> = conn_<%=cid%>
+          .prepareStatement(changeQuery);
+
+        String jobName_<%=cid%> = <%=jobName%>;
+
+        pstmt_<%=cid%>.setString(1, jobName_<%=cid%>);
+        rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
         rs_<%=cid %>.next();
-        boundingPolygon_<%=cid%> = rs_<%=cid %>.getString("BoundingPolygonAsGml3");
-    } finally {
+        requireUpdate_<%=cid%> = rs_<%=cid %>.getBoolean("changed");
+    }
+    finally {
         if (rs_<%=cid %> != null) rs_<%=cid %>.close();
-        if (stmt_<%=cid %> != null) stmt_<%=cid %>.close();
-        
-        <%    if(("false").equals(useExistingConn)) { %>
+        if (pstmt_<%=cid %> != null) pstmt_<%=cid %>.close();
+
+        <% if(("false").equals(useExistingConn)) { %>
             if (conn_<%=cid%> != null) conn_<%=cid%>.close();
         <% } %>
     }
-    
-    // Turn it into an XML document (Postgis doesn't include the gml namespace declaration in the returned xml
-    // so we add a root element containing the required declaration)
-    
-    StringBuilder postgisWrapper_<%=cid%> = new StringBuilder("<postgisResult xmlns:gml=\"http://www.opengis.net/gml\">");
-    postgisWrapper_<%=cid%>.append(boundingPolygon_<%=cid%>);
-    postgisWrapper_<%=cid%>.append("</postgisResult>");
-    String wrappedGml_<%=cid%> = postgisWrapper_<%=cid%>.toString();
-    
-    org.jdom.input.SAXBuilder saxBuilder_<%=cid%> = new org.jdom.input.SAXBuilder();
-    org.jdom.Document doc_<%=cid%> = saxBuilder_<%=cid%>.build(new java.io.StringReader(wrappedGml_<%=cid%>));
-    
-    // Convert included polygons into a list of iso19115/iso19139 gmd:geographicElements
-    
-    List<org.jdom.Element> geographicElements_<%=cid%> = new java.util.ArrayList<org.jdom.Element>();
-    
-    org.jdom.xpath.XPath xpath_<%=cid%> = org.jdom.xpath.XPath.newInstance("//gml:Polygon");
-    xpath_<%=cid%>.addNamespace(org.jdom.Namespace.getNamespace("gml", "http://www.opengis.net/gml"));
-    List<org.jdom.Element> polygons_<%=cid%> = (List<org.jdom.Element>) xpath_<%=cid%>.selectNodes(doc_<%=cid%>);
-    
-    org.jdom.Namespace gmdNs = org.jdom.Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
-    
-    for (org.jdom.Element polygon : polygons_<%=cid%>) {
-        org.jdom.Element polygonElement = new org.jdom.Element("polygon", gmdNs).addContent((org.jdom.Element) polygon.clone());;
-        org.jdom.Element exBoundingPolygonElement = new org.jdom.Element("EX_BoundingPolygon", gmdNs).addContent(polygonElement);
-        org.jdom.Element geographicElement = new org.jdom.Element("geographicElement", gmdNs).addContent(exBoundingPolygonElement);
-        geographicElements_<%=cid%>.add(geographicElement);
     }
-    
-    // Connect to Geonetwork
-    
-    it.geosolutions.geonetwork.GNClient geonetworkClient_<%= cid %> = new it.geosolutions.geonetwork.GNClient(
-      <%= gnServiceUrl %>,
-      <%= gnUsername %>,
-      <%= gnPassword %>
-    );
-    
-    // Fetch specified metadata record
-    
-    org.jdom.Document metadata_<%= cid %> = new org.jdom.Document(
-        geonetworkClient_<%= cid %>.get(<%= uuid %>)
-    );
 
-    // Update metadata mecord
-    
-    MetadataUpdater metadataUpdater = new MetadataUpdater();
-    
-    List<org.jdom.Namespace> namespaces_<%= cid %> = new java.util.ArrayList<org.jdom.Namespace>();
-    namespaces_<%= cid %>.add(gmdNs);
+    System.out.format( "* require update %b\n", requireUpdate_<%=cid%> );
 
-    metadataUpdater.removeNodes(metadata_<%= cid %>, namespaces_<%= cid %>, "//gmd:EX_Extent", "geographicElement", gmdNs);
-    metadataUpdater.addNodes(metadata_<%= cid %>,  namespaces_<%= cid %>, "//gmd:EX_Extent", geographicElements_<%=cid%>); 
-    
-    // Post updated record back to Geonetwork
-    
-    geonetworkClient_<%= cid %>.updateMetadata(<%= uuid %>, metadata_<%= cid %>.getRootElement());
+    if(requireUpdate_<%=cid%>)
+    {
+        String boundingPolygon_<%=cid%> = null;
 
+        java.sql.Connection conn_<%=cid%> = null;
+        java.sql.Statement stmt_<%=cid %> = null;
+        java.sql.ResultSet rs_<%=cid %> = null;
+
+        try {
+            <%
+            //String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+
+            if(("true").equals(useExistingConn)) {
+                String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+                String conn = "conn_" + connection; %>
+                conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
+            <% } else { %>
+                java.lang.Class.forName("org.postgresql.Driver");
+                String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+                String dbUser_<%=cid %> = <%=dbuser%>;
+                String dbPwd_<%=cid %> = <%=dbpwd%>;
+                conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>, dbUser_<%=cid%>, dbPwd_<%=cid%>);
+            <% } %>
+
+            // Get bounding polygon from postgres (requires BoundingPolygonAsGml3 function to be installed)
+
+            String query = "select BoundingPolygonAsGml3('" + <%=dbschema%> + "','" + <%=dbtable%> + "','" + <%=dbcol%> + "'," + <%=resolution%> + ")";
+            stmt_<%=cid %> = conn_<%=cid %>.createStatement();
+            rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query);
+            rs_<%=cid %>.next();
+            boundingPolygon_<%=cid%> = rs_<%=cid %>.getString("BoundingPolygonAsGml3");
+        } finally {
+            if (rs_<%=cid %> != null) rs_<%=cid %>.close();
+            if (stmt_<%=cid %> != null) stmt_<%=cid %>.close();
+
+            <%    if(("false").equals(useExistingConn)) { %>
+                if (conn_<%=cid%> != null) conn_<%=cid%>.close();
+            <% } %>
+        }
+
+        // Turn it into an XML document (Postgis doesn't include the gml namespace declaration in the returned xml
+        // so we add a root element containing the required declaration)
+
+        StringBuilder postgisWrapper_<%=cid%> = new StringBuilder("<postgisResult xmlns:gml=\"http://www.opengis.net/gml\">");
+        postgisWrapper_<%=cid%>.append(boundingPolygon_<%=cid%>);
+        postgisWrapper_<%=cid%>.append("</postgisResult>");
+        String wrappedGml_<%=cid%> = postgisWrapper_<%=cid%>.toString();
+
+        org.jdom.input.SAXBuilder saxBuilder_<%=cid%> = new org.jdom.input.SAXBuilder();
+        org.jdom.Document doc_<%=cid%> = saxBuilder_<%=cid%>.build(new java.io.StringReader(wrappedGml_<%=cid%>));
+
+        // Convert included polygons into a list of iso19115/iso19139 gmd:geographicElements
+
+        List<org.jdom.Element> geographicElements_<%=cid%> = new java.util.ArrayList<org.jdom.Element>();
+
+        org.jdom.xpath.XPath xpath_<%=cid%> = org.jdom.xpath.XPath.newInstance("//gml:Polygon");
+        xpath_<%=cid%>.addNamespace(org.jdom.Namespace.getNamespace("gml", "http://www.opengis.net/gml"));
+        List<org.jdom.Element> polygons_<%=cid%> = (List<org.jdom.Element>) xpath_<%=cid%>.selectNodes(doc_<%=cid%>);
+
+        org.jdom.Namespace gmdNs = org.jdom.Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+
+        for (org.jdom.Element polygon : polygons_<%=cid%>) {
+            org.jdom.Element polygonElement = new org.jdom.Element("polygon", gmdNs).addContent((org.jdom.Element) polygon.clone());;
+            org.jdom.Element exBoundingPolygonElement = new org.jdom.Element("EX_BoundingPolygon", gmdNs).addContent(polygonElement);
+            org.jdom.Element geographicElement = new org.jdom.Element("geographicElement", gmdNs).addContent(exBoundingPolygonElement);
+            geographicElements_<%=cid%>.add(geographicElement);
+        }
+
+        // Connect to Geonetwork
+
+        it.geosolutions.geonetwork.GNClient geonetworkClient_<%= cid %> = new it.geosolutions.geonetwork.GNClient(
+          <%= gnServiceUrl %>,
+          <%= gnUsername %>,
+          <%= gnPassword %>
+        );
+
+        // Fetch specified metadata record
+
+        org.jdom.Document metadata_<%= cid %> = new org.jdom.Document(
+            geonetworkClient_<%= cid %>.get(<%= uuid %>)
+        );
+
+        // Update metadata mecord
+
+        MetadataUpdater metadataUpdater = new MetadataUpdater();
+
+        List<org.jdom.Namespace> namespaces_<%= cid %> = new java.util.ArrayList<org.jdom.Namespace>();
+        namespaces_<%= cid %>.add(gmdNs);
+
+        metadataUpdater.removeNodes(metadata_<%= cid %>, namespaces_<%= cid %>, "//gmd:EX_Extent", "geographicElement", gmdNs);
+        metadataUpdater.addNodes(metadata_<%= cid %>,  namespaces_<%= cid %>, "//gmd:EX_Extent", geographicElements_<%=cid%>);
+
+        // Post updated record back to Geonetwork
+
+        geonetworkClient_<%= cid %>.updateMetadata(<%= uuid %>, metadata_<%= cid %>.getRootElement());
+    }

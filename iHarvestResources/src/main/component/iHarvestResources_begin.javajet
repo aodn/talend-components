@@ -1,27 +1,25 @@
-<%@ jet 
+<%@ jet
 	imports="
-		org.talend.core.model.process.INode 
-		org.talend.core.model.process.ElementParameterParser 
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.core.model.metadata.IMetadataColumn
 		org.talend.core.model.process.IConnection
 		org.talend.core.model.process.IConnectionCategory
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.metadata.types.JavaTypesManager
 		org.talend.core.model.metadata.types.JavaType
-		java.util.List 
-    	java.util.Map		
-	" 
+		java.util.List
+		java.util.Map
+	"
 %>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-	
-    String cid = node.getUniqueName();
-
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
 %>
 
-	String dbquery_<%=cid%> = 
+	String dbquery_<%=cid%> =
 		"select indexed_file.id, indexed_file.url, indexed_file.modified " +
 		"  from indexed_file " +
 		"  join index_job " +
@@ -31,7 +29,9 @@
 		"  left join file_harvest " +
 		"    on file_harvest.file_id = indexed_file.id " +
 		"   and file_harvest.harvest_type = ? " +
+		"   and file_harvest.last_change_type <> 'deleted' " +
 		" where (file_harvest.last_moddate_harvested <> indexed_file.modified " +
-		"    or  file_harvest.last_moddate_harvested is null) ";
-				
- 	<%@ include file="../templates/Resources/ComponentBegin.javajet"%> 	
+		"    or  file_harvest.last_moddate_harvested is null) "
+	;
+
+	<%@ include file="../templates/Resources/ComponentBegin.javajet"%>

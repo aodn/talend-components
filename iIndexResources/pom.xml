@@ -10,7 +10,7 @@
   
   <artifactId>iIndexResources</artifactId>
   <name>iIndexResources</name>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <build>
     <plugins>
