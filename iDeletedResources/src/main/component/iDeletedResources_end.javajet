@@ -15,7 +15,7 @@
 	String update_<%=cid%> = ""
 		+ " update file_harvest"
 		+ " set last_moddate_harvested = ?,"
-		+ "   last_change_type = ?,"
+		+ "   last_change_type = 'deleted',"
 		+ "   last_change_run = (select last_run_no from index_job where name = ?)"
 		+ " where harvest_type = ?"
 		+ " and file_id = ?"
@@ -25,10 +25,9 @@
 		.prepareStatement(update_<%=cid%>);
 
 	pstmt_<%=cid%>.setTimestamp(1, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
-	pstmt_<%=cid%>.setString(2, "deleted");
-	pstmt_<%=cid%>.setString(3, jobName_<%=cid%>);
-	pstmt_<%=cid%>.setString(4, harvestType_<%=cid%>);
-	pstmt_<%=cid%>.setLong(5, id_<%=cid%>);
+	pstmt_<%=cid%>.setString(2, jobName_<%=cid%>);
+	pstmt_<%=cid%>.setString(3, harvestType_<%=cid%>);
+	pstmt_<%=cid%>.setLong(4, id_<%=cid%>);
 
 	System.out.format( "* iDeleteResources delete resource file_id=%d\n", id_<%=cid%> );
 
