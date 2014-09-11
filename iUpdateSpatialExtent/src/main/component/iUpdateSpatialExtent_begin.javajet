@@ -35,8 +35,6 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
 %>
 
-    System.out.format( "* iSpatialExtend instance \n");
-
     boolean requireUpdate_<%=cid%> = false;
 
     {
@@ -96,7 +94,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
     }
     }
 
-    System.out.format( "* require update %b\n", requireUpdate_<%=cid%> );
+    System.out.format( "* iSpatialExtend - require update %b\n", requireUpdate_<%=cid%> );
 
     if(requireUpdate_<%=cid%>)
     {
