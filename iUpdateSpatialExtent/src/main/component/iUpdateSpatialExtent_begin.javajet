@@ -31,6 +31,7 @@ String gnPassword = ElementParameterParser.getValue(node, "__GN_PASSWORD__");
 String uuid = ElementParameterParser.getValue(node, "__UUID__");
 
 String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
+String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
 %>
 
@@ -64,10 +65,11 @@ String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
         // has any resource changed during the harvest
         String changeQuery = ""
           + " select exists ("
-          + "	select 1"
-          + "	from indexed_file"
-          + "	left join file_harvest on indexed_file.id = file_harvest.file_id"
-          + "	where file_harvest.last_change_run = (select last_run_no from index_job where name = ? )"
+          + "   select 1"
+          + "   from indexed_file"
+          + "   left join file_harvest on indexed_file.id = file_harvest.file_id"
+          + "   where file_harvest.last_change_run = (select last_run_no from index_job where name = ? )"
+          + "   and file_harvest.harvest_type = ?"
           + " ) as changed"
         ;
 
@@ -75,8 +77,11 @@ String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
           .prepareStatement(changeQuery);
 
         String jobName_<%=cid%> = <%=jobName%>;
+        String harvestType_<%=cid%> = <%=harvestType%>;
 
         pstmt_<%=cid%>.setString(1, jobName_<%=cid%>);
+        pstmt_<%=cid%>.setString(2, harvestType_<%=cid%>);
+
         rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
         rs_<%=cid %>.next();
         requireUpdate_<%=cid%> = rs_<%=cid %>.getBoolean("changed");
