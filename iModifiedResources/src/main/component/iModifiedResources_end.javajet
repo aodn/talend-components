@@ -12,12 +12,13 @@
 
 	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%>
 
-	String update_<%=cid%> = "update file_harvest "
-		+ " set last_moddate_harvested = ?,"
-		+ " last_change_type = ?,"
-		+ " last_change_run = (select last_run_no from index_job where name = ?)"
-		+ " WHERE harvest_type = ?"
-		+ " AND file_id = ?"
+	String update_<%=cid%> = ""
+		+ " update file_harvest "
+		+ "   set last_moddate_harvested = ?,"
+		+ "   last_change_type = ?,"
+		+ "   last_change_run = (select last_run_no from index_job where name = ?)"
+		+ " where harvest_type = ?"
+		+ " and file_id = ?"
 	;
 
 	java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>

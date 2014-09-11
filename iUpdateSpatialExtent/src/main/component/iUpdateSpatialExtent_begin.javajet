@@ -64,10 +64,10 @@ String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
         // has any resource changed during the harvest
         String changeQuery = ""
           + " select exists ("
-          + " select 1"
-          + " from indexed_file"
-          + " left join file_harvest on indexed_file.id = file_harvest.file_id"
-          + " where file_harvest.last_change_run = (select last_run_no from index_job where name = ? )"
+          + "	select 1"
+          + "	from indexed_file"
+          + "	left join file_harvest on indexed_file.id = file_harvest.file_id"
+          + "	where file_harvest.last_change_run = (select last_run_no from index_job where name = ? )"
           + " ) as changed"
         ;
 

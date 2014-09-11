@@ -20,14 +20,14 @@
 %>
 
 	String dbquery_<%=cid%> = ""
-		+ " select indexed_file.id, indexed_file.url, indexed_file.modified "
-		+ " from indexed_file "
-		+ " JOIN file_harvest on (file_harvest.file_id = indexed_file.id) "
-		+ " JOIN index_job on (indexed_file.job_id = index_job.id) "
-		+ " where indexed_file.last_indexed_run <> index_job.last_run_no "
-		+ " and file_harvest.last_change_type <> 'deleted' "
-		+ " and index_job.name = ? "
-		+ " and file_harvest.harvest_type = ? "
+		+ " select indexed_file.id, indexed_file.url, indexed_file.modified"
+		+ "   from indexed_file"
+		+ "   join file_harvest on (file_harvest.file_id = indexed_file.id)"
+		+ "   join index_job on (indexed_file.job_id = index_job.id)"
+		+ " where indexed_file.last_indexed_run <> index_job.last_run_no"
+		+ "   and file_harvest.last_change_type <> 'deleted'"
+		+ "   and index_job.name = ?"
+		+ "   and file_harvest.harvest_type = ?"
 	;
 
 	<%@ include file="../templates/Resources/ComponentBegin.javajet"%>
