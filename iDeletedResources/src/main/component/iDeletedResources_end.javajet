@@ -1,25 +1,34 @@
-<%@ jet 
+<%@ jet
 	imports="
-		org.talend.core.model.process.INode 
+		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-	" 
+	"
 %>
-<% 
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    String cid = node.getUniqueName();	
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
 %>
-	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%> 
-	
-						// Delete form harvested files
-						
-						String delete_<%=cid%> = "delete from file_harvest "
-								+ "WHERE harvest_type = ? AND file_id = ?";
-								
-						java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>
-								.prepareStatement(delete_<%=cid%>);
-								
-						pstmt_<%=cid%>.setString(1, harvestType_<%=cid%>);
-						pstmt_<%=cid%>.setLong(2, id_<%=cid%>);
-						
-	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%> 
+	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%>
+
+
+	String update_<%=cid%> = ""
+		+ " update file_harvest"
+		+ " set last_moddate_harvested = ?,"
+		+ "   last_change_type = 'deleted',"
+		+ "   last_change_run = (select last_run_no from index_job where name = ?)"
+		+ " where harvest_type = ?"
+		+ " and file_id = ?"
+	;
+
+	java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>
+		.prepareStatement(update_<%=cid%>);
+
+	pstmt_<%=cid%>.setTimestamp(1, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
+	pstmt_<%=cid%>.setString(2, jobName_<%=cid%>);
+	pstmt_<%=cid%>.setString(3, harvestType_<%=cid%>);
+	pstmt_<%=cid%>.setLong(4, id_<%=cid%>);
+
+	System.out.format( "* iDeleteResources delete resource file_id=%d\n", id_<%=cid%> );
+
+	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%>

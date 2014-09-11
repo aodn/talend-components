@@ -1,26 +1,46 @@
-<%@ jet 
+<%@ jet
 	imports="
-		org.talend.core.model.process.INode 
+		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
-	" 
+	"
 %>
-<% 
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    String cid = node.getUniqueName();	
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
 %>
-	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%> 
-	
-						// Add record to harvested files
-						
-						String insert_<%=cid%> = "insert into file_harvest "
-								+ " (harvest_type, file_id, last_moddate_harvested) VALUES (?,?,?)";
-								
-						java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>
-								.prepareStatement(insert_<%=cid%>);
-								
-						pstmt_<%=cid%>.setString(1, harvestType_<%=cid%>);
-						pstmt_<%=cid%>.setLong(2, id_<%=cid%>);
-						pstmt_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
-						
-	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%> 
+	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%>
+
+
+	String insert_<%=cid%> = ""
+		+ " with new_data( file_id, harvest_type, last_moddate_harvested, last_change_run )"
+		+ "   as ( values( ?, ?, ?::timestamptz, (select last_run_no from index_job where name = ? ) )"
+		+ " ),"
+		+ " updated as ("
+		+ "   update file_harvest set last_change_type = 'readded',"
+		+ "     last_change_run = (select last_change_run from new_data),"
+		+ "     last_moddate_harvested = (select last_moddate_harvested from new_data)"
+		+ "   where file_id = (select file_id from new_data)"
+		+ "   and harvest_type = (select harvest_type from new_data)"
+		+ "	  returning file_harvest.*"
+		+ " )"
+		+ " insert into file_harvest (file_id, harvest_type, last_moddate_harvested, last_change_type, last_change_run)"
+		+ " select file_id, harvest_type, last_moddate_harvested, 'new', last_change_run"
+		+ "   from new_data where not exists ("
+		+ "     select 1 from file_harvest"
+		+ "     where file_id = (select file_id from new_data)"
+		+ "     and harvest_type = (select harvest_type from new_data)"
+		+ "   )"
+	;
+
+	java.sql.PreparedStatement pstmt_<%=cid%> = conn_<%=cid%>
+		.prepareStatement(insert_<%=cid%>);
+
+	pstmt_<%=cid%>.setLong(1, id_<%=cid%>);
+	pstmt_<%=cid%>.setString(2, harvestType_<%=cid%>);
+	pstmt_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
+	pstmt_<%=cid%>.setString(4, jobName_<%=cid%>);
+
+	System.out.format( "* iNewResources new/readded resource file_id=%d\n", id_<%=cid%> );
+
+	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%>
