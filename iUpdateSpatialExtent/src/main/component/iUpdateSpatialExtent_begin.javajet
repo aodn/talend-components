@@ -146,6 +146,12 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
         org.jdom.input.SAXBuilder saxBuilder_<%=cid%> = new org.jdom.input.SAXBuilder();
         org.jdom.Document doc_<%=cid%> = saxBuilder_<%=cid%>.build(new java.io.StringReader(wrappedGml_<%=cid%>));
+        
+        // Get srsName for use in creating gmd:polygon's
+        
+        org.jdom.xpath.XPath srsElementXpath_<%=cid%> = org.jdom.xpath.XPath.newInstance("//*[@srsName]");
+        org.jdom.Element srsNameElement_<%=cid%> = (org.jdom.Element) srsElementXpath_<%=cid%>.selectSingleNode(doc_<%=cid%>);
+        String srsName_<%=cid%> = srsNameElement_<%=cid%>.getAttributeValue("srsName");
 
         // Convert included polygons into a list of iso19115/iso19139 gmd:geographicElements
 
@@ -158,6 +164,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
         org.jdom.Namespace gmdNs = org.jdom.Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
 
         for (org.jdom.Element polygon : polygons_<%=cid%>) {
+            polygon.setAttribute("srsName", srsName_<%=cid%>);
             org.jdom.Element polygonElement = new org.jdom.Element("polygon", gmdNs).addContent((org.jdom.Element) polygon.clone());;
             org.jdom.Element exBoundingPolygonElement = new org.jdom.Element("EX_BoundingPolygon", gmdNs).addContent(polygonElement);
             org.jdom.Element geographicElement = new org.jdom.Element("geographicElement", gmdNs).addContent(exBoundingPolygonElement);
