@@ -149,6 +149,15 @@
         </addColumn>
     </changeSet>
 
+    <!-- default last_change_type to new for pre-existing data -->
+
+    <changeSet author="craigj" id="default-last-change-type">
+        <update tableName="file_harvest">
+            <column name="last_change_type" value="new"/>
+            <where>last_change_type is null</where>
+        </update>
+    </changeSet>
+
     <!-- drop views -->
 
     <changeSet author="julian" id="1354481764331-33">
