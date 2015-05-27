@@ -75,8 +75,8 @@
 	</ADVANCED_PARAMETERS>
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="netcdf" MODULE="netcdfAll-4.2.jar" REQUIRED="true" />
-			<IMPORT NAME="nc-ext" MODULE="talend-dap-0.0.1-SNAPSHOT.jar" REQUIRED="true" />
+			<IMPORT NAME="netcdf" MODULE="netcdf-4.2.35.jar" REQUIRED="true" />
+			<IMPORT NAME="nc-ext" MODULE="iNetCDFInput-1.0.0-SNAPSHOT.jar" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 	<RETURNS>
