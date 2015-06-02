@@ -9,33 +9,33 @@ import java.util.Set;
 // corresponding single dimension vector and convert to index values for those ranges
 
 public class IndexValuesIterator implements Iterator<Set<IndexValue>> {
-	private long next = 0L;
-	private long size;
-	
-	private IndexValuesConverter indexConverter;
-	
-	public IndexValuesIterator(Set<IndexRange> indexRanges) {
-		// Instantiate converter for supplied index range
-		indexConverter = new IndexValuesConverter(indexRanges);
-		
-		// Calculate size of single dimension vector 
-		size = 1L;
-		
-		for (IndexRange indexRange : indexRanges ) {
-			size *= indexRange.getSize();
-		}
-	}
+    private long next = 0L;
+    private long size;
+    
+    private IndexValuesConverter indexConverter;
+    
+    public IndexValuesIterator(Set<IndexRange> indexRanges) {
+        // Instantiate converter for supplied index range
+        indexConverter = new IndexValuesConverter(indexRanges);
+        
+        // Calculate size of single dimension vector 
+        size = 1L;
+        
+        for (IndexRange indexRange : indexRanges ) {
+            size *= indexRange.getSize();
+        }
+    }
 
-	public boolean hasNext() {
-		return next < size;
-	}
+    public boolean hasNext() {
+        return next < size;
+    }
 
-	public Set<IndexValue> next() {
-		return indexConverter.getArrayIndexValues(next++);
-	}
+    public Set<IndexValue> next() {
+        return indexConverter.getArrayIndexValues(next++);
+    }
 
-	public void remove() {
-		// Not Implemented
-	}
+    public void remove() {
+        // Not Implemented
+    }
 }
 
