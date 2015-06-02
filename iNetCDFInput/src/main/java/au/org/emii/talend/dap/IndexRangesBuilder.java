@@ -57,6 +57,15 @@ public class IndexRangesBuilder {
         
         while (iterator.hasNext()) {
             Dimension dimension = iterator.next();
+            addDimension(dimension);
+        }
+    }
+    
+    public void addStringDimensions(Variable variable) {
+        Iterator<Dimension> iterator = variable.getDimensions().listIterator();
+        
+        while (iterator.hasNext()) {
+            Dimension dimension = iterator.next();
             
             // Ignore last dimension on String/Char this is the string index
             if (variable.getDataType().isString() && !iterator.hasNext()) break;

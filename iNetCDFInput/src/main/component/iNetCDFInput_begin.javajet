@@ -154,6 +154,7 @@ for (int i=0; i < conns.size(); i++) {
         
         for (IMetadataColumn column : listColumns) {
             String columnName = column.getLabel();
+            String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 %>
             String <%=cid %>_name_<%=connName %>_<%=columnName %> = columnNameMapping_<%=cid %>.get("<%=column.getLabel() %>");
             String <%=cid %>_type_<%=connName %>_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=column.getLabel() %>");
@@ -161,7 +162,13 @@ for (int i=0; i < conns.size(); i++) {
             if (<%=cid %>_type_<%=connName %>_<%=columnName %>.equals("VARIABLE") && <%=cid %>_name_<%=connName %>_<%=columnName %> != null) {
                 ucar.nc2.Variable variable = ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=connName %>_<%=columnName %>);
                 if (variable != null) {
+
+                <%  if (ttg.equals("String")) { %>
+                    indexRangesBuilder_<%=cid %>.addStringDimensions(variable);
+                <%  } else { %>
                     indexRangesBuilder_<%=cid %>.addDimensions(variable);
+                <%  } %>
+
                 }
             }
 <%            
