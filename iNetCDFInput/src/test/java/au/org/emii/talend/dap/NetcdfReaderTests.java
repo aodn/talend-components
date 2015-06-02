@@ -9,13 +9,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
@@ -24,114 +21,225 @@ import au.org.emii.talend.dap.utils.FileUtils;
 
 public class NetcdfReaderTests {
     
-    private static final String QC_TEST_DATA = "0123456789";
-    private static final String[] PARAMETER_DATA = { 
-        "TEMP                                                            ",
-        "PSAL                                                            ",
-        "PRES                                                            "
+    private static final String[] ARGO_QC_TEST_DATA = {
+        "0123456789"
     };
-    private File tempFile;
-    private NetcdfFileWriteable ncfile;
 
-    @Before
-    public void buildTestFile() throws IOException, InvalidRangeException {
-        tempFile = File.createTempFile("test", ".nc");
-        ncfile = NetcdfFileWriteable.createNew(tempFile.getAbsolutePath(), false);
-        
-        Dimension timeDim = ncfile.addDimension("time", QC_TEST_DATA.length());
-        Dimension profileDim = ncfile.addDimension("profile", 1);
+    private static final String[] ARGO_PARAMETER_TEST_DATA = { 
+        "TEMP",
+        "PSAL",
+        "PRES"
+    };
 
-        ArrayList<Dimension> presQCdims = new ArrayList<Dimension>();
-        presQCdims.add(profileDim);
-        presQCdims.add(timeDim);
-
-        ncfile.addVariable("pres_qc", DataType.CHAR, presQCdims);
-
-        Dimension paramDim = ncfile.addDimension("param", 3);
-        Dimension string64Dim = ncfile.addDimension("string64", 64);
-        
-        ArrayList<Dimension> parameterDims = new ArrayList<Dimension>();
-        parameterDims.add(paramDim);
-        parameterDims.add(string64Dim);
-        
-        ncfile.addVariable("parameter", DataType.CHAR, parameterDims);
-        
-        ncfile.create();
-        
-        ArrayChar presQCArray = new ArrayChar.D2(profileDim.getLength(), timeDim.getLength());
-        presQCArray.setString(0, QC_TEST_DATA);
-        
-        ncfile.write("pres_qc", presQCArray);
-        
-        ArrayChar parameterArray = new ArrayChar.D2(paramDim.getLength(), string64Dim.getLength());
-        for (int i=0; i<PARAMETER_DATA.length; i++) {
-            parameterArray.setString(i, PARAMETER_DATA[i]);
-        }
-
-        ncfile.write("parameter", parameterArray);
-        
-        ncfile.flush();
-    }
+    private static final String[] ABOS_QC_TEST_DATA = {
+        "0",
+        "1",
+        "2",
+        "3"
+    };
     
-    @After
-    public void deleteTestFile() {
-        FileUtils.closeQuietly(ncfile);
-        
-        if (tempFile != null) {
-            tempFile.delete();
-        }
+    private static final String ABOS_STATION_NAME_TEST_DATA = "Pulse-Pulse-9-2012";
+
+    @Test
+    public void argoQCTest() throws IOException {
+        test2DGetCharAndGetString(ARGO_QC_TEST_DATA);
     }
 
     @Test
-    public void readCharVariableAsString() throws IOException {
-        Variable variable = ncfile.findVariable("pres_qc");
-        NetcdfReader reader = new NetcdfReader(variable);
-        Set<IndexValue> indexValues = new HashSet<IndexValue>();
-        indexValues.add(new IndexValue("profile", 0));
-        String result = reader.getString(indexValues);
-        assertThat(result, is(QC_TEST_DATA));
+    public void argoParameterTest() throws IOException {
+        test2DGetCharAndGetString(ARGO_PARAMETER_TEST_DATA);
     }
 
     @Test
-    public void readCharVariableAsChar() throws IOException {
-        Variable variable = ncfile.findVariable("pres_qc");
-        NetcdfReader reader = new NetcdfReader(variable);
-
-        for (int i=0; i<QC_TEST_DATA.length(); i++) {
-            Set<IndexValue> indexValues = new HashSet<IndexValue>();
-            indexValues.add(new IndexValue("profile",0));
-            indexValues.add(new IndexValue("time",i));
-            char result = reader.getChar(indexValues);
-            assertThat(result, is(QC_TEST_DATA.charAt(i)));
-        }
+    public void abosQCTest() throws IOException {
+        test2DGetCharAndGetString(ABOS_QC_TEST_DATA);
     }
     
     @Test
-    public void readStringVariableAsString() throws IOException {
-        Variable variable = ncfile.findVariable("parameter");
-        NetcdfReader reader = new NetcdfReader(variable);
+    public void abosStationNameTest() throws IOException {
+        test1DGetCharAndGetString(ABOS_STATION_NAME_TEST_DATA);
+    }
 
-        for (int i=0; i<PARAMETER_DATA.length; i++) {
-            Set<IndexValue> indexValues = new HashSet<IndexValue>();
-            indexValues.add(new IndexValue("param", i));
-            String result = reader.getString(indexValues);
-            assertThat(result, is(PARAMETER_DATA[i]));
+    private void test2DGetCharAndGetString(String[] data) throws IOException {
+        create2DVariableAndAssertThatGetStringMatchesData(data);
+        create2DVariableAndAssertThatGetCharMatchesData(data);
+    }
+
+    private void test1DGetCharAndGetString(String data) throws IOException {
+        create1DVariableAndAssertThatGetStringMatchesData(data);
+        create1DVariableAndAssertThatGetCharMatchesData(data);
+    }
+
+    private void create2DVariableAndAssertThatGetStringMatchesData(
+            String[] data) throws IOException {
+        NetcdfFileWriteable ncFile = createFileWith2DCharVariable(data);
+        try {
+            assertThatGetStringMatchesData2D(ncFile, data);
+        } finally {
+            closeAndDelete(ncFile);
         }
     }
 
-    @Test
-    public void readStringVariableAsChar() throws IOException {
-        Variable variable = ncfile.findVariable("parameter");
+    private void create2DVariableAndAssertThatGetCharMatchesData(
+            String[] data) throws IOException {
+        NetcdfFileWriteable ncFile = createFileWith2DCharVariable(data);
+        try {
+            assertThatGetCharMatchesData2D(ncFile, data);
+        } finally {
+            closeAndDelete(ncFile);
+        }
+    }
+
+    private void create1DVariableAndAssertThatGetStringMatchesData(
+            String data) throws IOException {
+        NetcdfFileWriteable ncFile = createFileWith1DCharVariable(data);
+        try {
+            assertThatGetStringMatchesData1D(ncFile, data);
+        } finally {
+            closeAndDelete(ncFile);
+        }
+    }
+
+    private void create1DVariableAndAssertThatGetCharMatchesData(
+            String data) throws IOException {
+        NetcdfFileWriteable ncFile = createFileWith1DCharVariable(data);
+        try {
+            assertThatGetCharMatchesData1D(ncFile, data);
+        } finally {
+            closeAndDelete(ncFile);
+        }
+    }
+
+    private void assertThatGetCharMatchesData2D(NetcdfFileWriteable ncfile, String[] data) 
+            throws IOException {
+        Variable variable = ncfile.findVariable("variable");
         NetcdfReader reader = new NetcdfReader(variable);
 
-        for (int i=0; i<PARAMETER_DATA.length; i++) {
-            for (int j=0; j<PARAMETER_DATA[i].length(); j++) {
+        for (int i=0; i < data.length; i++) {
+            for (int j=0; j < data[i].length(); j++) {
                 Set<IndexValue> indexValues = new HashSet<IndexValue>();
-                indexValues.add(new IndexValue("param", i));
-                indexValues.add(new IndexValue("string64", j));
+                indexValues.add(new IndexValue("dim1", i));
+                indexValues.add(new IndexValue("dim2", j));
                 char result = reader.getChar(indexValues);
-                assertThat(result, is(PARAMETER_DATA[i].charAt(j)));
+                assertThat(result, is(data[i].charAt(j)));
             }
         }
     }
+
+    private void assertThatGetStringMatchesData2D(NetcdfFileWriteable ncfile, String[] data)
+            throws IOException {
+        Variable variable = ncfile.findVariable("variable");
+        NetcdfReader reader = new NetcdfReader(variable);
+
+        for (int i=0; i < data.length; i++) {
+            Set<IndexValue> indexValues = new HashSet<IndexValue>();
+            indexValues.add(new IndexValue("dim1", i));
+            String result = reader.getString(indexValues);
+            assertThat(result, is(data[i]));
+        }
+    }
+
+    private void assertThatGetCharMatchesData1D(NetcdfFileWriteable ncfile, String data) 
+            throws IOException {
+        Variable variable = ncfile.findVariable("variable");
+        NetcdfReader reader = new NetcdfReader(variable);
+
+        for (int i=0; i < data.length(); i++) {
+            Set<IndexValue> indexValues = new HashSet<IndexValue>();
+            indexValues.add(new IndexValue("dim1", i));
+            char result = reader.getChar(indexValues);
+            assertThat(result, is(data.charAt(i)));
+        }
+    }
+
+    private void assertThatGetStringMatchesData1D(NetcdfFileWriteable ncfile, String data)
+            throws IOException {
+        Variable variable = ncfile.findVariable("variable");
+        NetcdfReader reader = new NetcdfReader(variable);
+        Set<IndexValue> indexValues = new HashSet<IndexValue>();
+        String result = reader.getString(indexValues);
+        assertThat(result, is(data));
+    }
+
+    private void closeAndDelete(NetcdfFileWriteable ncFile) {
+        File tempFile = new File(ncFile.getLocation());
+        FileUtils.closeQuietly(ncFile);
+        tempFile.delete();
+    }
+
+
+    private NetcdfFileWriteable createFileWith2DCharVariable(String[] data)
+            throws IOException {
+        File tempFile = File.createTempFile("test", ".nc");
+        
+        try {
+            NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(tempFile.getAbsolutePath(), false);
+
+            Dimension dim1 = ncfile.addDimension("dim1", data.length);
+            Dimension dim2 = ncfile.addDimension("dim2", calcMaxLength(data));
+            
+            ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
+            dimensions.add(dim1);
+            dimensions.add(dim2);
+            
+            ncfile.addVariable("variable", DataType.CHAR, dimensions);
+            
+            ncfile.create();
+            
+            ArrayChar dataArray = new ArrayChar.D2(dim1.getLength(), dim2.getLength());
+            for (int i=0; i < data.length; i++) {
+                dataArray.setString(i, data[i]);
+            }
+
+            ncfile.write("variable", dataArray);
+            
+            ncfile.flush();
+            
+            return ncfile;
+        } catch (Exception e) {
+            tempFile.delete();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private NetcdfFileWriteable createFileWith1DCharVariable(String data)
+            throws IOException {
+        File tempFile = File.createTempFile("test", ".nc");
+        
+        try {
+            NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(tempFile.getAbsolutePath(), false);
+
+            Dimension dim1 = ncfile.addDimension("dim1", data.length());
+            
+            ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
+            dimensions.add(dim1);
+            
+            ncfile.addVariable("variable", DataType.CHAR, dimensions);
+            
+            ncfile.create();
+            
+            ArrayChar dataArray = new ArrayChar.D1(dim1.getLength());
+            dataArray.setString(data);
+
+            ncfile.write("variable", dataArray);
+            
+            ncfile.flush();
+            
+            return ncfile;
+        } catch (Exception e) {
+            tempFile.delete();
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private int calcMaxLength(String[] parameterData) {
+        int result = 0;
+        for (String element : parameterData) {
+            if (element.length() > result) {
+                result = element.length();
+            }
+        }
+        return result;
+    }
+
 }
