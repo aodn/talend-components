@@ -70,7 +70,7 @@ public class NetcdfReader {
 
     public String getString(Set<IndexValue> indexValues) {
         if (data instanceof ArrayChar && data.getShape().length > 0) {
-            index.setCurrentCounter(indexValuesConverter.getVectorIndexValue(indexValues)*data.getShape()[data.getRank()-1]);
+            index.setCurrentCounter(indexValuesConverter.getVectorIndexValue(indexValues));
             return ((ArrayChar)data).getString(index);
         } else {
             return data.getObject(indexValuesConverter.getVectorIndexValue(indexValues)).toString();
