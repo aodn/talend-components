@@ -71,5 +71,12 @@
 	  </plugins>
     </pluginManagement>
   </build>
+
+  <repositories>
+    <repository>
+      <id>jenkins</id>
+      <url>https://kenkins.aodn.org.au/plugin/repository/everything</url>
+    </repository>
+  </repositories>
   
 </project>
