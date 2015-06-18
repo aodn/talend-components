@@ -15,8 +15,10 @@
   <dependencies>
     <dependency>
       <groupId>edu.ucar.unidata</groupId>
-      <artifactId>netcdf</artifactId>
-      <version>4.2.35</version>
+      <artifactId>netcdfAll</artifactId>
+      <version>4.2</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/component/netcdfAll-4.2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

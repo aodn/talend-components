@@ -36,14 +36,14 @@ public class IndexRangesBuilder {
         while (dArrayDimensions.hasMoreElements()) {
             DArrayDimension dArrayDimension = dArrayDimensions.nextElement();
             
-            String name = dArrayDimension.getEncodedName();
+            String name = dArrayDimension.getName();
             
             IndexRange index = getIndexRange(name);
             
             if (index == null) {
                 indexRanges.add(new IndexRange(dArrayDimension));
             } else if (dArrayDimension.getSize() != index.getSize()) {
-                throw new IllegalArgumentException("Size of dimension '" + name + "' for variable '" + dArray.getEncodedName() + "' incompatible with existing index");
+                throw new IllegalArgumentException("Size of dimension '" + name + "' for variable '" + dArray.getName() + "' incompatible with existing index");
             }
         }
     }
