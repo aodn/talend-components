@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<COMPONENT>
+    <HEADER
+        PLATEFORM="ALL"
+        SERIAL=""
+        VERSION="0.102"
+        STATUS="ALPHA"
+
+        COMPATIBILITY="ALL"
+        AUTHOR="IMOS"
+        RELEASE_DATE="20150915"
+        STARTABLE="true"
+
+        DATA_AUTO_PROPAGATE="false"
+        HAS_CONDITIONAL_OUTPUTS="true"
+    >
+        <SIGNATURE/>
+    </HEADER>
+
+    <FAMILIES>
+        <FAMILY>File/Management</FAMILY>
+    </FAMILIES>
+
+    <DOCUMENTATION>
+        <URL/>
+    </DOCUMENTATION>
+
+    <CONNECTORS>
+        <CONNECTOR CTYPE="FLOW" NAME="ADDED_MODIFIED" MAX_INPUT="0" MAX_OUTPUT="1"/>
+        <CONNECTOR CTYPE="FLOW" NAME="REMOVED" MAX_INPUT="0" MAX_OUTPUT="1"/>
+
+        <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1"/>
+        <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="COMPONENT_OK"/>
+        <CONNECTOR CTYPE="COMPONENT_ERROR"/>
+        <CONNECTOR CTYPE="RUN_IF"/>
+    </CONNECTORS>
+
+    <PARAMETERS>
+        <PARAMETER
+            NAME="MANIFEST_FILENAME"
+            FIELD="FILE"
+            NUM_ROW="1"
+            REQUIRED="true"
+            REPOSITORY_VALUE="FILE_PATH" >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="BASE_PATH"
+            FIELD="TEXT"
+            NUM_ROW="1"
+            REQUIRED="true" >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="SCHEMA_ADDED_MODIFIED"
+            FIELD="SCHEMA_TYPE"
+            READONLY="true"
+            REQUIRED="true"
+            CONTEXT="ADDED_MODIFIED"
+            NUM_ROW="2" >
+            <TABLE READONLY="true">
+                <COLUMN NAME="filePath" TYPE="id_String" READONLY="false" LENGTH="1024"/>
+            </TABLE>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="SCHEMA_REMOVED"
+            FIELD="SCHEMA_TYPE"
+            READONLY="true"
+            REQUIRED="true"
+            CONTEXT="REMOVED"
+            NUM_ROW="2" >
+            <TABLE READONLY="true">
+                <COLUMN NAME="filePath" TYPE="id_String" READONLY="false" LENGTH="1024"/>
+            </TABLE>
+        </PARAMETER>
+    </PARAMETERS>
+
+    <CODEGENERATION></CODEGENERATION>
+
+    <RETURNS>
+        <RETURN AVAILABILITY="AFTER" NAME="NB_LINE" TYPE="id_Integer"/>
+    </RETURNS>
+</COMPONENT>

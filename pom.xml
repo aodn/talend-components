@@ -19,6 +19,7 @@
     <module>iIndexResources</module>
     <module>iIndexThreddsResources</module>
     <module>iMakeLine</module>
+    <module>iManifestFileList</module>
     <module>iModifiedResources</module>
     <module>iNetCDFGlobalAttribute</module>
     <module>iNetCDFGlobalAttributes</module>

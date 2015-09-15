@@ -1,0 +1,50 @@
+<%@ jet
+    imports="
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.process.EConnectionType
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        java.util.List
+        java.util.Map
+    "
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+final INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+class CodeGenerator {
+    public IConnection getFirstConnectionByName(String name) {
+        IConnection returnConn = null;
+        List< ? extends IConnection> conns = node.getOutgoingConnections(name);
+        if (conns != null && conns.size() > 0) {
+            returnConn = conns.get(0);
+        }
+
+        return returnConn;
+    }
+}
+
+CodeGenerator cg = new CodeGenerator();
+IConnection addedModifiedConn = cg.getFirstConnectionByName("ADDED_MODIFIED");
+IConnection removedConn = cg.getFirstConnectionByName("REMOVED");
+%>
+
+    // Setting a connection to null means that the row will not be propagated to the next component.
+    <%= addedModifiedConn.getName() %> = null;
+    <%= removedConn.getName() %> = null;
+
+    if (fileExists) {
+        <%= addedModifiedConn.getName() %> = new  <%= addedModifiedConn.getName() %>Struct();
+        <%= addedModifiedConn.getName() %>.filePath = currentFileName_<%=cid%>;
+    }
+    else {
+        <%= removedConn.getName() %> = new  <%= removedConn.getName() %>Struct();
+        <%= removedConn.getName() %>.filePath = currentFileName_<%=cid%>;
+    }
