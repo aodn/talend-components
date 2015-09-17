@@ -10,6 +10,7 @@
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.metadata.types.JavaTypesManager
         org.talend.core.model.metadata.types.JavaType
+        java.util.HashMap
         java.util.List
         java.util.Map
     "
@@ -32,19 +33,27 @@ class CodeGenerator {
 }
 
 CodeGenerator cg = new CodeGenerator();
-IConnection addedModifiedConn = cg.getFirstConnectionByName("ADDED_MODIFIED");
-IConnection removedConn = cg.getFirstConnectionByName("REMOVED");
+
+Map<IConnection, Boolean> connMap = new HashMap<IConnection, Boolean>();
+connMap.put(cg.getFirstConnectionByName("ADDED_MODIFIED"), true);
+connMap.put(cg.getFirstConnectionByName("REMOVED"), false);
+
+for (Map.Entry<IConnection, Boolean> entry : connMap.entrySet()) {
+    IConnection conn = entry.getKey();
+    Boolean writeIfExists =entry.getValue();
+
+    if (conn != null) {
 %>
 
-    // Setting a connection to null means that the row will not be propagated to the next component.
-    <%= addedModifiedConn.getName() %> = null;
-    <%= removedConn.getName() %> = null;
+        // Setting a connection to null means that the row will not be propagated to the next component.
+        <%= conn.getName() %> = null;
 
-    if (fileExists) {
-        <%= addedModifiedConn.getName() %> = new  <%= addedModifiedConn.getName() %>Struct();
-        <%= addedModifiedConn.getName() %>.filePath = currentFileName_<%=cid%>;
+        if (<%= writeIfExists %> == fileExists) {
+            <%= conn.getName() %> = new  <%= conn.getName() %>Struct();
+            <%= conn.getName() %>.filePath = currentFileName_<%=cid%>;
+        }
+
+<%
     }
-    else {
-        <%= removedConn.getName() %> = new  <%= removedConn.getName() %>Struct();
-        <%= removedConn.getName() %>.filePath = currentFileName_<%=cid%>;
-    }
+}
+%>
