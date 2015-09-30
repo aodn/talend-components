@@ -1,0 +1,53 @@
+<%@ jet 
+    imports="
+        org.talend.core.model.process.INode 
+        org.talend.core.model.process.ElementParameterParser 
+        org.talend.core.model.metadata.IMetadataTable 
+        org.talend.core.model.metadata.IMetadataColumn 
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        java.util.List 
+        java.util.Map
+    " 
+%>
+<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+
+    String cid = node.getUniqueName();
+    String cidForward = "";
+
+    String dbhost = ElementParameterParser.getValue(node, "__HOST__");
+    String dbport = ElementParameterParser.getValue(node, "__PORT__");
+    String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+    String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbuser = ElementParameterParser.getValue(node, "__USER__");
+    String dbpass = ElementParameterParser.getValue(node, "__PASS__");
+
+    String userName = (dbuser != null && dbuser.trim().length() == 0)? "null":dbuser;
+    String password = (dbpass != null && dbpass.trim().length() == 0)? "null":dbpass;
+
+    String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
+    String manifestFilename = ElementParameterParser.getValue(node, "__MANIFEST_FILENAME__");
+    String basePath = ElementParameterParser.getValue(node, "__BASE_PATH__");
+%>
+    au.org.emii.talend.updateindex.Parameters params_<%=cid%> = new au.org.emii.talend.updateindex.Parameters();
+
+    params_<%=cid%>.dbhost = <%=dbhost%>;
+    params_<%=cid%>.dbport = <%=dbport%>;
+    params_<%=cid%>.dbschema = <%=dbschema%>;
+    params_<%=cid%>.dbname = <%=dbname%>;
+    params_<%=cid%>.userName = <%=userName%>;
+    params_<%=cid%>.password = <%=password%>;
+    params_<%=cid%>.jobName = <%=jobName%>;
+    params_<%=cid%>.manifestFilename = <%=manifestFilename%>;
+    params_<%=cid%>.basePath = <%=basePath%>;
+
+    au.org.emii.talend.updateindex.Component component_<%=cid%> = new au.org.emii.talend.updateindex.Component();
+
+    au.org.emii.talend.updateindex.Results results_<%=cid%> = component_<%=cid%>.run(params_<%=cid%>);
+
+    globalMap.put("<%=cidForward %>_NB_FILE", results_<%=cid%>.processedFileCount);

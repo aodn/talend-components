@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="talend" id="1354478507434-1">
+        <createTable tableName="file_harvest">
+            <column autoIncrement="true" name="id" type="bigserial">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="file_harvest_pk"/>
+            </column>
+            <column name="harvest_type" type="VARCHAR(8)"/>
+            <column name="file_id" type="int8"/>
+            <column name="last_moddate_harvested" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="talend" id="1354478507434-2">
+        <createTable tableName="index_job">
+            <column autoIncrement="true" name="id" type="serial">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="index_job_pk"/>
+            </column>
+            <column name="name" type="VARCHAR(100)"/>
+            <column name="last_run_no" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_run_date" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="talend" id="1354478507434-3">
+        <createTable tableName="indexed_file">
+            <column autoIncrement="true" name="id" type="serial">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="indexed_file_pk"/>
+            </column>
+            <column name="job_id" type="int8"/>
+            <column name="url" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="modified" type="TIMESTAMP WITH TIME ZONE"/>
+            <column defaultValueComputed="now()" name="first_indexed" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="last_indexed" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="last_indexed_run" type="int4"/>
+        </createTable>
+    </changeSet>
+    
+    <!-- include resource size in indexed information -->
+
+    <changeSet author="craigj" id="8d2ccf90-46a1-11e3-8f96-0800200c9a66">
+        <addColumn tableName="indexed_file">
+            <column name="size" type="double precision"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="talend" id="1354481764331-21">
+        <addUniqueConstraint columnNames="file_id" constraintName="file_harvest_file_id_unique" deferrable="false" disabled="false" initiallyDeferred="false" tableName="file_harvest"/>
+    </changeSet>
+
+    <changeSet author="talend" id="1354481764331-22">
+        <addUniqueConstraint columnNames="name" constraintName="index_job_name_uc" deferrable="false" disabled="false" initiallyDeferred="false" tableName="index_job"/>
+    </changeSet>
+
+    <changeSet author="talend" id="1354481764331-23">
+        <addUniqueConstraint columnNames="job_id, url" constraintName="indexed_file_job_url_uc" deferrable="false" disabled="false" initiallyDeferred="false" tableName="indexed_file"/>
+    </changeSet>
+
+    <!-- can harvest the same file in different ways -->
+
+    <changeSet author="craigj" id="1354481764331-24">
+        <dropUniqueConstraint constraintName="file_harvest_file_id_unique"  tableName="file_harvest"/>
+    </changeSet>
+
+    <changeSet author="craigj" id="1354481764331-25">
+        <addUniqueConstraint columnNames="harvest_type, file_id" constraintName="file_harvest_harvest_type_file_id_unique" deferrable="false" disabled="false" initiallyDeferred="false" tableName="file_harvest"/>
+    </changeSet>
+    
+    <!-- add convenience views -->
+    
+   <changeSet author="talend" id="1354481764331-26">
+        <createView viewName="new_resource">
+            SELECT index_job.name as job_name, file_harvest.harvest_type, indexed_file.id, indexed_file.url, indexed_file.modified
+			  FROM indexed_file 
+			  LEFT OUTER JOIN file_harvest on (file_harvest.file_id = indexed_file.id) 
+			  JOIN index_job on (indexed_file.job_id = index_job.id and indexed_file.last_indexed_run = index_job.last_run_no) 
+			 WHERE file_harvest.file_id is null;        
+        </createView>
+    </changeSet>
+    
+   <changeSet author="talend" id="1354481764331-28">
+        <createView viewName="deleted_resource">
+            select index_job.name as job_name, file_harvest.harvest_type, indexed_file.id, indexed_file.url, indexed_file.modified 
+			  from indexed_file 
+			  JOIN file_harvest on (file_harvest.file_id = indexed_file.id) 
+			  JOIN index_job on (indexed_file.job_id = index_job.id) 
+			 where indexed_file.last_indexed_run &lt;&gt; index_job.last_run_no;
+		</createView>
+    </changeSet>
+    
+   <changeSet author="talend" id="1354481764331-30">
+        <createView viewName="current_resource">
+            select index_job.name as job_name, indexed_file.id, indexed_file.url, indexed_file.modified 
+			  from indexed_file 
+			  JOIN index_job on (indexed_file.job_id = index_job.id and indexed_file.last_indexed_run = index_job.last_run_no); 
+        </createView>
+    </changeSet>
+    
+   <changeSet author="talend" id="1354481764331-31">
+        <createView viewName="modified_resource">
+            SELECT index_job.name as job_name, file_harvest.harvest_type, indexed_file.id, indexed_file.url, indexed_file.modified
+			  FROM indexed_file 
+			  JOIN file_harvest on (file_harvest.file_id = indexed_file.id) 
+			  JOIN index_job on (indexed_file.job_id = index_job.id and indexed_file.last_indexed_run = index_job.last_run_no) 
+			 WHERE indexed_file.modified &lt;&gt; file_harvest.last_moddate_harvested;        
+        </createView>
+    </changeSet>
+    
+    <!-- migrate from pre component table structures (ANMN)-->
+    
+    <changeSet author="craigj" id="f911a3c0-fefd-11e2-b778-0800200c9a66">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="index_run"/>
+        </preConditions>
+        
+        <sql>insert into index_job (id, name, last_run_no, last_run_date)
+            select 1, 'index', run_no, run_date from index_run
+        </sql>
+        
+        <sql>insert into indexed_file (id, job_id, url, created, modified, first_indexed, last_indexed, last_indexed_run)
+            select id, 1, url, created, modified, first_indexed, last_indexed, last_index_run from file            
+        </sql>
+
+        <sql>select setval('indexed_file_id_seq', (select max(id) from indexed_file))</sql>
+        
+        <sql>insert into file_harvest (harvest_type, file_id, last_moddate_harvested)
+            select 'harvest', id, last_modified from file
+        </sql>
+        
+        <dropTable tableName="file"/>
+        
+        <dropTable tableName="index_run"/>
+    </changeSet>
+
+    <!-- details about changes to resources -->
+
+    <changeSet author="julian" id="1354481764331-32">
+        <addColumn tableName="file_harvest">
+            <column name="last_change_type" type="VARCHAR(8)"/>
+        </addColumn>
+
+        <addColumn tableName="file_harvest">
+            <column name="last_change_run" type="int4"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- default last_change_type to new for pre-existing data -->
+
+    <changeSet author="craigj" id="default-last-change-type">
+        <update tableName="file_harvest">
+            <column name="last_change_type" value="new"/>
+            <where>last_change_type is null</where>
+        </update>
+    </changeSet>
+
+    <!-- drop views -->
+
+    <changeSet author="julian" id="1354481764331-33">
+      <dropView viewName="new_resource"/>
+      <dropView viewName="deleted_resource"/>
+      <dropView viewName="current_resource"/>
+      <dropView viewName="modified_resource"/>
+    </changeSet>
+
+    <!-- add deleted flag to indexed_file -->
+
+    <changeSet author="craigj" id="add-deleted-flag-to-indexed-file">
+        <addColumn tableName="indexed_file">
+            <column name="deleted" type="boolean" defaultValue="false" value="false"/>
+        </addColumn>
+        <update tableName="indexed_file">
+            <column name="deleted" value="true"/>
+            <where>last_indexed_run &lt;&gt; (select last_run_no from index_job where index_job.id = job_id)</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
