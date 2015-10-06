@@ -12,6 +12,7 @@
     <module>directory-build</module>
     <module>iAggGeomOut</module>
     <module>iDeletedResources</module>
+    <module>iDeletedFileList</module>
     <module>iFileList</module>
     <module>iHarvestResources</module>
     <module>iIncludeSdiLibraries</module>
@@ -20,12 +21,15 @@
     <module>iIndexThreddsResources</module>
     <module>iMakeLine</module>
     <module>iModifiedResources</module>
+    <module>iModifiedFileList</module>
+    <module>iNewOrModifiedFileList</module>
     <module>iNetCDFGlobalAttribute</module>
     <module>iNetCDFGlobalAttributes</module>
     <module>iNetCDFInput</module>
     <module>iNetCDFVariable</module>
     <module>iNetCDFVariableAttribute</module>
     <module>iNewResources</module>
+    <module>iNewFileList</module>
     <module>iNormalize</module>
     <module>iOPeNDAPAttribute</module>
     <module>iOPeNDAPAttributes</module>

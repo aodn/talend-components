@@ -179,4 +179,20 @@
         </update>
     </changeSet>
 
+    <!-- tighten up constraints for manifest processing -->
+
+    <changeSet author="craigj" id="last-change-type-not-null-constraint">
+        <addNotNullConstraint tableName="file_harvest" columnName="last_change_type"/>
+        <addNotNullConstraint tableName="file_harvest" columnName="last_change_run" columnDataType="int" defaultNullValue="0"/>
+    </changeSet>
+
+    <!-- set last_indexed_run to the last run number where file processing was triggered -->
+
+    <changeSet author="craigj" id="last-indexed-run-is-last-processed-run">
+        <update tableName="indexed_file">
+            <column name="last_indexed_run" valueComputed="(select min(last_change_run) from file_harvest where file_id = id)"/>
+            <where>not deleted</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>

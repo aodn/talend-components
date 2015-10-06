@@ -1,3 +1,7 @@
+<%
+    String dieOnErrorValue = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+    boolean dieOnError = dieOnErrorValue != null && dieOnErrorValue.equalsIgnoreCase("true");
+%>
 
                 pstmt_<%=cid%>.executeUpdate();
                                             
@@ -5,13 +9,14 @@
                 conn_<%=cid%>.commit();
                 
                 nb_resources_<%=cid %>++;
-                
+<% if (!dieOnError) { %>
             } catch (Exception e) {
                 // Log error and the file for which it happened and continue with 
                 // the next resource
                 System.err.println("Exception while processing " + resourceUrl_<%=cid%>);
                 e.printStackTrace();
             }
+<% } %>
         }
     } finally {
         if (conn_<%=cid%> != null) {
@@ -22,4 +27,3 @@
     }
 					
 	globalMap.put("<%=cid %>_NB_RESOURCES", nb_resources_<%=cid %>);
-										    

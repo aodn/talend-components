@@ -5,7 +5,7 @@
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
-    <FAMILY>Harvesting/Index All</FAMILY> 
+    <FAMILY>Harvesting/Manifest</FAMILY> 
   </FAMILIES>  
   <DOCUMENTATION> 
     <URL/> 
@@ -63,11 +63,19 @@
         <DEFAULT>false</DEFAULT>
      </PARAMETER>
     <PARAMETER NAME="CUSTOM_QUERY" FIELD="MEMO" NB_LINES="4" NUM_ROW="2" REQUIRED="false" SHOW_IF="USE_CUSTOM_QUERY=='TRUE'">
-      <DEFAULT>"select id, url, modified " +
-"  from modified_resource " +
-" where job_name = ? " +
-"   and harvest_type = ? "
+      <DEFAULT>
+          " select indexed_file.id, indexed_file.url, indexed_file.modified"
+        + "   from indexed_file"
+        + "   join index_job on (indexed_file.job_id = index_job.id)"
+        + "   join file_harvest on (file_harvest.file_id = indexed_file.id)"
+        + " where indexed_file.deleted"
+        + "   and file_harvest.last_change_type &lt;&gt; 'deleted'"
+        + "   and index_job.name = ?"
+        + "   and file_harvest.harvest_type = ?"
       </DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="DIE_ON_ERROR" FIELD="CHECK" NUM_ROW="3">
+      <DEFAULT>true</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>
   <CODEGENERATION> 

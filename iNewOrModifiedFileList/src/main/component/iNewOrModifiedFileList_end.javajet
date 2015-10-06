@@ -42,6 +42,6 @@
 	pstmt_<%=cid%>.setTimestamp(3, new java.sql.Timestamp(lastModified_<%=cid%>.getTime()));
 	pstmt_<%=cid%>.setString(4, jobName_<%=cid%>);
 
-	System.out.format( "* iHarvestResources modified/new resource file_id=%d\n", id_<%=cid%> );
+	System.out.format( "* <%=cid%> modified/new resource file_id=%d\n", id_<%=cid%> );
 
 	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%>

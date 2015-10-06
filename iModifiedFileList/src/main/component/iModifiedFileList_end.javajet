@@ -31,6 +31,6 @@
 	pstmt_<%=cid%>.setLong(4, id_<%=cid%>);
 
 
-	System.out.format( "* iModifiedResources modified resource file_id=%d\n", id_<%=cid%> );
+	System.out.format( "* <%=cid%> modified resource file_id=%d\n", id_<%=cid%> );
 
 	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%>
