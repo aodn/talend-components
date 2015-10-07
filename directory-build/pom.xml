@@ -29,6 +29,13 @@
     </dependency>
     <dependency>
       <groupId>au.org.emii.talend</groupId>
+      <artifactId>iDeletedFileList</artifactId>
+      <classifier>package-component</classifier>
+      <type>zip</type>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>au.org.emii.talend</groupId>
       <artifactId>iFileList</artifactId>
       <classifier>package-component</classifier>
       <type>zip</type>
@@ -37,6 +44,13 @@
     <dependency>
       <groupId>au.org.emii.talend</groupId>
       <artifactId>iHarvestResources</artifactId>
+      <classifier>package-component</classifier>
+      <type>zip</type>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>au.org.emii.talend</groupId>
+      <artifactId>iNewOrModifiedFileList</artifactId>
       <classifier>package-component</classifier>
       <type>zip</type>
       <version>1.0.0-SNAPSHOT</version>
@@ -85,6 +99,13 @@
     </dependency>
     <dependency>
       <groupId>au.org.emii.talend</groupId>
+      <artifactId>iModifiedFileList</artifactId>
+      <classifier>package-component</classifier>
+      <type>zip</type>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>au.org.emii.talend</groupId>
       <artifactId>iNetCDFGlobalAttribute</artifactId>
       <classifier>package-component</classifier>
       <type>zip</type>
@@ -121,6 +142,13 @@
     <dependency>
       <groupId>au.org.emii.talend</groupId>
       <artifactId>iNewResources</artifactId>
+      <classifier>package-component</classifier>
+      <type>zip</type>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>au.org.emii.talend</groupId>
+      <artifactId>iNewFileList</artifactId>
       <classifier>package-component</classifier>
       <type>zip</type>
       <version>1.0.0-SNAPSHOT</version>
@@ -205,6 +233,13 @@
     <dependency>
       <groupId>au.org.emii.talend</groupId>
       <artifactId>templates</artifactId>
+      <classifier>package-component</classifier>
+      <type>zip</type>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>au.org.emii.talend</groupId>
+      <artifactId>iUpdateIndex</artifactId>
       <classifier>package-component</classifier>
       <type>zip</type>
       <version>1.0.0-SNAPSHOT</version>

@@ -12,6 +12,7 @@
     <module>directory-build</module>
     <module>iAggGeomOut</module>
     <module>iDeletedResources</module>
+    <module>iDeletedFileList</module>
     <module>iFileList</module>
     <module>iHarvestResources</module>
     <module>iIncludeSdiLibraries</module>
@@ -20,12 +21,15 @@
     <module>iIndexThreddsResources</module>
     <module>iMakeLine</module>
     <module>iModifiedResources</module>
+    <module>iModifiedFileList</module>
+    <module>iNewOrModifiedFileList</module>
     <module>iNetCDFGlobalAttribute</module>
     <module>iNetCDFGlobalAttributes</module>
     <module>iNetCDFInput</module>
     <module>iNetCDFVariable</module>
     <module>iNetCDFVariableAttribute</module>
     <module>iNewResources</module>
+    <module>iNewFileList</module>
     <module>iNormalize</module>
     <module>iOPeNDAPAttribute</module>
     <module>iOPeNDAPAttributes</module>
@@ -35,6 +39,7 @@
     <module>iPostgresqlGenerateChangelog</module>
     <module>iPostgresqlOutput</module>
     <module>iThreddsIterator</module>
+    <module>iUpdateIndex</module>
     <module>iUpdateSpatialExtent</module>
     <module>iXSLTField</module>
     <module>templates</module>
@@ -42,35 +47,50 @@
   
   <build>
     <pluginManagement>
-	  <plugins>
-	    <plugin>
-	      <artifactId>maven-assembly-plugin</artifactId>
-	      <version>2.4</version>
-	      <dependencies>
-	        <dependency>
-	          <groupId>au.org.emii.talend</groupId>
-	          <artifactId>component-packager</artifactId>
-	          <version>1.0.0-SNAPSHOT</version>
-	        </dependency>
-	        </dependencies>
-	        <executions>
-	        <execution>
-	          <id>package-component</id>
-	          <phase>package</phase>
-	          <goals>
-	            <goal>single</goal>
-	          </goals>
-	          <configuration>
-	            <descriptorRefs>
-	              <descriptorRef>package-component</descriptorRef>
-	            </descriptorRefs>
-	          </configuration>
-	        </execution>
-	      </executions>
-	    </plugin>
-	  </plugins>
+      <plugins>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.4</version>
+          <dependencies>
+            <dependency>
+              <groupId>au.org.emii.talend</groupId>
+              <artifactId>component-packager</artifactId>
+              <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            </dependencies>
+            <executions>
+            <execution>
+              <id>package-component</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+              <configuration>
+                <descriptorRefs>
+                  <descriptorRef>package-component</descriptorRef>
+                </descriptorRefs>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
     </pluginManagement>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.3</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <repositories>
     <repository>

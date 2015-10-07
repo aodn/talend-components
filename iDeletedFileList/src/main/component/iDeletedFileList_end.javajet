@@ -6,17 +6,17 @@
 	"
 %>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    String cid = node.getUniqueName();
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
 %>
-
 	<%@ include file="../templates/Resources/ComponentEndStart.javajet"%>
 
+
 	String update_<%=cid%> = ""
-		+ " update file_harvest "
-		+ "   set last_moddate_harvested = ?,"
-		+ "   last_change_type = 'modified',"
+		+ " update file_harvest"
+		+ " set last_moddate_harvested = ?,"
+		+ "   last_change_type = 'deleted',"
 		+ "   last_change_run = (select last_run_no from index_job where name = ?)"
 		+ " where harvest_type = ?"
 		+ " and file_id = ?"
@@ -30,7 +30,6 @@
 	pstmt_<%=cid%>.setString(3, harvestType_<%=cid%>);
 	pstmt_<%=cid%>.setLong(4, id_<%=cid%>);
 
-
-	System.out.format( "* iModifiedResources modified resource file_id=%d\n", id_<%=cid%> );
+	System.out.format( "* <%=cid%> delete resource file_id=%d\n", id_<%=cid%> );
 
 	<%@ include file="../templates/Resources/ComponentEndFinish.javajet"%>

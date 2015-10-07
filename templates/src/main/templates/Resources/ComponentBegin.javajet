@@ -29,6 +29,9 @@
     
     boolean useCustomQuery = ElementParameterParser.getValue(node, "__USE_CUSTOM_QUERY__").equalsIgnoreCase("true");
     String customQuery = ElementParameterParser.getValue(node, "__CUSTOM_QUERY__");
+
+    String dieOnErrorValue = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+    boolean dieOnError = dieOnErrorValue != null && dieOnErrorValue.equalsIgnoreCase("true");
 %>
 
 	int nb_resources_<%=cid %> = 0;
@@ -77,7 +80,8 @@
 			globalMap.put("<%=cid %>_URL",  resourceUrl_<%=cid %>);
 			globalMap.put("<%=cid %>_MODIFIED", lastModified_<%=cid %>);
 
+<% if (!dieOnError) { %>
 			try {
+<% } %>
 			
 			    // Iterate
-	
