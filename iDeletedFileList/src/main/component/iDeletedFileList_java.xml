@@ -65,8 +65,10 @@
     <PARAMETER NAME="CUSTOM_QUERY" FIELD="MEMO" NB_LINES="4" NUM_ROW="2" REQUIRED="false" SHOW_IF="USE_CUSTOM_QUERY=='TRUE'">
       <DEFAULT>
           " select indexed_file.id, indexed_file.url, indexed_file.modified"
-        + "   from indexed_file"
-        + "   join index_job on (indexed_file.job_id = index_job.id)"
+        + "   from indexed_file "
+        + "   join index_job "
+        + "     on indexed_file.job_id = index_job.id "
+        + "    and indexed_file.last_indexed_run = index_job.last_run_no " 
         + "   join file_harvest on (file_harvest.file_id = indexed_file.id)"
         + " where indexed_file.deleted"
         + "   and file_harvest.last_change_type &lt;&gt; 'deleted'"

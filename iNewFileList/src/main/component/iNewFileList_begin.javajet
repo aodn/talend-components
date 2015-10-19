@@ -24,6 +24,7 @@
 		"  from indexed_file " +
 		"  join index_job " +
 		"    on indexed_file.job_id = index_job.id " +
+		"   and indexed_file.last_indexed_run = index_job.last_run_no " +
 		"   and index_job.name = ? " +
 		"  left join file_harvest " +
 		"    on file_harvest.file_id = indexed_file.id " +
