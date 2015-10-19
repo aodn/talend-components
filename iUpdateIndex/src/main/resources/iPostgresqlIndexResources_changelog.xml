@@ -189,8 +189,9 @@
     <!-- set last_indexed_run to the last run number where file processing was triggered -->
 
     <changeSet author="craigj" id="last-indexed-run-is-last-processed-run">
+        <validCheckSum>3:486230455a2a562d66a1d1628615f7a6</validCheckSum>
         <update tableName="indexed_file">
-            <column name="last_indexed_run" valueComputed="(select min(last_change_run) from file_harvest where file_id = id)"/>
+            <column name="last_indexed_run" valueComputed="(select min(last_change_run) from file_harvest where file_id = indexed_file.id)"/>
             <where>not deleted</where>
         </update>
     </changeSet>
