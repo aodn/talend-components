@@ -10,21 +10,21 @@
   <DOCUMENTATION> 
     <URL/> 
   </DOCUMENTATION>  
-	<CONNECTORS>
-		<CONNECTOR CTYPE="FLOW" MAX_OUTPUT="0" MAX_INPUT="0" />
-		<CONNECTOR CTYPE="ITERATE" MAX_INPUT="1" />
-		<CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
-		<CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
-		<CONNECTOR CTYPE="COMPONENT_OK" />
-		<CONNECTOR CTYPE="COMPONENT_ERROR" />
-		<CONNECTOR CTYPE="RUN_IF" />
-	</CONNECTORS>
+    <CONNECTORS>
+        <CONNECTOR CTYPE="FLOW" MAX_OUTPUT="0" MAX_INPUT="0" />
+        <CONNECTOR CTYPE="ITERATE" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+        <CONNECTOR CTYPE="COMPONENT_OK" />
+        <CONNECTOR CTYPE="COMPONENT_ERROR" />
+        <CONNECTOR CTYPE="RUN_IF" />
+    </CONNECTORS>
   <PARAMETERS> 
     <PARAMETER NAME="PROPERTY" FIELD="PROPERTY_TYPE" NUM_ROW="1" REPOSITORY_VALUE="DATABASE:POSTGRESQL"/>
     <PARAMETER NAME="HOST" FIELD="TEXT" NUM_ROW="3" REPOSITORY_VALUE="SERVER_NAME" REQUIRED="true">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-	<PARAMETER NAME="TYPE" FIELD="TEXT" NUM_ROW="3" SHOW="false" REPOSITORY_VALUE="TYPE">
+    <PARAMETER NAME="TYPE" FIELD="TEXT" NUM_ROW="3" SHOW="false" REPOSITORY_VALUE="TYPE">
       <DEFAULT>PostgreSQL</DEFAULT>
     </PARAMETER>
     <PARAMETER NAME="PORT" FIELD="TEXT" NUM_ROW="3" REPOSITORY_VALUE="PORT" REQUIRED="true">
@@ -68,14 +68,13 @@
         "  from indexed_file " +
         "  join index_job " +
         "    on indexed_file.job_id = index_job.id " +
+        "   and indexed_file.last_indexed_run = index_job.last_run_no " +
         "   and index_job.name = ? " +
         "  left join file_harvest " +
         "    on file_harvest.file_id = indexed_file.id " +
         "   and file_harvest.harvest_type = ? " +
         "   and file_harvest.last_change_type &lt;&gt; 'deleted' " +
-        " where (file_harvest.last_change_run &lt;&gt; indexed_file.last_indexed_run " +
-        "    or  file_harvest.last_change_run is null) " +
-        "   and not indexed_file.deleted "
+        " where not indexed_file.deleted "
       </DEFAULT>
     </PARAMETER>
     <PARAMETER NAME="DIE_ON_ERROR" FIELD="CHECK" NUM_ROW="3">
@@ -84,7 +83,7 @@
   </ADVANCED_PARAMETERS>
   <CODEGENERATION> 
     <IMPORTS> 
-	  <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
+      <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
     </IMPORTS> 
   </CODEGENERATION>  
   <RETURNS> 
