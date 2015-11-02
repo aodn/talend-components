@@ -179,6 +179,17 @@
         </update>
     </changeSet>
 
+    <!-- add indexes to indexed_file and file_harvest to support harvest queries -->
+
+    <changeSet author="craigj" id="add-harvest-indexes">
+        <createIndex indexName="indexed_file_deleted_idx" tableName="indexed_file">
+             <column name="deleted"/>
+        </createIndex>
+        <createIndex indexName="file_harvest_file_id_idx" tableName="file_harvest">
+             <column name="file_id"/>
+        </createIndex>
+    </changeSet>
+
     <!-- tighten up constraints for manifest processing -->
 
     <changeSet author="craigj" id="last-change-type-not-null-constraint">
