@@ -41,7 +41,7 @@ class AttributeHelper_<%=cid %> {
                 opendap.dap.Attribute dapAttribute = attributeTable.getAttribute(attributeName);
                 try {
 	                if (dapAttribute.isContainer()) {
-	                    String newContainerPath = addContainerName(containerPath, dapAttribute.getName());
+	                    String newContainerPath = addContainerName(containerPath, dapAttribute.getClearName());
 	                    addAttributes(dapAttribute.getContainer(), attributes, newContainerPath);                
 	                } else {
 	                    addSimpleAttribute(dapAttribute, attributes, containerPath);
@@ -69,7 +69,7 @@ class AttributeHelper_<%=cid %> {
         Attribute attribute = new Attribute();
         
         attribute.container = containerPath;
-        attribute.name = dapAttribute.getName();
+        attribute.name = dapAttribute.getClearName();
         attribute.type = dapAttribute.getTypeString();
         attribute.value = getValueString(dapAttribute.getValues());
         

@@ -36,14 +36,14 @@ public class IndexRangesBuilder {
         while (dArrayDimensions.hasMoreElements()) {
             DArrayDimension dArrayDimension = dArrayDimensions.nextElement();
             
-            String name = dArrayDimension.getName();
+            String name = dArrayDimension.getClearName();
             
             IndexRange index = getIndexRange(name);
             
             if (index == null) {
                 indexRanges.add(new IndexRange(dArrayDimension));
             } else if (dArrayDimension.getSize() != index.getSize()) {
-                throw new IllegalArgumentException("Size of dimension '" + name + "' for variable '" + dArray.getName() + "' incompatible with existing index");
+                throw new IllegalArgumentException("Size of dimension '" + name + "' for variable '" + dArray.getClearName() + "' incompatible with existing index");
             }
         }
     }
@@ -75,12 +75,12 @@ public class IndexRangesBuilder {
     }
     
     private void addDimension(Dimension dimension) {
-        IndexRange index = getIndexRange(dimension.getName());
+        IndexRange index = getIndexRange(dimension.getShortName());
         
         if (index == null) {
             indexRanges.add(new IndexRange(dimension));
         } else if (dimension.getLength() != index.getSize()) {
-            throw new IllegalArgumentException("Size of dimension '" + dimension.getLength() + "' for variable '" + dimension.getName() + "' incompatible with existing index");
+            throw new IllegalArgumentException("Size of dimension '" + dimension.getLength() + "' for variable '" + dimension.getShortName() + "' incompatible with existing index");
         }
     }
     
