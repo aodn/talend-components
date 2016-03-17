@@ -23,11 +23,11 @@ public class IndexRange {
     }
     
     public IndexRange(DArrayDimension dodsDimension) {
-        name = dodsDimension.getName();
+        name = dodsDimension.getClearName();
         size = dodsDimension.getSize();
     }
     public IndexRange(Dimension ncDimension) {
-        name = ncDimension.getName();
+        name = ncDimension.getShortName();
         size = ncDimension.getLength();
     }
 };
