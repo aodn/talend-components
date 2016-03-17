@@ -14,7 +14,7 @@ import org.junit.Test;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import au.org.emii.talend.dap.reader.NetcdfReader;
 import au.org.emii.talend.dap.utils.FileUtils;
@@ -72,7 +72,7 @@ public class NetcdfReaderTests {
 
     private void create2DVariableAndAssertThatGetStringMatchesData(
             String[] data) throws IOException {
-        NetcdfFileWriter ncFile = createFileWith2DCharVariable(data);
+        NetcdfFileWriteable ncFile = createFileWith2DCharVariable(data);
         try {
             assertThatGetStringMatchesData2D(ncFile, data);
         } finally {
@@ -82,7 +82,7 @@ public class NetcdfReaderTests {
 
     private void create2DVariableAndAssertThatGetCharMatchesData(
             String[] data) throws IOException {
-        NetcdfFileWriter ncFile = createFileWith2DCharVariable(data);
+        NetcdfFileWriteable ncFile = createFileWith2DCharVariable(data);
         try {
             assertThatGetCharMatchesData2D(ncFile, data);
         } finally {
@@ -92,7 +92,7 @@ public class NetcdfReaderTests {
 
     private void create1DVariableAndAssertThatGetStringMatchesData(
             String data) throws IOException {
-        NetcdfFileWriter ncFile = createFileWith1DCharVariable(data);
+        NetcdfFileWriteable ncFile = createFileWith1DCharVariable(data);
         try {
             assertThatGetStringMatchesData1D(ncFile, data);
         } finally {
@@ -102,7 +102,7 @@ public class NetcdfReaderTests {
 
     private void create1DVariableAndAssertThatGetCharMatchesData(
             String data) throws IOException {
-        NetcdfFileWriter ncFile = createFileWith1DCharVariable(data);
+        NetcdfFileWriteable ncFile = createFileWith1DCharVariable(data);
         try {
             assertThatGetCharMatchesData1D(ncFile, data);
         } finally {
@@ -110,7 +110,7 @@ public class NetcdfReaderTests {
         }
     }
 
-    private void assertThatGetCharMatchesData2D(NetcdfFileWriter ncfile, String[] data) 
+    private void assertThatGetCharMatchesData2D(NetcdfFileWriteable ncfile, String[] data) 
             throws IOException {
         Variable variable = ncfile.findVariable("variable");
         NetcdfReader reader = new NetcdfReader(variable);
@@ -126,7 +126,7 @@ public class NetcdfReaderTests {
         }
     }
 
-    private void assertThatGetStringMatchesData2D(NetcdfFileWriter ncfile, String[] data)
+    private void assertThatGetStringMatchesData2D(NetcdfFileWriteable ncfile, String[] data)
             throws IOException {
         Variable variable = ncfile.findVariable("variable");
         NetcdfReader reader = new NetcdfReader(variable);
@@ -139,7 +139,7 @@ public class NetcdfReaderTests {
         }
     }
 
-    private void assertThatGetCharMatchesData1D(NetcdfFileWriter ncfile, String data) 
+    private void assertThatGetCharMatchesData1D(NetcdfFileWriteable ncfile, String data) 
             throws IOException {
         Variable variable = ncfile.findVariable("variable");
         NetcdfReader reader = new NetcdfReader(variable);
@@ -152,7 +152,7 @@ public class NetcdfReaderTests {
         }
     }
 
-    private void assertThatGetStringMatchesData1D(NetcdfFileWriter ncfile, String data)
+    private void assertThatGetStringMatchesData1D(NetcdfFileWriteable ncfile, String data)
             throws IOException {
         Variable variable = ncfile.findVariable("variable");
         NetcdfReader reader = new NetcdfReader(variable);
@@ -161,28 +161,28 @@ public class NetcdfReaderTests {
         assertThat(result, is(data));
     }
 
-    private void closeAndDelete(NetcdfFileWriter ncFile) {
-        File tempFile = new File(ncFile.getNetcdfFile().getLocation());
-        FileUtils.closeQuietly(ncFile.getNetcdfFile());
+    private void closeAndDelete(NetcdfFileWriteable ncFile) {
+        File tempFile = new File(ncFile.getLocation());
+        FileUtils.closeQuietly(ncFile);
         tempFile.delete();
     }
 
 
-    private NetcdfFileWriter createFileWith2DCharVariable(String[] data)
+    private NetcdfFileWriteable createFileWith2DCharVariable(String[] data)
             throws IOException {
         File tempFile = File.createTempFile("test", ".nc");
         
         try {
-            NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getAbsolutePath(), null);
+            NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(tempFile.getAbsolutePath(), false);
 
-            Dimension dim1 = ncfile.addDimension(null, "dim1", data.length);
-            Dimension dim2 = ncfile.addDimension(null, "dim2", calcMaxLength(data));
+            Dimension dim1 = ncfile.addDimension("dim1", data.length);
+            Dimension dim2 = ncfile.addDimension("dim2", calcMaxLength(data));
             
             ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
             dimensions.add(dim1);
             dimensions.add(dim2);
             
-            Variable variable = ncfile.addVariable(null, "variable", DataType.CHAR, dimensions);
+            ncfile.addVariable("variable", DataType.CHAR, dimensions);
             
             ncfile.create();
             
@@ -191,7 +191,7 @@ public class NetcdfReaderTests {
                 dataArray.setString(i, data[i]);
             }
 
-            ncfile.write(variable, dataArray);
+            ncfile.write("variable", dataArray);
             
             ncfile.flush();
             
@@ -202,26 +202,26 @@ public class NetcdfReaderTests {
         }
     }
 
-    private NetcdfFileWriter createFileWith1DCharVariable(String data)
+    private NetcdfFileWriteable createFileWith1DCharVariable(String data)
             throws IOException {
         File tempFile = File.createTempFile("test", ".nc");
         
         try {
-            NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, tempFile.getAbsolutePath(), null);
+            NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(tempFile.getAbsolutePath(), false);
 
-            Dimension dim1 = ncfile.addDimension(null, "dim1", data.length());
+            Dimension dim1 = ncfile.addDimension("dim1", data.length());
             
             ArrayList<Dimension> dimensions = new ArrayList<Dimension>();
             dimensions.add(dim1);
             
-            Variable variable = ncfile.addVariable(null, "variable", DataType.CHAR, dimensions);
+            ncfile.addVariable("variable", DataType.CHAR, dimensions);
             
             ncfile.create();
             
             ArrayChar dataArray = new ArrayChar.D1(dim1.getLength());
             dataArray.setString(data);
 
-            ncfile.write(variable, dataArray);
+            ncfile.write("variable", dataArray);
             
             ncfile.flush();
             

@@ -12,23 +12,24 @@ import org.junit.Test;
 
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 
 public class IndexRangesBuilderTest {
     private IndexRangesBuilder builder;
+    private NetcdfFileWriteable ncfile;
     private Variable variable;
 
     @Before
     public void buildTestFile() throws IOException {
         builder = new IndexRangesBuilder();
-        NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, "netcdf-test.nc", null);
-        Dimension timeDim = writer.addDimension(null, "time", 10);
-        Dimension profileDim = writer.addDimension(null, "profile", 1);
+        ncfile = NetcdfFileWriteable.createNew("netcdf-test.nc", false);
+        Dimension timeDim = ncfile.addDimension("time", 10);
+        Dimension profileDim = ncfile.addDimension("profile", 1);
         ArrayList<Dimension> dims = new ArrayList<Dimension>();
         dims.add(profileDim);
         dims.add(timeDim);
-        variable = writer.addVariable(null, "pres_qc", DataType.CHAR, dims);
+        variable = ncfile.addVariable("pres_qc", DataType.CHAR, dims);
     }
     
     @Test

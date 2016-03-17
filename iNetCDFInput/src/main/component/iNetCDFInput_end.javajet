@@ -22,4 +22,4 @@ String cid = node.getUniqueName();
     }
 }
           
-globalMap.put("<%=cid %>_NB_FEATURE", nbFeature_<%=cid %>);
+globalMap.put("<%=cidForward %>_NB_FEATURE", nbFeature_<%=cid %>);

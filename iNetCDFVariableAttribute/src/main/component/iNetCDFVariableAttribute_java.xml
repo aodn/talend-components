@@ -41,7 +41,7 @@
 	</PARAMETERS>
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="netcdf" MODULE="netcdfAll-4.6.4.jar" REQUIRED="true" />
+			<IMPORT NAME="netcdf" MODULE="netcdfAll-4.2.jar" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 	<RETURNS>
