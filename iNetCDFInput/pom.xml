@@ -18,6 +18,11 @@
       <artifactId>netcdfAll</artifactId>
       <version>4.6.4</version>
     </dependency>
+    <dependency>
+      <groupId>au.org.emii</groupId>
+      <artifactId>netcdf-iterator</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -51,6 +56,10 @@
     <repository>
       <id>mvnrepository</id>
       <url>http://mvnrepository.com/artifact/</url>
+    </repository>
+    <repository>
+      <id>jenkins</id>
+      <url>https://jenkins.aodn.org.au/plugin/repository/everything</url>
     </repository>
   </repositories>
 </project>

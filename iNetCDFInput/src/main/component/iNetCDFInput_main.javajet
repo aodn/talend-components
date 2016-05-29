@@ -47,7 +47,7 @@ for (int i=0; i < conns.size(); i++) {
             String <%=cid %>_name_<%=columnName %> = columnNameMapping_<%=cid %>.get("<%=columnName %>");
             String <%=cid %>_type_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=columnName %>");
             
-            au.org.emii.talend.dap.reader.NetcdfReader reader_<%=cid %>_<%=columnName %> = readers_<%=cid %>.get(<%=cid %>_name_<%=columnName %>);
+            au.org.emii.netcdf.iterator.reader.NetcdfReader reader_<%=cid %>_<%=columnName %> = readers_<%=cid %>.get(<%=cid %>_name_<%=columnName %>);
             
             if (<%=cid %>_name_<%=columnName %> == null || (<%=cid %>_type_<%=columnName %> .equals("VARIABLE") && reader_<%=cid %>_<%=columnName %> == null)) {
                 // skip this column - no mapping or the variable doesn't exist
@@ -145,9 +145,9 @@ for (int i=0; i < conns.size(); i++) {
 <%            } 
 %>
             } else {
-                au.org.emii.talend.dap.IndexValue dimensionValue = null;
+                au.org.emii.netcdf.iterator.IndexValue dimensionValue = null;
                 
-                for (au.org.emii.talend.dap.IndexValue indexValue : indexValues_<%=cid %>) {
+                for (au.org.emii.netcdf.iterator.IndexValue indexValue : indexValues_<%=cid %>) {
                     if (indexValue.getName().equals(<%=cid %>_name_<%=columnName %>)) {
                         dimensionValue = indexValue;
                         break;

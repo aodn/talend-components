@@ -108,18 +108,18 @@ opendap.dap.DataDDS data_<%=cid %> = conn_<%=cid %>.getData(constraintExpression
 
 // Create readers for each variable.  Readers return the value of the variable for particular index values
 
-au.org.emii.talend.dap.reader.DReaderFactory readerFactory_<%=cid %> = new au.org.emii.talend.dap.reader.DReaderFactory();
+au.org.emii.netcdf.iterator.reader.DReaderFactory readerFactory_<%=cid %> = new au.org.emii.netcdf.iterator.reader.DReaderFactory();
 	
-java.util.Map<String, au.org.emii.talend.dap.reader.DReader> readers_<%=cid %> = new java.util.LinkedHashMap<String, au.org.emii.talend.dap.reader.DReader>();
+java.util.Map<String, au.org.emii.netcdf.iterator.reader.DReader> readers_<%=cid %> = new java.util.LinkedHashMap<String, au.org.emii.netcdf.iterator.reader.DReader>();
 
 for (String variableName : columnVariableNames_<%=cid %>.values()) {
 	readers_<%=cid %>.put(variableName, readerFactory_<%=cid %>.getInstance(data_<%=cid %>.getVariable(variableName)));
 }
 	
-java.util.Map<String,java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>>> connIterators_<%=cid %> = new java.util.LinkedHashMap<String, java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>>>();
+java.util.Map<String,java.util.Iterator<java.util.Set<au.org.emii.netcdf.iterator.IndexValue>>> connIterators_<%=cid %> = new java.util.LinkedHashMap<String, java.util.Iterator<java.util.Set<au.org.emii.netcdf.iterator.IndexValue>>>();
  
-au.org.emii.talend.dap.IndexRangesBuilder indexRangesBuilder_<%=cid %>;
-java.util.Set<au.org.emii.talend.dap.IndexRange> indexRanges_<%=cid %>;
+au.org.emii.netcdf.iterator.IndexRangesBuilder indexRangesBuilder_<%=cid %>;
+java.util.Set<au.org.emii.netcdf.iterator.IndexRange> indexRanges_<%=cid %>;
 				
 <%
 
@@ -135,7 +135,7 @@ for (int i=0; i < conns.size(); i++) {
 
 %>
 
-		indexRangesBuilder_<%=cid %> = new au.org.emii.talend.dap.IndexRangesBuilder();
+		indexRangesBuilder_<%=cid %> = new au.org.emii.netcdf.iterator.IndexRangesBuilder();
 		
 <%    	
         List<IMetadataColumn> listColumns = connMetadata.getListColumns();
@@ -154,15 +154,15 @@ for (int i=0; i < conns.size(); i++) {
 
 		indexRanges_<%=cid %> = indexRangesBuilder_<%=cid %>.getIndexRanges();
 		
-		connIterators_<%=cid %>.put("<%=connMetadata.getLabel() %>", new au.org.emii.talend.dap.IndexValuesIterator(indexRanges_<%=cid %>));
+		connIterators_<%=cid %>.put("<%=connMetadata.getLabel() %>", new au.org.emii.netcdf.iterator.IndexValuesIterator(indexRanges_<%=cid %>));
 		
 <%		
     }
 }
 %>
 for (String connName_<%=cid %> : connIterators_<%=cid %>.keySet()) {
-	java.util.Iterator<java.util.Set<au.org.emii.talend.dap.IndexValue>> connIterator_<%=cid %> = connIterators_<%=cid %>.get(connName_<%=cid %>);
+	java.util.Iterator<java.util.Set<au.org.emii.netcdf.iterator.IndexValue>> connIterator_<%=cid %> = connIterators_<%=cid %>.get(connName_<%=cid %>);
 	
 	while (connIterator_<%=cid %>.hasNext()) {
-		java.util.Set<au.org.emii.talend.dap.IndexValue> indexValues_<%=cid %> = connIterator_<%=cid %>.next();
+		java.util.Set<au.org.emii.netcdf.iterator.IndexValue> indexValues_<%=cid %> = connIterator_<%=cid %>.next();
 
