@@ -52,15 +52,15 @@ for (int i=0; i < conns.size(); i++) {
             if (<%=cid %>_name_<%=columnName %> == null || (<%=cid %>_type_<%=columnName %> .equals("VARIABLE") && reader_<%=cid %>_<%=columnName %> == null)) {
                 // skip this column - no mapping or the variable doesn't exist
             } else if (<%=cid %>_type_<%=columnName %> .equals("VARIABLE")) {
+                ucar.nc2.dataset.VariableDS variable = (ucar.nc2.dataset.VariableDS)ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=columnName %>);
 <%                
             String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
                 
             boolean checkMissing = scaleMissing.equals("true") && nullValueHandling.equals("NULL_VALUES") && column.isNullable() && !ttg.equals("String");
 
-            if (checkMissing) { %> 
-                ucar.nc2.dataset.VariableDS variable = (ucar.nc2.dataset.VariableDS)ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=columnName %>);
-                
-                if (variable.isMissing(reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>))) {
+            if (checkMissing) {
+%> 
+                if (variable.isMissing(reader_<%=cid %>_<ng.format(String.java:2940)%=columnName %>.getDouble(indexValues_<%=cid %>))) {
                     <%=conn.getName() %>.<%=columnName %> = null;
                 } else {
 <%        
@@ -138,8 +138,14 @@ for (int i=0; i < conns.size(); i++) {
 %>
                     <%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getString(indexValues_<%=cid %>)<%=trimStrings.equals("true")?".trim()":"" %>;
 <%
+            } else if (ttg.equals("java.util.Date")) {
+%>
+                    Double time = reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>);
+                    String units = variable.findAttribute("units").getStringValue();
+                    <%=conn.getName() %>.<%=columnName %> = ucar.nc2.units.DateUnit.getStandardDate(String.format("%f %s", time, units));
+<%
             }
-            
+
             if (checkMissing) { %>
                 }
 <%            } 
