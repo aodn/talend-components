@@ -47,20 +47,20 @@ for (int i=0; i < conns.size(); i++) {
             String <%=cid %>_name_<%=columnName %> = columnNameMapping_<%=cid %>.get("<%=columnName %>");
             String <%=cid %>_type_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=columnName %>");
             
-            au.org.emii.talend.dap.reader.NetcdfReader reader_<%=cid %>_<%=columnName %> = readers_<%=cid %>.get(<%=cid %>_name_<%=columnName %>);
+            au.org.emii.netcdf.iterator.reader.NetcdfReader reader_<%=cid %>_<%=columnName %> = readers_<%=cid %>.get(<%=cid %>_name_<%=columnName %>);
             
             if (<%=cid %>_name_<%=columnName %> == null || (<%=cid %>_type_<%=columnName %> .equals("VARIABLE") && reader_<%=cid %>_<%=columnName %> == null)) {
                 // skip this column - no mapping or the variable doesn't exist
             } else if (<%=cid %>_type_<%=columnName %> .equals("VARIABLE")) {
+                ucar.nc2.dataset.VariableDS variable = (ucar.nc2.dataset.VariableDS)ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=columnName %>);
 <%                
             String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
                 
             boolean checkMissing = scaleMissing.equals("true") && nullValueHandling.equals("NULL_VALUES") && column.isNullable() && !ttg.equals("String");
 
-            if (checkMissing) { %> 
-                ucar.nc2.dataset.VariableDS variable = (ucar.nc2.dataset.VariableDS)ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=columnName %>);
-                
-                if (variable.isMissing(reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>))) {
+            if (checkMissing) {
+%> 
+                if (variable.isMissing(reader_<%=cid %>_<ng.format(String.java:2940)%=columnName %>.getDouble(indexValues_<%=cid %>))) {
                     <%=conn.getName() %>.<%=columnName %> = null;
                 } else {
 <%        
@@ -138,16 +138,26 @@ for (int i=0; i < conns.size(); i++) {
 %>
                     <%=conn.getName() %>.<%=columnName %> = reader_<%=cid %>_<%=columnName %>.getString(indexValues_<%=cid %>)<%=trimStrings.equals("true")?".trim()":"" %>;
 <%
+            } else if (ttg.equals("java.util.Date")) {
+%>
+                    Double time = reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>);
+                    String units = variable.findAttribute("units").getStringValue();
+                    ucar.nc2.Attribute calendarAttribute = variable.findAttribute("calendar");
+                    String calendarString = calendarAttribute==null?"gregorian":calendarAttribute.getStringValue().toLowerCase();
+                    ucar.nc2.time.Calendar calendar = ucar.nc2.time.Calendar.get(calendarString);
+                    ucar.nc2.time.CalendarDateUnit dateUnit = ucar.nc2.time.CalendarDateUnit.withCalendar(calendar, units);
+                    <%=conn.getName() %>.<%=columnName %> = dateUnit.makeCalendarDate(time).toDate();
+<%
             }
-            
+
             if (checkMissing) { %>
                 }
 <%            } 
 %>
             } else {
-                au.org.emii.talend.dap.IndexValue dimensionValue = null;
+                au.org.emii.netcdf.iterator.IndexValue dimensionValue = null;
                 
-                for (au.org.emii.talend.dap.IndexValue indexValue : indexValues_<%=cid %>) {
+                for (au.org.emii.netcdf.iterator.IndexValue indexValue : indexValues_<%=cid %>) {
                     if (indexValue.getName().equals(<%=cid %>_name_<%=columnName %>)) {
                         dimensionValue = indexValue;
                         break;
