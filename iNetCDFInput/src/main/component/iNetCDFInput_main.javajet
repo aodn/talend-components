@@ -60,7 +60,7 @@ for (int i=0; i < conns.size(); i++) {
 
             if (checkMissing) {
 %> 
-                if (variable.isMissing(reader_<%=cid %>_<ng.format(String.java:2940)%=columnName %>.getDouble(indexValues_<%=cid %>))) {
+                if (variable.isMissing(reader_<%=cid %>_<%=columnName %>.getDouble(indexValues_<%=cid %>))) {
                     <%=conn.getName() %>.<%=columnName %> = null;
                 } else {
 <%        
