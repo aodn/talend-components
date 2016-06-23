@@ -115,17 +115,33 @@ try {
     ncDataset_<%=cid %> = ucar.nc2.dataset.NetcdfDataset.openDataset(filename_<%=cid %>, enhanceMode_<%=cid %>, 0, null, null);
 <%  } %>
             
-    // Create readers for each variable.  Readers return the value of the variable for particular index values
+    // Build maps of column name to variable and column name to variable reader where applicable
+    // Readers return the value of the variable for particular index value combinations
     
+    java.util.Map<String, ucar.nc2.Variable> columnVariableMapping_<%=cid %> = new java.util.LinkedHashMap<String, ucar.nc2.Variable>();
     java.util.Map<String, au.org.emii.netcdf.iterator.reader.NetcdfReader> readers_<%=cid %> = new java.util.LinkedHashMap<String, au.org.emii.netcdf.iterator.reader.NetcdfReader>();
-    
+
     for (java.util.Map.Entry<String, String> typeMapping : columnTypeMapping_<%=cid %>.entrySet()) {
-        if (typeMapping.getValue().equals("VARIABLE")) {
-            String name = columnNameMapping_<%=cid %>.get(typeMapping.getKey());
-            ucar.nc2.Variable variable = ncDataset_<%=cid %>.findVariable(name);
-            if (variable != null) {
-                readers_<%=cid %>.put(name, new au.org.emii.netcdf.iterator.reader.NetcdfReader(variable));
-            }
+        String columnName = typeMapping.getKey();
+        String mappingType = typeMapping.getValue();
+        String mappingValue = columnNameMapping_<%=cid %>.get(columnName);
+
+        ucar.nc2.Variable variable = null;
+
+        if (mappingType.equals("VARIABLE")||mappingType.equals("DIMENSION")) {
+            // column mapped to variable by name
+            variable = ncDataset_<%=cid %>.findVariable(mappingValue);
+        } else if (mappingType.equals("STANDARD_NAME")) {
+            // column mapped to variable by standard name
+            variable = ncDataset_<%=cid %>.findVariableByAttribute(null, "standard_name", mappingValue);
+        }
+
+        if (variable == null) continue;
+
+        columnVariableMapping_<%=cid %>.put(columnName, variable);
+
+        if (!mappingType.equals("DIMENSION")) {
+            readers_<%=cid %>.put(mappingValue, new au.org.emii.netcdf.iterator.reader.NetcdfReader(variable));
         }
     }
         
@@ -156,11 +172,11 @@ for (int i=0; i < conns.size(); i++) {
             String columnName = column.getLabel();
             String ttg = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 %>
-            String <%=cid %>_name_<%=connName %>_<%=columnName %> = columnNameMapping_<%=cid %>.get("<%=column.getLabel() %>");
-            String <%=cid %>_type_<%=connName %>_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=column.getLabel() %>");
+            String <%=cid %>_name_<%=connName %>_<%=columnName %> = columnNameMapping_<%=cid %>.get("<%=columnName %>");
+            String <%=cid %>_type_<%=connName %>_<%=columnName %> = columnTypeMapping_<%=cid %>.get("<%=columnName %>");
             
-            if (<%=cid %>_type_<%=connName %>_<%=columnName %>.equals("VARIABLE") && <%=cid %>_name_<%=connName %>_<%=columnName %> != null) {
-                ucar.nc2.Variable variable = ncDataset_<%=cid %>.findVariable(<%=cid %>_name_<%=connName %>_<%=columnName %>);
+            if (!<%=cid %>_type_<%=connName %>_<%=columnName %>.equals("DIMENSION") && <%=cid %>_name_<%=connName %>_<%=columnName %> != null) {
+                ucar.nc2.Variable variable = columnVariableMapping_<%=cid %>.get("<%=columnName %>");
                 if (variable != null) {
 
                 <%  if (ttg.equals("String")) { %>
