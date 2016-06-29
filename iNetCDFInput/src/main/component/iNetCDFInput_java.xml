@@ -68,6 +68,7 @@
                  <ITEMS DEFAULT="VARIABLE">
                     <ITEM NAME="VARIABLE" VALUE="VARIABLE" />
                     <ITEM NAME="DIMENSION" VALUE="DIMENSION" />
+                    <ITEM NAME="STANDARD_NAME" VALUE="STANDARD_NAME" />
                   </ITEMS>
               </ITEM> 
             </ITEMS>
