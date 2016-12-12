@@ -68,6 +68,7 @@
                  <ITEMS DEFAULT="VARIABLE">
                     <ITEM NAME="VARIABLE" VALUE="VARIABLE" />
                     <ITEM NAME="DIMENSION" VALUE="DIMENSION" />
+                    <ITEM NAME="AXIS_TYPE" VALUE="AXIS_TYPE" />
                   </ITEMS>
               </ITEM> 
             </ITEMS>
