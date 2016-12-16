@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default">
+  <context confirmationNeeded="false" name="Default">
+    <contextParameter comment="" name="testUrl" prompt="testUrl?" promptNeeded="false" repositoryContextId="_RFggsOWsEeWY_55BCLySdw" type="id_String" value="&quot;http://thredds.aodn.org.au/thredds/dodsC/IMOS/Argo/dac/csiro/5900854/profiles/D5900854_073.nc&quot;"/>
+  </context>
+  <parameters>
+    <elementParameter field="TEXT" name="JOB_RUN_VM_ARGUMENTS" value=" -Xms256M -Xmx1024M"/>
+    <elementParameter field="CHECK" name="JOB_RUN_VM_ARGUMENTS_OPTION" value="false"/>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_X" value="0"/>
+    <elementParameter field="TEXT" name="SCREEN_OFFSET_Y" value="0"/>
+    <elementParameter field="TEXT" name="SCHEMA_OPTIONS" value="none"/>
+    <elementParameter field="TEXT" name="OEM_CUSTOM_ATTRIBUTE" value=""/>
+    <elementParameter field="TEXT" name="HADOOP_APP_PATH" value=""/>
+    <elementParameter field="TEXT" name="JOBID_FOR_OOZIE" value=""/>
+    <elementParameter field="CHECK" name="IMPLICITCONTEXT_USE_PROJECT_SETTINGS" value="true"/>
+    <elementParameter field="CHECK" name="STATANDLOG_USE_PROJECT_SETTINGS" value="true"/>
+    <elementParameter field="FILE" name="IMPLICIT_TCONTEXTLOAD_FILE" value="&quot;&quot;"/>
+    <elementParameter field="TEXT" name="FIELDSEPARATOR" value="&quot;&quot;"/>
+    <elementParameter field="TECHNICAL" name="PROPERTY_TYPE_IMPLICIT_CONTEXT:REPOSITORY_PROPERTY_TYPE" value=""/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION_IMPLICIT_CONTEXT" value=""/>
+    <elementParameter field="CHECK" name="DISABLE_WARNINGS" value="false"/>
+    <elementParameter field="CHECK" name="DISABLE_INFO" value="false"/>
+    <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="ojdbc14-10g.jar"/>
+    <routinesParameter id="_WwbGQOUWEeWju-xUGvaDjw" name="DataOperation"/>
+    <routinesParameter id="_WwpIsOUWEeWju-xUGvaDjw" name="GeoOperation"/>
+    <routinesParameter id="_WwmscOUWEeWju-xUGvaDjw" name="GeometryOperation"/>
+    <routinesParameter id="_Wwn6kOUWEeWju-xUGvaDjw" name="GeometryUtility"/>
+    <routinesParameter id="_WwcUYOUWEeWju-xUGvaDjw" name="Mathematical"/>
+    <routinesParameter id="_WwAPgOUWEeWju-xUGvaDjw" name="Numeric"/>
+    <routinesParameter id="_Wwk3QOUWEeWju-xUGvaDjw" name="OpenStreetMap"/>
+    <routinesParameter id="_WwdigOUWEeWju-xUGvaDjw" name="Relational"/>
+    <routinesParameter id="_Wwhz8OUWEeWju-xUGvaDjw" name="StringHandling"/>
+    <routinesParameter id="_WwewoOUWEeWju-xUGvaDjw" name="TalendDataGenerator"/>
+    <routinesParameter id="_WwjpIOUWEeWju-xUGvaDjw" name="TalendDate"/>
+    <routinesParameter id="_Wwgl0OUWEeWju-xUGvaDjw" name="TalendString"/>
+  </parameters>
+  <node componentName="iOPeNDAPAttributes" componentVersion="0.1" offsetLabelX="0" offsetLabelY="0" posX="192" posY="160">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="iOPeNDAPAttributes_1"/>
+    <elementParameter field="CHECK" name="START" value="true"/>
+    <elementParameter field="TEXT" name="URL" value="context.testUrl"/>
+    <elementParameter field="TEXT" name="CONTAINER" value="&quot;NC_GLOBAL&quot;"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <elementParameter field="CHECK" name="INFORMATION" value="false"/>
+    <elementParameter field="MEMO" name="COMMENT" value=""/>
+    <elementParameter field="CHECK" name="VALIDATION_RULES" value="false"/>
+    <metadata connector="FLOW" name="iOPeNDAPAttributes_1">
+      <column comment="" key="false" name="title" nullable="true" pattern="" sourceType="" type="id_String"/>
+      <column comment="" key="false" name="institution" nullable="true" pattern="" sourceType="" type="id_String"/>
+      <column comment="" key="false" name="source" nullable="true" pattern="" sourceType="" type="id_String"/>
+    </metadata>
+  </node>
+  <node componentName="tJava" componentVersion="0.101" offsetLabelX="0" offsetLabelY="0" posX="448" posY="160">
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tJava_1"/>
+    <elementParameter field="MEMO_JAVA" name="CODE" value="if (((Integer)globalMap.get(&quot;iOPeNDAPAttributes_1_NB_LINE&quot;)) != 1) throw new Exception(&quot;Expected 1 global attribute record to be returned&quot;);&#xA;&#xA;System.out.println(&quot;getOPeNDAPGlobalAttributes: passed&quot;);"/>
+    <elementParameter field="MEMO_IMPORT" name="IMPORT" value="//import java.util.List;"/>
+    <elementParameter field="TEXT" name="LABEL" value="checkResults"/>
+    <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <elementParameter field="CHECK" name="INFORMATION" value="false"/>
+    <elementParameter field="MEMO" name="COMMENT" value=""/>
+    <elementParameter field="CHECK" name="VALIDATION_RULES" value="false"/>
+    <metadata connector="FLOW" name="tJava_1">
+      <column defaultValue="" key="false" length="255" name="catalogUri" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="authority" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="id" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="name" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="catalogUrl" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="downloadUrl" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="opendapUrl" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="subsetUrl" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="255" name="fullName" nullable="true" precision="0" sourceType="" type="id_String"/>
+      <column defaultValue="" key="false" length="0" name="modified" nullable="true" pattern="&quot;yyyy-MM-dd'T'HH:mm:ss'000Z'&quot;" precision="0" sourceType="" type="id_Date"/>
+      <column defaultValue="" key="false" length="0" name="fileSize" nullable="true" precision="0" sourceType="" type="id_Double"/>
+    </metadata>
+  </node>
+  <connection connectorName="SUBJOB_OK" label="OnSubjobOk" lineStyle="1" metaname="iOPeNDAPAttributes_1" offsetLabelX="0" offsetLabelY="0" source="iOPeNDAPAttributes_1" target="tJava_1">
+    <elementParameter field="CHECK" name="ACTIVATE" value="true"/>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="OnSubjobOk1"/>
+  </connection>
+  <subjob>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="iOPeNDAPAttributes_1"/>
+    <elementParameter field="COLOR" name="SUBJOB_TITLE_COLOR" value="160;190;240"/>
+    <elementParameter field="COLOR" name="SUBJOB_COLOR" value="220;220;250"/>
+  </subjob>
+  <subjob>
+    <elementParameter field="TEXT" name="UNIQUE_NAME" value="tJava_1"/>
+    <elementParameter field="COLOR" name="SUBJOB_TITLE_COLOR" value="160;190;240"/>
+    <elementParameter field="COLOR" name="SUBJOB_COLOR" value="220;220;250"/>
+  </subjob>
+</talendfile:ProcessType>

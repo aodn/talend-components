@@ -5,5 +5,9 @@ target
 *~
 *.swp
 *.swo
+tests/.*
+.idea
+*.iml
+
 
 
