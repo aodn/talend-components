@@ -1,0 +1,59 @@
+<%@ jet
+    imports="
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.process.EConnectionType
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        java.util.HashMap
+        java.util.List
+        java.util.Map
+    "
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+final INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+class CodeGenerator {
+    public IConnection getFirstConnectionByName(String name) {
+        IConnection returnConn = null;
+        List< ? extends IConnection> conns = node.getOutgoingConnections(name);
+        if (conns != null && conns.size() > 0) {
+            returnConn = conns.get(0);
+        }
+
+        return returnConn;
+    }
+}
+
+CodeGenerator cg = new CodeGenerator();
+
+Map<IConnection, Boolean> connMap = new HashMap<IConnection, Boolean>();
+connMap.put(cg.getFirstConnectionByName("ADDED_MODIFIED"), true);
+connMap.put(cg.getFirstConnectionByName("REMOVED"), false);
+
+for (Map.Entry<IConnection, Boolean> entry : connMap.entrySet()) {
+    IConnection conn = entry.getKey();
+    Boolean writeIfExists =entry.getValue();
+
+    if (conn != null) {
+%>
+
+        // Setting a connection to null means that the row will not be propagated to the next component.
+        <%= conn.getName() %> = null;
+
+        if (<%= writeIfExists %> == fileExists) {
+            <%= conn.getName() %> = new  <%= conn.getName() %>Struct();
+            <%= conn.getName() %>.filePath = currentFileName_<%=cid%>;
+        }
+
+<%
+    }
+}
+%>
