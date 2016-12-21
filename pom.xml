@@ -94,8 +94,8 @@
 
   <repositories>
     <repository>
-      <id>jenkins</id>
-      <url>https://kenkins.aodn.org.au/plugin/repository/everything</url>
+      <id>aodn</id>
+      <url>http://content.aodn.org.au/repo/maven/</url>
     </repository>
   </repositories>
   
