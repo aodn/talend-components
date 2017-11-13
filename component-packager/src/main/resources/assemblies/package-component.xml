@@ -37,6 +37,7 @@
     <dependencySet>
     	<outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}</outputFileNameMapping>
     	<useProjectArtifact>false</useProjectArtifact>
+        <useTransitiveDependencies>false</useTransitiveDependencies>
     </dependencySet>
   </dependencySets>
 </assembly>
