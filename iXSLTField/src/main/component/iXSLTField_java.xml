@@ -89,7 +89,7 @@
   
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="SAXON9" MODULE="saxon9.jar" REQUIRED="true" />
+			<IMPORT NAME="SAXON9" MODULE="saxon9.jar" MVN="mvn:org.talend.libraries/saxon9/6.0.0" REQUIRED="true" />
 		</IMPORTS>
 	</CODEGENERATION>
 	

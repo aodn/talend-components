@@ -83,10 +83,10 @@
   </ADVANCED_PARAMETERS>
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
+      <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
       <IMPORT MODULE="iUpdateIndex-1.0.0-SNAPSHOT.jar" NAME="iUpdateIndex-1.0.0-SNAPSHOT" REQUIRED="true"/>
     </IMPORTS>
-  </CODEGENERATION>  
+  </CODEGENERATION>
   <RETURNS> 
     <RETURN AVAILABILITY="FLOW" NAME="FILE_ID" TYPE="id_Long"/> 
     <RETURN AVAILABILITY="FLOW" NAME="URL" TYPE="id_String"/> 

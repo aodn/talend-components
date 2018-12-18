@@ -351,10 +351,10 @@
 
   <CODEGENERATION>
     <IMPORTS>
-    	<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
-		<IMPORT NAME="Driver-Postgis" MODULE="postgis_1.4.0.jar" REQUIRED="false" />
+    	<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
+		<IMPORT NAME="Driver-Postgis" MODULE="postgis_1.4.0.jar" MVN="mvn:org.talend.libraries/jts-1.12/6.0.0" REQUIRED="false" />
      	<IMPORT NAME="org.talend.sdi" MODULE="org.talend.sdi.jar" REQUIRED="false" />
-     	<IMPORT NAME="jts" MODULE="jts-1.9.jar" REQUIRED="false"/>
+     	<IMPORT NAME="jts" MODULE="jts-1.12.jar" REQUIRED="false"/>
     </IMPORTS>
   </CODEGENERATION>
    
