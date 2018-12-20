@@ -1,23 +1,4 @@
-<%@ jet
-	imports="
-		org.talend.core.model.process.INode
-		org.talend.core.model.process.ElementParameterParser
-		org.talend.core.model.metadata.IMetadataTable
-		org.talend.core.model.metadata.IMetadataColumn
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.metadata.types.JavaType
-		java.util.List
-		java.util.Map
-	"
-%>
-<%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
-%>
+	<%@ include file="../templates/Resources/ComponentBeginStart.javajet"%>
 
 	String dbquery_<%=cid%> =
 		"select indexed_file.id, indexed_file.url, indexed_file.modified " +
@@ -33,5 +14,4 @@
 		" where file_harvest.last_moddate_harvested is null "
 	;
 
-
-	<%@ include file="../templates/Resources/ComponentBegin.javajet"%>
+	<%@ include file="../templates/Resources/ComponentBeginFinish.javajet"%>

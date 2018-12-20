@@ -1,37 +1,20 @@
-<%@ jet
-	imports="
-		org.talend.core.model.process.INode
-		org.talend.core.model.process.ElementParameterParser
-		org.talend.core.model.metadata.IMetadataTable
-		org.talend.core.model.metadata.IMetadataColumn
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.metadata.types.JavaType
-		java.util.List
-		java.util.Map
-	"
-%>
-<%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
-%>
+	<%@ include file="../templates/Resources/ComponentBeginStart.javajet"%>
+
+	Long runNo_<%=cid%> = au.org.emii.talend.JobRunNos.getRunNo(<%=jobName%>);
 
 	String dbquery_<%=cid%> =
 		"select indexed_file.id, indexed_file.url, indexed_file.modified " +
 		"  from indexed_file " +
 		"  join index_job " +
 		"    on indexed_file.job_id = index_job.id " +
-		"   and indexed_file.last_indexed_run = index_job.last_run_no " +
 		"   and index_job.name = ? " +
 		"  left join file_harvest " +
 		"    on file_harvest.file_id = indexed_file.id " +
 		"   and file_harvest.harvest_type = ? " +
 		"   and file_harvest.last_change_type <> 'deleted' " +
-		" where file_harvest.last_change_run is null " +
+		" where indexed_file.last_indexed_run = " + runNo_<%=cid%>.toString() +
+		"   and file_harvest.last_change_run is null " +
 		"   and not indexed_file.deleted "
 	;
 
-	<%@ include file="../templates/Resources/ComponentBegin.javajet"%>
+	<%@ include file="../templates/Resources/ComponentBeginFinish.javajet"%>

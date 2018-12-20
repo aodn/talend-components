@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import au.org.emii.talend.JobRunNos;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -163,6 +164,10 @@ public class FileIndexUpdater {
             rs.next();
             jobId = rs.getLong("id");
             runNo = rs.getLong("last_run_no");
+
+            // publish run number used for this indexing job
+            JobRunNos.setRunNo(jobName, runNo);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
