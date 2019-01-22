@@ -1,0 +1,15 @@
+<%@ jet
+    imports="
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.ElementParameterParser
+    "
+%>
+<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+
+    String dieOnErrorValue = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+    boolean dieOnError = dieOnErrorValue != null && dieOnErrorValue.equalsIgnoreCase("true");
+%>

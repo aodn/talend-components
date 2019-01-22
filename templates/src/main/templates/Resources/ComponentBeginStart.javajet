@@ -1,0 +1,36 @@
+<%@ jet
+	imports="
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.core.model.metadata.IMetadataColumn
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	"
+%>
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+
+    String dbhost = ElementParameterParser.getValue(node, "__HOST__");
+    String dbport = ElementParameterParser.getValue(node, "__PORT__");
+    String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+    String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbuser = ElementParameterParser.getValue(node, "__USER__");
+    String dbpass = ElementParameterParser.getValue(node, "__PASS__");
+    
+    String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
+    String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
+
+    boolean useFilter = ElementParameterParser.getValue(node, "__USE_FILTER__").equalsIgnoreCase("true");
+    String filter = ElementParameterParser.getValue(node, "__FILTER__");
+    
+    boolean useCustomQuery = ElementParameterParser.getValue(node, "__USE_CUSTOM_QUERY__").equalsIgnoreCase("true");
+    String customQuery = ElementParameterParser.getValue(node, "__CUSTOM_QUERY__");
+
+    String dieOnErrorValue = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+    boolean dieOnError = dieOnErrorValue != null && dieOnErrorValue.equalsIgnoreCase("true");
+%>
+
