@@ -66,7 +66,9 @@
       <IMPORT NAME="gt-metadata" MODULE="gt-metadata-8.5.jar"
         REQUIRED="true" />
       <IMPORT NAME="gt-postgis" MODULE="gt-jdbc-postgis-8.5.jar"
-        REQUIRED="true" />
+              REQUIRED="true" />
+      <IMPORT NAME="postgis" MODULE="postgis-jdbc-2.1.0SVN.jar"
+              REQUIRED="true"/>
       <IMPORT NAME="gt-referencing" MODULE="gt-referencing-8.5.jar"
         REQUIRED="true" />
       <!-- CHECKME if needed -->
