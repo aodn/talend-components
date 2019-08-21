@@ -1,0 +1,4 @@
+services:
+    dev:
+        volumes:
+            - '${HOME}/.m2:/home/builder/.m2'
