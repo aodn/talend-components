@@ -26,9 +26,7 @@ pipeline {
     }
     post {
         success {
-            dir('dist/') {
-                archiveArtifacts artifacts: 'directory-build/target/*.zip', fingerprint: true, onlyIfSuccessful: true
-            }
+            archiveArtifacts artifacts: 'directory-build/target/*.zip', fingerprint: true, onlyIfSuccessful: true
         }
     }
 }
