@@ -57,9 +57,5 @@
       <id>mvnrepository</id>
       <url>http://mvnrepository.com/artifact/</url>
     </repository>
-    <repository>
-      <id>jenkins</id>
-      <url>https://jenkins.aodn.org.au/plugin/repository/everything</url>
-    </repository>
   </repositories>
 </project>
