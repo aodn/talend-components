@@ -110,7 +110,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
         java.sql.ResultSet rs_<%=cid %> = null;
 
         System.out.format(
-          "* iUpdateSpatialExtent - updating uuid '%s' from %s.%s.%s using %s degree resolution\n", 
+          "* iUpdateSpatialExtent - updating uuid '%s' from %s.%s.%s using %s degree resolution\n",
            <%= uuid %>, <%=dbschema%>, <%=dbtable%>, <%=dbcol%>, <%=resolution%>
         );
 
@@ -143,8 +143,29 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
             <% } %>
         }
 
+        // Connect to Geonetwork
+
+        it.geosolutions.geonetwork.GNClient geonetworkClient_<%= cid %> = new it.geosolutions.geonetwork.GNClient(
+          <%= gnServiceUrl %>,
+          <%= gnUsername %>,
+          <%= gnPassword %>
+        );
+
+        // Fetch specified metadata record
+
+        org.jdom.Document metadata_<%= cid %> = new org.jdom.Document(
+            geonetworkClient_<%= cid %>.get(<%= uuid %>)
+        );
+
         org.jdom.Namespace gmdNs = org.jdom.Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
         org.jdom.Namespace gcoNs = org.jdom.Namespace.getNamespace("gco", "http://www.isotc211.org/2005/gco");
+        org.jdom.Namespace gmlNs = org.jdom.Namespace.getNamespace("gml", "http://www.opengis.net/gml");
+
+        if(metadata_<%= cid %>.getRootElement().getNamespace().getURI().equals("http://standards.iso.org/iso/19115/-3/mdb/2.0")) {
+            gmdNs = org.jdom.Namespace.getNamespace("gex", "http://standards.iso.org/iso/19115/-3/gex/1.0");
+            gcoNs = org.jdom.Namespace.getNamespace("gco", "http://standards.iso.org/iso/19115/-3/gco/1.0");
+            gmlNs = org.jdom.Namespace.getNamespace("gml", "http://www.opengis.net/gml/3.2");
+        }
 
         List<org.jdom.Element> geographicElements_<%=cid%> = new java.util.ArrayList<org.jdom.Element>();
 
@@ -156,7 +177,9 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
             // Turn it into an XML document (Postgis doesn't include the gml namespace declaration in the returned xml
             // so we add a root element containing the required declaration)
 
-            StringBuilder postgisWrapper_<%=cid%> = new StringBuilder("<postgisResult xmlns:gml=\"http://www.opengis.net/gml\">");
+            StringBuilder postgisWrapper_<%=cid%> = new StringBuilder("<postgisResult xmlns:gml=\"");
+            postgisWrapper_<%=cid%>.append(gmlNs.getURI());
+            postgisWrapper_<%=cid%>.append("\">");
             postgisWrapper_<%=cid%>.append(boundingPolygon_<%=cid%>);
             postgisWrapper_<%=cid%>.append("</postgisResult>");
             String wrappedGml_<%=cid%> = postgisWrapper_<%=cid%>.toString();
@@ -173,41 +196,35 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
             // Convert included polygons into a list of iso19115/iso19139 gmd:geographicElements
 
             org.jdom.xpath.XPath xpath_<%=cid%> = org.jdom.xpath.XPath.newInstance("//gml:Polygon");
-            xpath_<%=cid%>.addNamespace(org.jdom.Namespace.getNamespace("gml", "http://www.opengis.net/gml"));
+            xpath_<%=cid%>.addNamespace(gmlNs);
             List<org.jdom.Element> polygons_<%=cid%> = (List<org.jdom.Element>) xpath_<%=cid%>.selectNodes(doc_<%=cid%>);
 
             for (org.jdom.Element polygon : polygons_<%=cid%>) {
                 polygon.setAttribute("srsName", srsName_<%=cid%>);
-                org.jdom.Element polygonElement = new org.jdom.Element("polygon", gmdNs).addContent((org.jdom.Element) polygon.clone());;
+                org.jdom.Element polygonElement = new org.jdom.Element("polygon", gmdNs);
+                if(metadata_<%= cid %>.getRootElement().getNamespace().getURI().equals("http://standards.iso.org/iso/19115/-3/mdb/2.0")) {
+                    org.jdom.Element surfaceMemberElement = new org.jdom.Element("surfaceMember", gmlNs).addContent((org.jdom.Element) polygon.clone());
+                    org.jdom.Element multiSurfaceElement = new org.jdom.Element("MultiSurface", gmlNs).addContent(surfaceMemberElement);
+                    polygonElement.addContent(multiSurfaceElement);
+                }
+                else {
+                    polygonElement.addContent((org.jdom.Element) polygon.clone());
+                }
                 org.jdom.Element exBoundingPolygonElement = new org.jdom.Element("EX_BoundingPolygon", gmdNs).addContent(polygonElement);
                 org.jdom.Element geographicElement = new org.jdom.Element("geographicElement", gmdNs).addContent(exBoundingPolygonElement);
                 geographicElements_<%=cid%>.add(geographicElement);
             }
         }
 
-        // Connect to Geonetwork
-
-        it.geosolutions.geonetwork.GNClient geonetworkClient_<%= cid %> = new it.geosolutions.geonetwork.GNClient(
-          <%= gnServiceUrl %>,
-          <%= gnUsername %>,
-          <%= gnPassword %>
-        );
-
-        // Fetch specified metadata record
-
-        org.jdom.Document metadata_<%= cid %> = new org.jdom.Document(
-            geonetworkClient_<%= cid %>.get(<%= uuid %>)
-        );
-
-        // Update metadata mecord
+        // Update metadata record
 
         MetadataUpdater metadataUpdater = new MetadataUpdater();
 
         List<org.jdom.Namespace> namespaces_<%= cid %> = new java.util.ArrayList<org.jdom.Namespace>();
         namespaces_<%= cid %>.add(gmdNs);
 
-        metadataUpdater.removeNodes(metadata_<%= cid %>, namespaces_<%= cid %>, "//gmd:EX_Extent", "geographicElement", gmdNs);
-        metadataUpdater.addNodes(metadata_<%= cid %>,  namespaces_<%= cid %>, "//gmd:EX_Extent", geographicElements_<%=cid%>);
+        metadataUpdater.removeNodes(metadata_<%= cid %>, namespaces_<%= cid %>, "//"+gmdNs.getPrefix()+":EX_Extent", "geographicElement", gmdNs);
+        metadataUpdater.addNodes(metadata_<%= cid %>,  namespaces_<%= cid %>, "//"+gmdNs.getPrefix()+":EX_Extent", geographicElements_<%=cid%>);
 
         // Post updated record back to Geonetwork
 
