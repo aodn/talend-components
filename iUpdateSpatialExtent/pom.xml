@@ -16,7 +16,7 @@
     <dependency>
       <groupId>it.geosolutions</groupId>
       <artifactId>geonetwork-manager</artifactId>
-      <version>1.3-imos-20191122.001414-4</version>
+      <version>1.3-imos-SNAPSHOT</version>
       <type>jar</type>
       <scope>runtime</scope>
     </dependency>
