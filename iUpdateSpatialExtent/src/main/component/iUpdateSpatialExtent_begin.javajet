@@ -205,6 +205,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
                 if(metadata_<%= cid %>.getRootElement().getNamespace().getURI().equals("http://standards.iso.org/iso/19115/-3/mdb/2.0")) {
                     org.jdom.Element surfaceMemberElement = new org.jdom.Element("surfaceMember", gmlNs).addContent((org.jdom.Element) polygon.clone());
                     org.jdom.Element multiSurfaceElement = new org.jdom.Element("MultiSurface", gmlNs).addContent(surfaceMemberElement);
+                    multiSurfaceElement.setAttribute("srsName", srsName_<%=cid%>);
                     polygonElement.addContent(multiSurfaceElement);
                 }
                 else {
