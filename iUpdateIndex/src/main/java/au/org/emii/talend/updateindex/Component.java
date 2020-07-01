@@ -37,8 +37,10 @@ public class Component {
                     );
 
                     if (file.exists()) {
+                        System.out.println("* iUpdateIndex: " + file + " is new or has been modified");
                         fileIndexUpdater.addOrUpdateFile(file);
                     } else {
+                        System.out.println("* iUpdateIndex: " + file + " has been deleted");
                         fileIndexUpdater.deleteFile(file);
                     }
 

@@ -90,7 +90,7 @@ public class FileIndexUpdater {
             boolean recordMarked = pstmtMarkDeleted.executeUpdate() > 0;
 
             if (!recordMarked) {
-                System.err.print("FILE_INDEX_UPDATER - WARNING: " + file.getRelativePath() + " not found on index");
+                System.err.println("* iUpdateIndex: WARNING - " + file.getRelativePath() + " not found on index - no action will be taken");
             }
 
             deletedFileCount++;
