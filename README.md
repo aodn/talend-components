@@ -22,11 +22,13 @@ have not yet migrated to using that process.
 
 ## Using the maven project
 
-The maven project consists of a sub module for each component to be built, a component-packager sub-module
-used by the parent project to assemble each component into a zip file, a directory-build
-sub module that unpacks each component built by the component-packager into the user component build directory
-and the parent project which defines common dependencies and calls the component packager for each
-component included in the build.
+The maven project consists of:
+
+* a sub module for each component to be built, 
+* a component-packager sub-module which defines how to assemble each component into a zip file, 
+* a directory-build sub module that unpacks each component built by the component-packager into the user component build directory, and
+* the parent project which defines common dependencies and configuration for the component-packager and the sub modules
+  included in the project.
 
 ### Creating a component
 
