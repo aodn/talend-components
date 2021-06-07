@@ -27,7 +27,7 @@ The maven project consists of:
 * a sub module for each component to be built, 
 * a component-packager sub-module which defines how to assemble each component into a zip file, 
 * a directory-build sub module that unpacks each component built by the component-packager into the user component build directory, and
-* the parent project which defines common dependencies and configuration for the component-packager and the sub modules
+* the parent project which defines common dependencies, configuration for the component-packager and the sub modules
   included in the project.
 
 ### Creating a component
@@ -74,21 +74,25 @@ bin/po-box.sh
 bin/talend.sh
 ```
 
-Once talend is up and running, set both of:
+Once talend is up and running, set the following:
 
 * 'Window' menu > Preferences > Talend > Components > User component folder
-* 'Window' menu > Preferences > Talend Component Designer > Component Project
 
 to `/vagrant/src/talend-components/directory-build/target/talend-components`.
 
 To build and test a change to a component's source code:
 
 1. `mvn install` from the `talend-components` directory
-1. Switch to the `Component's Designer` perspective
-1. Show view `Component Designer`
-1. Right-click on the component in the `Component Designer` view, then click `Refresh`
-1. Right-click on the component in the `Component Designer` view, then click `Push Components to Palette`
+1. set 'Window' menu > Preferences > Talend > Components > User component folder
+to a directory not containing any components e.g. /tmp
+1. click apply
+1. set 'Window' menu > Preferences > Talend > Components > User component folder 
+to `/vagrant/src/talend-components/directory-build/target/talend-components`.
+1. click apply
 
 You should now be able to run the job with the updated component.  Simple.
+
+
+
 
 
