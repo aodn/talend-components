@@ -9,7 +9,7 @@ use when creating ETL jobs.
 
 ## Writing a custom component
 
-The following documentation was used to write the current set of components (for version 5.0)
+The following documentation for Talend version 5 was used to write the current set of components.
 
 * [Writing custom components](https://www.talendbyexample.com/talend-custom-component-writing.html)
 
@@ -22,8 +22,11 @@ have not yet migrated to using that process.
 
 ## Using the maven project
 
-The maven project consists of sub modules for each component to be built and two sub modules (component-packager and directory-build)
-used to build the user component directory containing components as described above for installation in Talend Open Studio.
+The maven project consists of a sub module for each component to be built, a component-packager sub-module
+used by the parent project to assemble each component into a zip file, a directory-build
+sub module that unpacks each component built by the component-packager into the user component build directory
+and the parent project which defines common dependencies and calls the component packager for each
+component included in the build.
 
 ### Creating a component
 
