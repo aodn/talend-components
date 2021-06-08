@@ -95,7 +95,7 @@ You should now be able to run the job with the updated component.  Simple.
 ## Component Catalogue
 
 * [pipeline integration](doc/pipeline_integration.md)
-
+* [liquibase](doc/liquibase.md)
 
 
 
