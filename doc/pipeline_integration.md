@@ -1,30 +1,27 @@
-## Manifest processing
+## Pipeline Integration
 
-### Background
+This page describes the components added during the first pipeline project to package common logic required to process 
+manifest files/staged files and trigger required harvesting actions for use in harvesters.
 
-To support the required integration with the pipeline a number of custom components were added during the first
-pipeline project and harvesters is use at the time updated to use them.
+### Context
 
-The pipeline calls the configured harvester for a collection to harvest/delete harvested metadata/data,
+When a pipeline is configured to harvest metadata/data from incoming files for a collection, the harvester is called
 passing the location of the temporary directory into which incoming files have been placed (base) and 
-the location of a manifest file containing the list of files to be processed (fileList) as context parameters.
-Where a file in the manifest does not exist in the temporary directory, this should trigger deletion of 
-any harvested metadata/data for that file.
+the location of a manifest file containing the list of files to be processed (fileList) along with any 
+environment/collection specific configured for that collection in chef-private. Where a file in the manifest does 
+not exist in the temporary directory, this triggers deletion of any previously harvested metadata/data for that file.
 
 ### Supporting tables
 
-Manifest processing components use the following tables in the harvesters schema to record state between 
-harvests.  They were used prior to the introduction of manifest processing when pipeline style processing
-was performed in talend harvesters and were re-purposed to minimise the changes required to harvesters at 
-the time.
+Pipeline integration components use the following tables in the harvesters schema to record state during/between 
+harvests.
 
 ![Supporting tables](mf_tables.png)
 
 #### index_job
 
-This table contains details of each harvesting job identifier used.  Prior to manifest processing, a numbner of indexing
-jobs could be run by a particular harvester e.g. for files from different sources.   For manifest 
-processing only one job is normally used and this table now just records the last run number.
+This table records harvesting jobs run in the schema.  For manifest processing only one job is normally used and this table 
+just records the last run details for that job.
 
 column | description
 --- | --- 
@@ -53,11 +50,11 @@ deleted | records whether the file has been deleted
 
 This table records what harvesting action is/was required for a file in the last harvester run (could be the current run)
 
-Note that its possible to perform different types of harvesting on a file and so the table records 
+Note that its possible to perform different types of harvesting on a file (e.g. metadata and data) and so the table records what 
 harvest action is/was required for a particular file for a particular type of harvest.
 
-This table was used in the past to allow processing to be restarted in the event of an error, but is not 
-required for that purpose any more as the pipeline controls what files need to be processed.
+This table was used in the past prior to the pipeline project to allow processing to be restarted in the event of an error,
+but is not required for that purpose any more as the pipeline controls what files need to be processed.
 
 id | unique identifier for harvest action
 harvest_type | type of harvest recorded
