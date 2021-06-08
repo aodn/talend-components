@@ -56,7 +56,7 @@ iUpdateIndex/src/main/component/iUpdateIndex_java.xml).
 ### Building components
 
 It is assumed that if you are here, you are interested in *developing* (not just *using*) AODN custom talend components.
-The easiest way to get started is to use the [project officer's vagrant machine](https://github.com/aodn/chef/blob/master/doc/README.examples.md#po-box), as follows.
+The easiest way to get started is to use the [project officer's pipeline box](https://github.com/aodn/chef/blob/master/doc/README.pipeline-box.md), as follows.
 
 Assuming you have cloned and are in the root of the `chef` repo:
 
@@ -68,7 +68,7 @@ mvn clean test install
 cd -
 
 # Start the PO VM.
-bin/po-box.sh
+bin/pipeline-box.sh
 
 # Run talend
 bin/talend.sh
