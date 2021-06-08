@@ -63,16 +63,11 @@ last_moddate_harvested | last modification date recorded for the file during har
 last_change_type | records action performed the last time this file was changed - 'modified', 'new' or 'deleted'
 last_change_run | run number action was performed in
 
-### Manifest processing components
+### Pipeline integration components
 
-* iUpdateIndex - update index_job and indexed_file to record a new harvester job run and
-  the files to be processed or deleted in that run for the supplied manifest file and directory contents 
-* iNewFileList - iterate over all newly added files in the current harvester run for the specified harvest type and job
-   and update file_harvest as each file is processed to record action performed.
-* iModifiedFileList - iterate over all 'updated' files in the current harvester run for the specified harvest type and job
-   and update file_harvest  as each file is processed to record action performed.
-* iNewOrModifiedFileList - iterate over all new or updated files in the current harvester run for the specified harvest type and job
-  and update file_harvest  as each file is processed to record action performed.
-* iDeletedFileList - iterate over all deleted files in the current harvester run for the specificied harvest type and job
-  and update file_harvest  as each file is processed to record action performed.
+* [iUpdateIndex](iUpdateIndex/README.md)
+* [iNewFileList](iNewFileList/README.md)
+* [iModifiedFileList](iModifiedFileList/README.md)
+* [iNewOrModifiedFileList](iNewOrModifiedFileList/README.md)
+* [iDeletedFileList](iDeletedFileList/README.md)
 

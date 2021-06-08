@@ -94,8 +94,31 @@ You should now be able to run the job with the updated component.  Simple.
 
 ## Component Catalogue
 
-* [pipeline integration](doc/pipeline_integration.md)
-* [liquibase](doc/liquibase.md)
+### Pipeline Integration
+
+Components used to perform common pipeline processing.  Refer to 
+[pipeline integration](doc/pipeline_integration.md) for some background on what these
+components are used for and supporting tables. 
+
+* [iUpdateIndex](iUpdateIndex/README.md)
+* [iNewFileList](iNewFileList/README.md)
+* [iModifiedFileList](iModifiedFileList/README.md)
+* [iNewOrModifiedFileList](iNewOrModifiedFileList/README.md)
+* [iDeletedFileList](iDeletedFileList/README.md)
 
 
+### Schema versioning/upgrade
 
+* [iPostgresqlDbUpdate](iPostgresqlDbUpdate/README.md)
+
+### GeoNetwork
+
+* [iUpdateSpatialExtent](iUpdateSpatialExtent/README.md)
+
+### NetCDF
+
+* [iNetCDFInput](iNetCDFInput/README.md)
+* [iNetCDFGlobalAttribute](iNetCDFGlobalAttribute/README.md)
+* [iNetCDFGlobalAttributes](iNetCDFGlobalAttributes/README.md)
+* [iNetCDFVariable](iNetCDFVariable/README.md)
+* [iNetCDFVariableAttribute](iNetCDFVariableAttribute/README.md)
