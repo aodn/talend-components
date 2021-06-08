@@ -92,6 +92,9 @@ to `/vagrant/src/talend-components/directory-build/target/talend-components`.
 
 You should now be able to run the job with the updated component.  Simple.
 
+## Custom components
+
+* [pipeline integration components](doc/manifest_processing.md)
 
 
 
