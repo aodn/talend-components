@@ -48,10 +48,10 @@ deleted | records whether the file has been deleted
 
 ### file_harvest
 
-This table records what harvesting action is/was required for a file in the last harvester run (could be the current run)
+This table records what harvesting action was required for a file in the last run updating this file
 
 Note that its possible to perform different types of harvesting on a file (e.g. metadata and data) and so the table records what 
-harvest action is/was required for a particular file for a particular type of harvest.
+harvest action was required for a particular file for a particular type of harvest.
 
 This table was used in the past prior to the pipeline project to allow processing to be restarted in the event of an error,
 but is not required for that purpose any more as the pipeline controls what files need to be processed.
@@ -59,9 +59,9 @@ but is not required for that purpose any more as the pipeline controls what file
 id | unique identifier for harvest action
 harvest_type | type of harvest recorded
 file_id | id of file being harvested
-last_moddate_harvested | last modification date harvested (not used for manifest processing)
-last_change_type | 'modified', 'new' or 'deleted'
-last_change_run | run number harvesting action applied/applies to
+last_moddate_harvested | last modification date recorded for the file during harvesting
+last_change_type | records action performed the last time this file was changed - 'modified', 'new' or 'deleted'
+last_change_run | run number action was performed in
 
 ### Manifest processing components
 
