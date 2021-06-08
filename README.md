@@ -71,7 +71,7 @@ cd -
 bin/pipeline-box.sh
 
 # Run talend
-bin/talend.sh
+bin/talend7-pipeline.sh
 ```
 
 Once talend is up and running, set the following:
