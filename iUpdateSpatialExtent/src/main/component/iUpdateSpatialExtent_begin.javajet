@@ -238,7 +238,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
         geonetworkClient_<%= cid %>.updateMetadata(<%= uuid %>, metadata_<%= cid %>.getRootElement());
 
         } catch (Exception e) {
-            System.out.format( "* iUpdateSpatialExtent - ERROR UPDATING SPATIAL EXTENT: cid=%s jobName=%s harvestType=%s uuid=%s exception=%s \n", <%= cid %>, <%= jobName %>, <%= jobName %>, <%= uuid %>, e.getMessage());
+            System.out.format( "* iUpdateSpatialExtent - ERROR UPDATING SPATIAL EXTENT: cid=%s jobName=%s harvestType=%s uuid=%s exception=%s \n", "<%= cid %>", <%= jobName %>, <%= harvestType %>, <%= uuid %>, e.getMessage());
             System.out.format( "* iUpdateSpatialExtent - stack trace to follow");
             e.printStackTrace();
         }
