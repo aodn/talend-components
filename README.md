@@ -1,6 +1,8 @@
 ## This repository
 
-This repository contains the source code for Talend custom components used by the AODN.
+This repository contains the source code for Talend custom components used by the AODN. 
+### Licensing
+This project is licensed under the terms of the GNU GPLv3 license.
 
 ## What are talend custom components?
 
