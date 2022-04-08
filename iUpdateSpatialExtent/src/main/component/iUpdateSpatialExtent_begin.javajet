@@ -103,6 +103,9 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
     if(requireUpdate_<%=cid%>)
     {
+
+        try {
+
         String boundingPolygon_<%=cid%> = null;
 
         java.sql.Connection conn_<%=cid%> = null;
@@ -145,6 +148,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
         // Connect to Geonetwork
 
+        System.out.format( "* iUpdateSpatialExtent - creating geonetwork client\n");
         it.geosolutions.geonetwork.GNClient geonetworkClient_<%= cid %> = new it.geosolutions.geonetwork.GNClient(
           <%= gnServiceUrl %>,
           <%= gnUsername %>,
@@ -153,6 +157,7 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
         // Fetch specified metadata record
 
+        System.out.format( "* iUpdateSpatialExtent - getting metadata record: %s\n", <%= uuid %>);
         org.jdom.Document metadata_<%= cid %> = new org.jdom.Document(
             geonetworkClient_<%= cid %>.get(<%= uuid %>)
         );
@@ -229,5 +234,12 @@ String harvestType = ElementParameterParser.getValue(node, "__HARVEST_TYPE__");
 
         // Post updated record back to Geonetwork
 
+        System.out.format( "* iUpdateSpatialExtent - updating metadata: %s\n", <%= uuid %>);
         geonetworkClient_<%= cid %>.updateMetadata(<%= uuid %>, metadata_<%= cid %>.getRootElement());
+
+        } catch (Exception e) {
+            System.out.format( "* iUpdateSpatialExtent - ERROR UPDATING SPATIAL EXTENT: cid=%s jobName=%s harvestType=%s uuid=%s exception=%s \n", "<%= cid %>", <%= jobName %>, <%= harvestType %>, <%= uuid %>, e.getMessage());
+            System.out.format( "* iUpdateSpatialExtent - stack trace to follow");
+            e.printStackTrace();
+        }
     }
