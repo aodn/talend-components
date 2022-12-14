@@ -183,9 +183,10 @@ java.util.Iterator<thredds.catalog.InvDataset> catalogIterator_<%=cid%> = new ja
 
 int nb_line_<%=cid %> = 0;
 
+System.out.println(catalogIterator_<%=cid%>.hasNext());
 while (catalogIterator_<%=cid%>.hasNext()) {
         thredds.catalog.InvDataset ds_<%=cid %> = catalogIterator_<%=cid%>.next();
-
+        System.out.println(nb_line_<%=cid %>);
 		if (nb_line_<%=cid %> > 0 && nb_line_<%=cid %> % 1000 == 0) {
 		
 			System.out.println("Processed " + nb_line_<%=cid %> + " files from Thredds catalog");
