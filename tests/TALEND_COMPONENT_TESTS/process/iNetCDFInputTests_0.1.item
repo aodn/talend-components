@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <talendfile:ProcessType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" defaultContext="Default" jobType="Standard">
   <context confirmationNeeded="false" name="Default">
-    <contextParameter comment="" name="testDataDir" prompt="testDataDir?" promptNeeded="false" repositoryContextId="_vzXSwOV4EeW9O_Zrk_wpHw" type="id_String" value="/vagrant/src/talend-components/tests/TALENDCOMPONENTTESTS/test_data"/>
+    <contextParameter comment="" name="testDataDir" prompt="testDataDir?" promptNeeded="false" repositoryContextId="_vzXSwOV4EeW9O_Zrk_wpHw" type="id_String" value="/vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/test_data"/>
   </context>
   <parameters>
     <elementParameter field="TEXT" name="SCREEN_OFFSET_X" value="0" show="false"/>
