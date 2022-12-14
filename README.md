@@ -94,6 +94,49 @@ to `/vagrant/src/talend-components/directory-build/target/talend-components`.
 
 You should now be able to run the job with the updated component.  Simple.
 
+## Components development using the tests
+
+Some tests require a database and Geonetwork. We use the PO pipeline box and stack to provide these.
+
+Run the PO pipeline box with the following added:
+  Schema: soop_co2
+  watches: SOOP_CO2
+  jobs: soop_co2
+
+In the stack Geonetwork run the "Catalogue Portal for systest" harvester to obtain required metadata.
+
+
+Get the talend-components repo so that it can be used in Talend via the PO pipeline box.
+```
+cd ~/git/chef  # Or your chef directory
+git clone git@github.com:aodn/talend-components.git src/talend-components
+cd src/talend-components
+mvn clean test install
+```
+
+Run Talend 7
+```
+bin/talend7-pipeline.sh
+Import and open the /vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/ project
+'Window' menu > Preferences > Talend > Components > User component folder:  /vagrant/src/talend-components/directory-build/target/talend-components
+```
+
+Change the context values in Talend to match your PO stack.
+
+Execute the 'runAll 0.1' job (or any single job) to run tests.
+
+If changes are made to /vagrant/src/talend-components/directory-build/target/talend-components then:
+
+	1. cd ~/git/chef/src/talend-components 
+	2. mvn install
+	3. Reload the components in Talend
+		b. Window → Preferences → Talend → Components -->User component folder
+		c. Paste in  /tmp
+		d. Apply
+		e. Window → Preferences → Talend → Components -->User component folder
+		f. Paste in /vagrant/src/talend-components/directory-build/target/talend-components
+		g. Apply
+
 ## Component Catalogue
 
 ### Pipeline Integration
