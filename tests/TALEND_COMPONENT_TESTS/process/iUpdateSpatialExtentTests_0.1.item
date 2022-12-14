@@ -78,7 +78,7 @@
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15" show="false"/>
     <elementParameter field="CHECK" name="ON_DATABASE_FLAG" value="false" show="false"/>
     <elementParameter field="CLOSED_LIST" name="DB_TYPE" value="tJDBCOutput" show="false"/>
-    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="ojdbc14-10g.jar" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="ORACLE_10" show="false"/>
     <elementParameter field="TEXT" name="URL" value="&quot;&quot;" show="false"/>
     <elementParameter field="TABLE" name="DRIVER_JAR" show="false"/>
     <elementParameter field="TEXT" name="DRIVER_CLASS" value="&quot;&quot;" show="false"/>
@@ -163,7 +163,7 @@
     <elementParameter field="QUERYSTORE_TYPE" name="QUERYSTORE" value="&quot;&quot;"/>
     <elementParameter field="TECHNICAL" name="QUERYSTORE:REPOSITORY_QUERYSTORE_TYPE" value="" show="false"/>
     <elementParameter field="TECHNICAL" name="QUERYSTORE:QUERYSTORE_TYPE" value="BUILT_IN"/>
-    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;insert into soop_co2.indexed_file (id, job_id, url, last_indexed_run) &#xA;values (1, 1, '/vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/test_data/IMOS_SOOP-CO2_GST_20210630T013357Z_VLMJ_FV01.zip', 2);&quot;"/>
+    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;insert into soop_co2.indexed_file (id, job_id, url, last_indexed_run) &#xA;values (1, 1, '/vagrant/src/talend-components/tests/TALENDCOMPONENTTESTS/test_data/IMOS_SOOP-CO2_GST_20210630T013357Z_VLMJ_FV01.zip', 2);&quot;"/>
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;" show="false"/>
@@ -338,7 +338,7 @@
     <elementParameter field="QUERYSTORE_TYPE" name="QUERYSTORE" value="&quot;&quot;"/>
     <elementParameter field="TECHNICAL" name="QUERYSTORE:REPOSITORY_QUERYSTORE_TYPE" value="" show="false"/>
     <elementParameter field="TECHNICAL" name="QUERYSTORE:QUERYSTORE_TYPE" value="BUILT_IN"/>
-    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;insert into soop_co2.visualisation_wms (&#xA;&#x9;file_id, url, size, time_coverage_start, time_coverage_end, geom, vessel_name&#xA;) values (&#xA;&#x9;1, &#xA;&#x9;'/vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/test_data/IMOS_SOOP-CO2_GST_20210630T013357Z_VLMJ_FV01.zip',&#xA;&#x9;2000,&#xA;&#x9;'2022-12-1',&#xA;&#x9;'2022-12-31',&#xA;&#x9;ST_GeomFromText('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 4326),&#xA;&#x9;'MV Vessel Name'&#xA;);&quot;"/>
+    <elementParameter field="MEMO_SQL" name="QUERY" value="&quot;insert into soop_co2.visualisation_wms (&#xA;&#x9;file_id, url, size, time_coverage_start, time_coverage_end, geom, vessel_name&#xA;) values (&#xA;&#x9;1, &#xA;&#x9;'/vagrant/src/talend-components/tests/TALENDCOMPONENTTESTS/test_data/IMOS_SOOP-CO2_GST_20210630T013357Z_VLMJ_FV01.zip',&#xA;&#x9;2000,&#xA;&#x9;'2022-12-1',&#xA;&#x9;'2022-12-31',&#xA;&#x9;ST_GeomFromText('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 4326),&#xA;&#x9;'MV Vessel Name'&#xA;);&quot;"/>
     <elementParameter field="LABEL" name="NOTE" value="This option only applies when deploying and running in the Talend Runtime"/>
     <elementParameter field="CHECK" name="SPECIFY_DATASOURCE_ALIAS" value="false"/>
     <elementParameter field="TEXT" name="DATASOURCE_ALIAS" value="&quot;&quot;" show="false"/>

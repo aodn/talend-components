@@ -66,7 +66,7 @@
     <elementParameter field="TECHNICAL" name="ENCODING:ENCODING_TYPE" value="ISO-8859-15" show="false"/>
     <elementParameter field="CHECK" name="ON_DATABASE_FLAG" value="false" show="false"/>
     <elementParameter field="CLOSED_LIST" name="DB_TYPE" value="tJDBCOutput" show="false"/>
-    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="ojdbc14-10g.jar" show="false"/>
+    <elementParameter field="CLOSED_LIST" name="DB_VERSION" value="ORACLE_10" show="false"/>
     <elementParameter field="TEXT" name="URL" value="&quot;&quot;" show="false"/>
     <elementParameter field="TABLE" name="DRIVER_JAR" show="false"/>
     <elementParameter field="TEXT" name="DRIVER_CLASS" value="&quot;&quot;" show="false"/>
@@ -108,8 +108,8 @@
     <routinesParameter id="_Wwhz8OUWEeWju-xUGvaDjw" name="StringHandling"/>
     <routinesParameter id="_WwewoOUWEeWju-xUGvaDjw" name="TalendDataGenerator"/>
     <routinesParameter id="_WwjpIOUWEeWju-xUGvaDjw" name="TalendDate"/>
-    <routinesParameter id="_Wwgl0OUWEeWju-xUGvaDjw" name="TalendString"/>
     <routinesParameter id="_JXDoYHaTEe20KocWzpf-pA" name="TalendStringUtil"/>
+    <routinesParameter id="_Wwgl0OUWEeWju-xUGvaDjw" name="TalendString"/>
   </parameters>
   <node componentName="iOPeNDAPAttributes" componentVersion="0.1" offsetLabelX="0" offsetLabelY="0" posX="192" posY="160">
     <elementParameter field="TEXT" name="UNIQUE_NAME" value="iOPeNDAPAttributes_1" show="false"/>
