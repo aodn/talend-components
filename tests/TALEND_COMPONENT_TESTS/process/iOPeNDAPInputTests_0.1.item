@@ -140,6 +140,9 @@
     <elementParameter field="CHECK" name="Version_V2_0"/>
     <elementParameter field="CHECK" name="Version_V3_2"/>
     <elementParameter field="CHECK" name="Version_V4.0"/>
+    <elementParameter field="CHECK" name="Version_V2_0"/>
+    <elementParameter field="CHECK" name="Version_V3_2"/>
+    <elementParameter field="CHECK" name="Version_V4.0"/>
     <metadata connector="FLOW" name="tJavaFlex_1"/>
   </node>
   <node componentName="tJava" componentVersion="0.101" offsetLabelX="0" offsetLabelY="0" posX="448" posY="160">

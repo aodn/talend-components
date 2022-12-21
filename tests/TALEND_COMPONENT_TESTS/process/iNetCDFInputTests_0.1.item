@@ -139,11 +139,14 @@
     <elementParameter field="MEMO_JAVA" name="CODE_MAIN" value="Map&lt;String, Object> row = new HashMap&lt;String, Object>();&#xA;&#xA;row.put(&quot;TIME&quot;, measurements.TIME);&#xA;row.put(&quot;LATITUDE&quot;, measurements.LATITUDE);&#xA;row.put(&quot;LONGITUDE&quot;, measurements.LONGITUDE);&#xA;row.put(&quot;VBSC&quot;, measurements.VBSC);&#xA;&#xA;rows.add(row);"/>
     <elementParameter field="MEMO_JAVA" name="CODE_END" value="globalMap.put(&quot;rows&quot;, rows);"/>
     <elementParameter field="CHECK" name="Version_V2_0" value="false" show="false"/>
-    <elementParameter field="CHECK" name="Version_V3_2" value="false" show="false"/>
+    <elementParameter field="CHECK" name="Version_V3_2" value="true" show="false"/>
     <elementParameter field="CHECK" name="Version_V4.0" value="false" show="false"/>
     <elementParameter field="MEMO_IMPORT" name="IMPORT" value="import java.util.List;&#xA;import java.util.Map;&#xA;import java.util.ArrayList;&#xA;import java.util.HashMap;&#xA;"/>
     <elementParameter field="TEXT" name="LABEL" value="collectRows"/>
     <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <elementParameter field="CHECK" name="Version_V2_0"/>
+    <elementParameter field="CHECK" name="Version_V3_2"/>
+    <elementParameter field="CHECK" name="Version_V4.0"/>
     <metadata connector="FLOW" name="tJavaFlex_1"/>
   </node>
   <node componentName="tJava" componentVersion="0.101" offsetLabelX="0" offsetLabelY="0" posX="160" posY="64">
@@ -209,11 +212,14 @@
     <elementParameter field="MEMO_JAVA" name="CODE_MAIN" value="Map&lt;String, Object> row = new HashMap&lt;String, Object>();&#xA;&#xA;row.put(&quot;time&quot;, timestep.time);&#xA;row.put(&quot;latitude&quot;, timestep.latitude);&#xA;row.put(&quot;longitude&quot;, timestep.longitude);&#xA;&#xA;rows.add(row);"/>
     <elementParameter field="MEMO_JAVA" name="CODE_END" value="globalMap.put(&quot;rows&quot;, rows);"/>
     <elementParameter field="CHECK" name="Version_V2_0" value="false" show="false"/>
-    <elementParameter field="CHECK" name="Version_V3_2" value="false" show="false"/>
+    <elementParameter field="CHECK" name="Version_V3_2" value="true" show="false"/>
     <elementParameter field="CHECK" name="Version_V4.0" value="false" show="false"/>
     <elementParameter field="MEMO_IMPORT" name="IMPORT" value="import java.util.List;&#xA;import java.util.Map;&#xA;import java.util.ArrayList;&#xA;import java.util.HashMap;&#xA;"/>
     <elementParameter field="TEXT" name="LABEL" value="collectRows"/>
     <elementParameter field="TEXT" name="CONNECTION_FORMAT" value="row"/>
+    <elementParameter field="CHECK" name="Version_V2_0"/>
+    <elementParameter field="CHECK" name="Version_V3_2"/>
+    <elementParameter field="CHECK" name="Version_V4.0"/>
     <metadata connector="FLOW" name="tJavaFlex_2"/>
   </node>
   <node componentName="tJava" componentVersion="0.101" offsetLabelX="0" offsetLabelY="0" posX="576" posY="416">
