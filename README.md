@@ -114,6 +114,8 @@ cd src/talend-components
 mvn clean test install
 ```
 
+On the pipeline box: 	`rm -r /var/lib/talend7/workspace/TALEND_COMPONENT_TESTS/`
+
 Run Talend 7
 ```
 bin/talend7-pipeline.sh
@@ -136,6 +138,14 @@ If changes are made to /vagrant/src/talend-components/directory-build/target/tal
 		e. Window → Preferences → Talend → Components -->User component folder
 		f. Paste in /vagrant/src/talend-components/directory-build/target/talend-components
 		g. Apply
+
+If changes are made to the tests do this in the Talend GUI to put them into git:
+
+	Right click repository
+	  Export items
+	    Select root directory: /vagrant/src/talend-components/tests
+	    Export dependencies
+	    Select All
 
 ## Component Catalogue
 
