@@ -119,7 +119,7 @@ On the pipeline box: 	`rm -r /var/lib/talend7/workspace/TALEND_COMPONENT_TESTS/`
 Run Talend 7
 ```
 bin/talend7-pipeline.sh
-Import and open the /vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/ project
+Import and open the /vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/ project.   (Project name must be: talend-component-tests)
 'Window' menu > Preferences > Talend > Components > User component folder:  /vagrant/src/talend-components/directory-build/target/talend-components
 ```
 
