@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ContextType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" xmi:id="_CVaxoHaTEe20KocWzpf-pA" confirmationNeeded="false" name="Default">
+  <contextParameter xmi:id="_CVaxoXaTEe20KocWzpf-pA" comment="" name="testDataDir" prompt="testDataDir?" promptNeeded="false" type="id_String" value="/vagrant/src/talend-components/tests/TALEND_COMPONENT_TESTS/test_data"/>
+</talendfile:ContextType>
