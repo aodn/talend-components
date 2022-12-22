@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<talendfile:ContextType xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:talendfile="platform:/resource/org.talend.model/model/TalendFile.xsd" xmi:id="_CVkioHaTEe20KocWzpf-pA" confirmationNeeded="false" name="Default">
+  <contextParameter xmi:id="_CVkioXaTEe20KocWzpf-pA" comment="" name="testUrl" prompt="testUrl?" promptNeeded="false" type="id_String" value="&quot;http://thredds.aodn.org.au/thredds/dodsC/IMOS/Argo/dac/csiro/5900854/profiles/D5900854_073.nc&quot;"/>
+</talendfile:ContextType>
