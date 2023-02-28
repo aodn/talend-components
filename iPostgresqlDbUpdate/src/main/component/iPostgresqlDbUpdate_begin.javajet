@@ -107,7 +107,7 @@
     	database_<%=cid%>.setDefaultSchemaName(schema_<%=cid%>); 
         liquibase_<%=cid%> = new liquibase.Liquibase(fileName_<%=cid%>, new liquibase.resource.FileSystemResourceAccessor(basePath_<%=cid%>), database_<%=cid%>);
 
-        liquibase_<%=cid%>.update();
+        liquibase_<%=cid%>.update(null);
     } finally {
         if (conn_<%=cid%> != null) {
             conn_<%=cid%>.rollback();

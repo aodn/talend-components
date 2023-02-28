@@ -56,7 +56,7 @@
 &lt;databaseChangeLog 
     xmlns=&quot;http://www.liquibase.org/xml/ns/dbchangelog&quot;
     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-    xsi:schemaLocation=&quot;http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.19.xsd&quot; objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"&gt;
+    xsi:schemaLocation=&quot;http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd&quot;&gt;
     
     &lt;changeSet author=&quot;talend&quot; id=&quot;changeset-1&quot;&gt;
         &lt;createTable tableName=&quot;dummy&quot;&gt;
