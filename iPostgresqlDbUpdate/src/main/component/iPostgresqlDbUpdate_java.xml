@@ -56,7 +56,7 @@
 &lt;databaseChangeLog 
     xmlns=&quot;http://www.liquibase.org/xml/ns/dbchangelog&quot;
     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-    xsi:schemaLocation=&quot;http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.19.xsd" objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"&gt;
+    xsi:schemaLocation=&quot;http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"&gt;
     
     &lt;changeSet author=&quot;talend&quot; id=&quot;changeset-1&quot;&gt;
         &lt;createTable tableName=&quot;dummy&quot;&gt;
@@ -69,7 +69,7 @@
   </PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT MODULE="liquibase-core-4.19.0.jar" NAME="liquibase" REQUIRED="true"/>
+      <IMPORT MODULE="liquibase.jar" NAME="liquibase" REQUIRED="true"/>
 	  <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
     </IMPORTS> 
   </CODEGENERATION>  
