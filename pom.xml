@@ -36,6 +36,7 @@
     <module>iOPeNDAPInput</module>
     <module>iOPeNDAPVariable</module>
     <module>iPostgresqlDbUpdate</module>
+    <module>iPostgresqlDbUpdateLiquibase4</module>
     <module>iPostgresqlGenerateChangelog</module>
     <module>iPostgresqlOutput</module>
     <module>iThreddsIterator</module>

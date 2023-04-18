@@ -1,0 +1,127 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+	
+    String cid = node.getUniqueName();
+    String dbhost = ElementParameterParser.getValue(node, "__HOST__");
+    String dbport = ElementParameterParser.getValue(node, "__PORT__");
+    String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+    String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+    String dbuser = ElementParameterParser.getValue(node, "__USER__");
+    String dbpass = ElementParameterParser.getValue(node, "__PASS__");
+    
+    String useInlineContent = ElementParameterParser.getValue(node, "__USE_INLINE_CONTENT__");
+    String fileName = ElementParameterParser.getValue(node, "__FILENAME__");
+	String inlineContent = ElementParameterParser.getValue(node, "__INLINE_CONTENT__")
+							.replaceAll("\"","\\\\\"")
+							.replaceAll("\r","\\\\r")
+							.replaceAll("\n","\\\\n\\\" + \n\\\"");
+    
+
+
+	  System.out.println( "useInlineContent: " + useInlineContent );
+
+    if (useInlineContent.equals("true")) { %>
+    	java.io.File tempFile_<%=cid%> = null;
+		java.io.PrintStream out_<%=cid%> = null;
+		java.io.File tempDir_<%=cid%> = null;
+    	
+    	try {
+    	System.out.println("Start of try block");
+	    	tempDir_<%=cid%> = java.io.File.createTempFile("talend-temp-","");
+	    	tempDir_<%=cid%>.delete();
+	    	tempDir_<%=cid%>.mkdir();
+
+	
+
+	    	tempFile_<%=cid%> = new java.io.File(tempDir_<%=cid%>, "changelog.xml");
+	    	
+	  	  System.out.println( "tempFile_cid " +  tempFile_<%=cid%> );
+
+		    out_<%=cid%> = new java.io.PrintStream(new java.io.FileOutputStream(tempFile_<%=cid%>));
+		    out_<%=cid%>.print("<%=inlineContent%>");
+		    out_<%=cid%>.flush();
+			
+			String fileName_<%=cid%> = "changelog.xml";
+			String basePath_<%=cid%> = tempDir_<%=cid%>.getAbsolutePath();
+    <% } else { %>
+    	String fileName_<%=cid%> = <%=fileName%>;
+		String basePath_<%=cid%> = null;
+
+	 	  System.out.println( "basePath_cid " + basePath_<%=cid%>  );
+
+    <% }
+    
+%>
+ 
+ 
+	 	
+	System.out.println( "***********************" );
+	System.out.println( "conn host:" + <%=dbhost%> 
+		+ ", port:" + <%=dbport%> 
+		+ ", schema:" + <%=dbschema%> 
+		+ ", name:" + <%=dbname%> 
+		+ ", user:" + <%=dbuser%> 		 
+	);
+	
+
+
+	String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+	
+	String schema_<%=cid%> = <%=dbschema%>;
+
+	String userName_<%=cid%> = <%=(dbuser != null && dbuser.trim().length() == 0)? "null":dbuser%>;
+	String password_<%=cid%> = <%=(dbpass != null && dbpass.trim().length() == 0)? "null":dbpass%>;
+	
+	
+	 System.out.println( "url_cid:" + url_<%=cid %> ); 
+	 System.out.println( "schema_cid:" + schema_<%=cid%> );
+	 System.out.println( "userName_cid:" + userName_<%=cid%> );
+
+
+
+	java.sql.Connection conn_<%=cid%>=null;
+    liquibase.Liquibase liquibase_<%=cid%> = null;
+
+    try {
+		java.lang.Class.forName("org.postgresql.Driver");
+		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,userName_<%=cid%>,password_<%=cid%>);
+		conn_<%=cid%>.setAutoCommit(false);
+    
+    	liquibase.database.Database database_<%=cid%> = liquibase.database.DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new liquibase.database.jvm.JdbcConnection(conn_<%=cid%>));
+    	database_<%=cid%>.setDefaultSchemaName(schema_<%=cid%>); 
+        liquibase_<%=cid%> = new liquibase.Liquibase(fileName_<%=cid%>, new liquibase.resource.FileSystemResourceAccessor(basePath_<%=cid%>), database_<%=cid%>);
+
+        liquibase_<%=cid%>.update();
+    } finally {
+        if (conn_<%=cid%> != null) {
+            conn_<%=cid%>.rollback();
+            conn_<%=cid%>.close();
+        }
+	 System.out.println( "***** completed finally block ***********" );
+    }
+
+<%    if (useInlineContent.equals("true")) { %>
+	} finally {
+	System.out.println("In finally block");
+		if (tempFile_<%=cid%> != null) tempFile_<%=cid%>.delete();
+		if (tempDir_<%=cid%> != null) tempDir_<%=cid%>.delete();
+	    if (out_<%=cid%> != null) out_<%=cid%>.close();
+	}
+<%    } %>
+	
