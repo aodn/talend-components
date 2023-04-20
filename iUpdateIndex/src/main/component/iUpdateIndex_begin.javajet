@@ -33,6 +33,7 @@
     String jobName = ElementParameterParser.getValue(node, "__JOBNAME__");
     String manifestFilename = ElementParameterParser.getValue(node, "__MANIFEST_FILENAME__");
     String basePath = ElementParameterParser.getValue(node, "__BASE_PATH__");
+    boolean liquibaseVersion4 = ElementParameterParser.getValue(node, "__LIQUIBASE_VERSION4__").equals("true");
 %>
     au.org.emii.talend.updateindex.Parameters params_<%=cid%> = new au.org.emii.talend.updateindex.Parameters();
 
@@ -45,6 +46,7 @@
     params_<%=cid%>.jobName = <%=jobName%>;
     params_<%=cid%>.manifestFilename = <%=manifestFilename%>;
     params_<%=cid%>.basePath = <%=basePath%>;
+    params_<%=cid%>.liquibaseVersion4 = <%=liquibaseVersion4%>;
 
     au.org.emii.talend.updateindex.Component component_<%=cid%> = new au.org.emii.talend.updateindex.Component();
 

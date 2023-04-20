@@ -10,8 +10,8 @@
 		org.talend.core.model.metadata.types.JavaTypesManager
 		org.talend.core.model.metadata.types.JavaType
 		java.util.List 
-    	java.util.Map		
-	" 
+    	java.util.Map
+	"
 %>
 <%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -93,21 +93,37 @@
 	 System.out.println( "schema_cid:" + schema_<%=cid%> );
 	 System.out.println( "userName_cid:" + userName_<%=cid%> );
 
+    String JARS_DIR = System.getProperty("user.dir") + "/liquibase4";
+    paolo.test.custom_classloader.DirectoryBasedParentLastURLClassLoader classLoader = new paolo.test.custom_classloader.DirectoryBasedParentLastURLClassLoader(JARS_DIR);
+    Class<?> classLiquibase = classLoader.loadClass("liquibase.Liquibase");
+    Class<?> classDatabase = classLoader.loadClass("liquibase.database.Database");
+    Class<?> classDatabaseFactory = classLoader.loadClass("liquibase.database.DatabaseFactory");
+    Class<?> classJdbcConnection = classLoader.loadClass("liquibase.database.jvm.JdbcConnection");
+    Class<?> classFileSystemResourceAccessor = classLoader.loadClass("liquibase.resource.FileSystemResourceAccessor");
 
+
+    java.lang.reflect.Method databaseFactory_getInstance = classDatabaseFactory.getMethod("getInstance");
+    java.lang.reflect.Method databaseFactory_findCorrectDatabaseImplementation = classDatabaseFactory.getMethod("findCorrectDatabaseImplementation", classJdbcConnection);
+    java.lang.reflect.Method database_setDefaultSchemaName = classDatabaseFactory.getMethod("setDefaultSchemaName", String.class);
+    java.lang.reflect.Method liquibase_update = classLiquibase.getMethod("update");
 
 	java.sql.Connection conn_<%=cid%>=null;
-    liquibase.Liquibase liquibase_<%=cid%> = null;
+    Object liquibase_<%=cid%> = null;
 
     try {
 		java.lang.Class.forName("org.postgresql.Driver");
 		conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,userName_<%=cid%>,password_<%=cid%>);
 		conn_<%=cid%>.setAutoCommit(false);
-    
-    	liquibase.database.Database database_<%=cid%> = liquibase.database.DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new liquibase.database.jvm.JdbcConnection(conn_<%=cid%>));
-    	database_<%=cid%>.setDefaultSchemaName(schema_<%=cid%>); 
-        liquibase_<%=cid%> = new liquibase.Liquibase(fileName_<%=cid%>, new liquibase.resource.FileSystemResourceAccessor(basePath_<%=cid%>), database_<%=cid%>);
 
-        liquibase_<%=cid%>.update();
+    	Object databaseFactory_<%=cid%> = databaseFactory_getInstance.invoke(null);
+    	Object jdbcConnection_<%=cid%> = classJdbcConnection.getConstructor(java.sql.Connection.class).newInstance(conn_<%=cid%>);
+        Object database_<%=cid%> = databaseFactory_findCorrectDatabaseImplementation.invoke(databaseFactory_<%=cid%>, jdbcConnection_<%=cid%>);
+        database_setDefaultSchemaName.invoke(database_<%=cid%>, schema_<%=cid%>);
+
+        Object fileSystemResourceAccessor_<%=cid%> = classFileSystemResourceAccessor.getConstructor(String.class).newInstance(basePath_<%=cid%>);
+        liquibase_<%=cid%> = classLiquibase.getConstructor(String.class, classFileSystemResourceAccessor, classDatabase).newInstance(fileName_<%=cid%>, fileSystemResourceAccessor_<%=cid%>, database_<%=cid%>);
+        liquibase_update.invoke(liquibase_<%=cid%>);
+
     } finally {
         if (conn_<%=cid%> != null) {
             conn_<%=cid%>.rollback();

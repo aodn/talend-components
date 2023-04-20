@@ -10,4 +10,5 @@ public class Parameters {
     public String jobName;
     public String basePath;
     public String manifestFilename;
+    public boolean liquibaseVersion4;
 }

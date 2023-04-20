@@ -197,6 +197,13 @@
     </dependency>
     <dependency>
       <groupId>au.org.emii.talend</groupId>
+      <artifactId>iPostgresqlDbUpdateLiquibase4</artifactId>
+      <classifier>package-component</classifier>
+      <type>zip</type>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>au.org.emii.talend</groupId>
       <artifactId>iPostgresqlGenerateChangelog</artifactId>
       <classifier>package-component</classifier>
       <type>zip</type>

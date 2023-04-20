@@ -68,7 +68,8 @@
 	</PARAMETER>
   </PARAMETERS>  
   <CODEGENERATION> 
-    <IMPORTS> 
+    <IMPORTS>
+      <IMPORT MODULE="custom_classloader.jar" NAME="custom_classloader" REQUIRED="true"/>
 	  <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
     </IMPORTS> 
   </CODEGENERATION>  

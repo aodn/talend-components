@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 
 public class Component {
 
-    private static int COMMIT_EVERY = 10000;
+    private static final int COMMIT_EVERY = 10000;
 
     public Results run(Parameters params) throws Exception {
         Results results = new Results();
@@ -22,9 +22,16 @@ public class Component {
             conn = DriverManager.getConnection(url, params.userName, params.password);
             conn.setAutoCommit(false);
 
-            FileIndexUpdater fileIndexUpdater = new FileIndexUpdater(
-                conn, params.dbschema, params.jobName
-            );
+            FileIndexUpdater fileIndexUpdater;
+            if (params.liquibaseVersion4) {
+                fileIndexUpdater = new FileIndexUpdater(
+                        conn, params.dbschema, params.jobName, true
+                );
+            } else {
+                fileIndexUpdater = new FileIndexUpdater(
+                        conn, params.dbschema, params.jobName
+                );
+            }
 
             BufferedReader br = new BufferedReader(new FileReader(params.manifestFilename ));
 

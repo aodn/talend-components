@@ -1,5 +1,8 @@
 package au.org.emii.talend.updateindex;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +19,8 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+
+import paolo.test.custom_classloader.DirectoryBasedParentLastURLClassLoader;
 
 public class FileIndexUpdater {
 
@@ -38,6 +43,16 @@ public class FileIndexUpdater {
         this.schemaName = schemaName;
 
         runLiquibase();
+        determineJobIdAndRunNumber();
+        prepareStatements();
+    }
+
+    public FileIndexUpdater(Connection conn, String schemaName, String jobName, boolean liquibaseVersion4) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        this.conn = conn;
+        this.jobName = jobName;
+        this.schemaName = schemaName;
+
+        runLiquibase4();
         determineJobIdAndRunNumber();
         prepareStatements();
     }
@@ -124,6 +139,57 @@ public class FileIndexUpdater {
         } catch (DatabaseException e) {
             throw new RuntimeException(e);
         } catch (LiquibaseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void runLiquibase4() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        File dir = new File(System.getProperty("user.dir") + "liquibase4");
+        String JARS_DIR = dir.getAbsolutePath();
+
+        System.out.println("Using " + JARS_DIR);
+        // /var/lib/talend7/workspace/SOOP_CO2_RT/poms/jobs/process/soop_co2_rt_harvester_0.1/src/main/ext-resources/liquibase4
+     // ls /var/lib/talend7/workspace/SOOP_CO2_RT/temp/lib
+
+        DirectoryBasedParentLastURLClassLoader classLoader = new DirectoryBasedParentLastURLClassLoader(JARS_DIR);
+        Class<?> classLiquibase = classLoader.loadClass("liquibase.Liquibase");
+        Class<?> classDatabase = classLoader.loadClass("liquibase.database.Database");
+        Class<?> classDatabaseFactory = classLoader.loadClass("liquibase.database.DatabaseFactory");
+        Class<?> classJdbcConnection = classLoader.loadClass("liquibase.database.jvm.JdbcConnection");
+        Class<?> classDatabaseConnection = classLoader.loadClass("liquibase.database.DatabaseConnection");
+        Class<?> classClassLoaderResourceAccessor = classLoader.loadClass("liquibase.resource.ClassLoaderResourceAccessor");
+        Class<?> classResourceAccessor = classLoader.loadClass("liquibase.resource.ResourceAccessor");
+
+//        liquibase.database.jvm.JdbcConnection
+
+        java.lang.reflect.Method databaseFactory_getInstance = classDatabaseFactory.getMethod("getInstance");
+        java.lang.reflect.Method databaseFactory_findCorrectDatabaseImplementation = classDatabaseFactory.getMethod("findCorrectDatabaseImplementation", classDatabaseConnection );
+        java.lang.reflect.Method database_setDefaultSchemaName = classDatabase.getMethod("setDefaultSchemaName", String.class);
+
+        Method[] methods = classLiquibase.getDeclaredMethods();
+        for(int i = 0; i < methods.length; i++) {
+            System.out.println("The method is: " + methods[i].toString());
+        }
+
+        java.lang.reflect.Method liquibase_update = classLiquibase.getMethod("update");
+
+        try {
+//          Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
+            Object databaseFactory = databaseFactory_getInstance.invoke(null);
+            Object jdbcConnection = classJdbcConnection.getConstructor(java.sql.Connection.class).newInstance(conn);
+            Object database = databaseFactory_findCorrectDatabaseImplementation.invoke(databaseFactory, jdbcConnection);
+
+//          database.setDefaultSchemaName(schemaName);
+            database_setDefaultSchemaName.invoke(database, schemaName);
+
+//          Liquibase liquibase = new Liquibase("iPostgresqlIndexResources_changelog.xml", new ClassLoaderResourceAccessor(), database);
+            Object classLoaderResourceAccessor = classClassLoaderResourceAccessor.getConstructor().newInstance();
+            Object oLiquibase = classLiquibase.getConstructor(String.class, classResourceAccessor, classDatabase).newInstance("iPostgresqlIndexResources_changelog.xml", classLoaderResourceAccessor, database);
+
+//          liquibase.update(null);
+            liquibase_update.invoke(oLiquibase);
+
+        } catch (InstantiationException e) {
             throw new RuntimeException(e);
         }
     }
