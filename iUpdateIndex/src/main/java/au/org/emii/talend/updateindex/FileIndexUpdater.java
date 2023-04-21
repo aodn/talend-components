@@ -135,7 +135,7 @@ public class FileIndexUpdater {
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
             database.setDefaultSchemaName(schemaName); 
             Liquibase liquibase = new Liquibase("iPostgresqlIndexResources_changelog.xml", new ClassLoaderResourceAccessor(), database);
-            liquibase.update(null);
+            liquibase.update("");
         } catch (DatabaseException e) {
             throw new RuntimeException(e);
         } catch (LiquibaseException e) {
@@ -144,12 +144,13 @@ public class FileIndexUpdater {
     }
     private void runLiquibase4() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        File dir = new File(System.getProperty("user.dir") + "liquibase4");
+        File dir = new File("/var/lib/talend7/plugins/org.talend.designer.components.localprovider_7.1.1.20181026_1147/components/ext/user/iUpdateIndex");
         String JARS_DIR = dir.getAbsolutePath();
 
         System.out.println("Using " + JARS_DIR);
-        // /var/lib/talend7/workspace/SOOP_CO2_RT/poms/jobs/process/soop_co2_rt_harvester_0.1/src/main/ext-resources/liquibase4
-     // ls /var/lib/talend7/workspace/SOOP_CO2_RT/temp/lib
+        // System.getProperty("user.dir") +  (wrong!) /var/lib/talend7/workspace/SOOP_CO2_RT/poms/jobs/process/soop_co2_rt_harvester_0.1/src/main/ext-resources/liquibase4
+        // location in the component in TOS /var/lib/talend7/plugins/org.talend.designer.components.localprovider_7.1.1.20181026_1147/components/ext/user/iUpdateIndex/
+        // actual location in project /var/lib/talend7/workspace/SOOP_CO2_RT/temp/lib
 
         DirectoryBasedParentLastURLClassLoader classLoader = new DirectoryBasedParentLastURLClassLoader(JARS_DIR);
         Class<?> classLiquibase = classLoader.loadClass("liquibase.Liquibase");

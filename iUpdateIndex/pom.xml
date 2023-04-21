@@ -18,6 +18,11 @@
         <artifactId>liquibase-core</artifactId>
         <version>2.0.1</version>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.liquibase</groupId>-->
+<!--      <artifactId>liquibase-core</artifactId>-->
+<!--      <version>4.19.0</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>paolo</groupId>
       <artifactId>custom_classloader</artifactId>
@@ -26,11 +31,11 @@
       <systemPath>${project.basedir}/src/main/resources/custom_classloader.jar</systemPath>
     </dependency>
     <dependency>
-      <groupId>liquibase</groupId>
-      <artifactId>liquibase4</artifactId>
-      <version>1.0</version>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-core</artifactId>
+      <version>4.19.0</version>
       <scope>system</scope>
-      <systemPath>${project.basedir}/src/main/resources/liquibase4.jar</systemPath>
+      <systemPath>${project.basedir}/src/main/component/liquibase-core-4.19.0.jar</systemPath>
     </dependency>
   </dependencies>
 

@@ -56,7 +56,8 @@
     </PARAMETER>
   </PARAMETERS>
   <CODEGENERATION> 
-    <IMPORTS> 
+    <IMPORTS>
+      <IMPORT MODULE="liquibase-core-4.19.0.jar" NAME="liquibase-core-4.19.0" MVN="mvn:org.liquibase/liquibase-core/4.19.0" REQUIRED="true"/>
       <IMPORT MODULE="liquibase.jar" NAME="liquibase" REQUIRED="true"/> 
       <IMPORT MODULE="iUpdateIndex-1.0.0-SNAPSHOT.jar" NAME="iUpdateIndex-1.0.0-SNAPSHOT" REQUIRED="true"/> 
 	  <IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
